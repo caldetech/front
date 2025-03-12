@@ -2,10 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { signInWithEmailAndPassword } from "./actions";
 
 export default function LogInForm() {
   return (
-    <form className="mt-8 space-y-6">
+    <form className="mt-8 space-y-6" action={signInWithEmailAndPassword}>
       <div className="space-y-4">
         <div>
           <Label htmlFor="email" className="sr-only">
