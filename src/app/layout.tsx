@@ -28,7 +28,6 @@ const overpass_mono = Overpass_Mono({
   variable: "--font-overpass-mono",
 });
 
-
 export const metadata: Metadata = {
   title: "Create Next App",
 };
@@ -40,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.className} ${inter.variable} ${roboto.variable} ${montserrat.variable} ${poppins.variable} ${overpass_mono.variable}`}>
+      <body className={`${inter.className} ${inter.variable} ${roboto.variable} ${montserrat.variable} ${poppins.variable} ${overpass_mono.variable} dark`}>
         {children}
       </body>
     </html>

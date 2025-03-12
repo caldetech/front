@@ -8,9 +8,14 @@ import { signInWithEmailAndPassword } from "./actions";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useFormState } from "@/hooks/use-form-state";
+import { useRouter } from "next/navigation";
 
 export default function LogInForm() {
-  const [{ success, message, errors }, handleSubmit, isPending] = useFormState(signInWithEmailAndPassword)
+  const router = useRouter()
+
+  const [{ success, message, errors }, handleSubmit, isPending] = useFormState(signInWithEmailAndPassword, () => {
+    router.push('/')
+  })
 
   return (
     <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

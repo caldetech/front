@@ -1,7 +1,7 @@
-import Login from "./(guest)/sign-in/page";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
-    <Login />
+    <Button>Top</Button>
   );
 }
