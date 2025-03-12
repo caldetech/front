@@ -16,7 +16,7 @@ export default function SignInPage() {
       </div>
 
       <div className="flex w-full items-center justify-center">
-        <div className="w-full max-w-md space-y-8 px-4">
+        <div className="w-full max-w-sm space-y-8 px-4">
           <div className="text-center">
             <h2 className="mt-6 text-3xl font-bold text-gray-900">
               Bem-vindo (a)!

@@ -5,19 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { signInWithEmailAndPassword } from "./actions";
-import { useActionState } from "react";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useFormState } from "@/hooks/use-form-state";
 
 export default function LogInForm() {
-  const [{ success, message, errors }, formAction, isPending] = useActionState(signInWithEmailAndPassword, {
-    success: false,
-    message: null,
-    errors: null
-  })
+  const [{ success, message, errors }, handleSubmit, isPending] = useFormState(signInWithEmailAndPassword)
 
   return (
-    <form className="mt-8 space-y-6" action={formAction}>
+    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
       {success === false && message && (
         <Alert variant={"destructive"}>
           <AlertTriangle className="size-4" />
