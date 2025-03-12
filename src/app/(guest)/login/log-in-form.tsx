@@ -20,10 +20,10 @@ export default function LogInForm() {
         <div className="w-full max-w-md space-y-8 px-4">
           <div className="text-center">
             <h2 className="mt-6 text-3xl font-bold text-gray-900">
-              Welcome back
+              Bem-vindo (a)!
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              Please sign in to your account
+              Por favor, faça login na sua conta
             </p>
           </div>
 
@@ -31,7 +31,7 @@ export default function LogInForm() {
             <div className="space-y-4">
               <div>
                 <Label htmlFor="email" className="sr-only">
-                  Email address
+                  E-mail
                 </Label>
                 <Input
                   id="email"
@@ -40,12 +40,12 @@ export default function LogInForm() {
                   autoComplete="email"
                   required
                   className="w-full"
-                  placeholder="Email address"
+                  placeholder="E-mail"
                 />
               </div>
               <div>
                 <Label htmlFor="password" className="sr-only">
-                  Password
+                  Senha
                 </Label>
                 <Input
                   id="password"
@@ -54,7 +54,7 @@ export default function LogInForm() {
                   autoComplete="current-password"
                   required
                   className="w-full"
-                  placeholder="Password"
+                  placeholder="Senha"
                 />
               </div>
               <div className="text-end">
@@ -62,14 +62,14 @@ export default function LogInForm() {
                   href="/dashboard/forgot-password"
                   className="ml-auto inline-block text-sm underline"
                 >
-                  Forgot your password?
+                  Esqueceu a senha?
                 </Link>
               </div>
             </div>
 
             <div>
               <Button type="submit" className="w-full">
-                Sign in
+                Entrar
               </Button>
             </div>
           </form>
@@ -81,7 +81,7 @@ export default function LogInForm() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="bg-muted px-2 text-gray-500">
-                  or continue with
+                  ou continue com
                 </span>
               </div>
             </div>
@@ -115,9 +115,9 @@ export default function LogInForm() {
             </div>
 
             <div className="mt-6 text-center text-sm">
-              Don&apos;t have an account?{" "}
+              Ainda não tem uma conta?{" "}
               <Link href="/dashboard/register/v1" className="underline">
-                Sign up
+                Cadastre-se
               </Link>
             </div>
           </div>
