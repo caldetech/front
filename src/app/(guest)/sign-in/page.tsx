@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import LogInForm from "./log-in-form";
+import LogInForm from "./sign-in-form";
 import { Github } from "lucide-react";
 import Link from "next/link";
 
