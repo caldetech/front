@@ -16,8 +16,8 @@ export default function SignUpPage() {
       <div className="flex w-full items-center justify-center lg:w-1/2">
         <div className="w-full max-w-md space-y-8 px-4">
           <div className="text-center">
-            <h2 className="mt-6 text-3xl font-bold text-gray-900">Register</h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <h2 className="mt-6 text-3xl font-bold text-foreground">Register</h2>
+            <p className="mt-2 text-sm text-foreground">
               Create a new account to access the dashboard.
             </p>
           </div>
@@ -30,7 +30,7 @@ export default function SignUpPage() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-muted px-2 text-gray-500">or continue with</span>
+                <span className="bg-muted px-2 text-foreground">or continue with</span>
               </div>
             </div>
 
@@ -62,9 +62,9 @@ export default function SignUpPage() {
               </Button>
             </div>
 
-            <p className="mt-6 text-center text-sm text-gray-600">
+            <p className="mt-6 text-center text-sm text-foreground">
               Already have an account?{" "}
-              <a href="/dashboard/login/v1" className="text-primary hover:underline">
+              <a href="/dashboard/login/v1" className="text-foreground hover:underline">
                 Log in
               </a>
             </p>

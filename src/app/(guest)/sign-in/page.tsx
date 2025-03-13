@@ -16,10 +16,10 @@ export default function SignInPage() {
       <div className="flex w-full items-center justify-center">
         <div className="w-full max-w-sm space-y-8 px-4">
           <div className="text-center">
-            <h2 className="mt-6 text-3xl font-bold text-gray-900">
+            <h2 className="mt-6 text-3xl font-bold text-foreground">
               Bem-vindo (a)!
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-foreground">
               Por favor, faça login na sua conta
             </p>
           </div>
@@ -27,18 +27,18 @@ export default function SignInPage() {
           <LogInForm />
 
           <div className="mt-6">
-            <div className="relative">
+            {/* <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-muted px-2 text-gray-500">
+                <span className="bg-muted px-2 text-foreground">
                   ou continue com
                 </span>
               </div>
-            </div>
+            </div> */}
 
-            <form action={signInWithGithub}>
+            {/* <form action={signInWithGithub}>
               <div className="mt-6 grid grid-cols-2 gap-3">
                 <Button variant="outline" className="w-full">
                   <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -67,7 +67,7 @@ export default function SignInPage() {
                   GitHub
                 </Button>
               </div>
-            </form>
+            </form> */}
 
             <div className="mt-6 text-center text-sm">
               Ainda não tem uma conta?{" "}
