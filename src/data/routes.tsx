@@ -95,10 +95,17 @@ export const page_routes: PageRoutesType[] = [
       {
         title: "Orders",
         href: "/ordens",
-        icon: "PackageSearch",
+        icon: "StickyNote",
         items: [
-          { title: "Order List", href: "/dashboard/pages/orders" },
-          { title: "Order Detail", href: "/dashboard/pages/orders/detail" }
+          { title: "", href: "" },
+        ]
+      },
+      { 
+        title: "Customers", 
+        href: "/clientes", 
+        icon: "Users",
+        items: [
+          { title: "", href: "" },
         ]
       },
       {
@@ -118,14 +125,6 @@ export const page_routes: PageRoutesType[] = [
           { title: "Product List", href: "/dashboard/pages/products" },
           { title: "Product Detail", href: "/dashboard/pages/products/1" },
           { title: "Add Product", href: "/dashboard/pages/products/create" }
-        ]
-      },
-      { 
-        title: "Customers", 
-        href: "/clientes", 
-        icon: "Users",
-        items: [
-          { title: "", href: "" },
         ]
       },
       { title: "Comissions", href: "/comissoes", icon: "WalletMinimal",

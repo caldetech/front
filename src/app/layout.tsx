@@ -29,7 +29,7 @@ const overpass_mono = Overpass_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Create Next App",
+  title: "Caldetech - Sistema de Gerenciamento",
 };
 
 export default function RootLayout({

@@ -32,12 +32,18 @@ export default function Sidebar() {
   };
 
   const routeTitles: any = {
+    Orders: "Ordens",
     Services: "Serviços",
     Products: "Produtos",
     Customers: "Clientes",
     Users: "Funcionários",
     Comissions: "Comissões"
   };
+
+  async function handleLogout() {
+    await fetch("/api/auth/sign-out", { method: "GET" });
+    window.location.href = "/sign-in"; 
+  }
 
   return (
     <div className="flex flex-col h-full border-r border-foreground/10 min-w-60">
@@ -126,7 +132,7 @@ export default function Sidebar() {
       <SidebarFooter>
         <Card className="group-data-[collapsible=icon]:hidden">
           <CardContent>
-            <Button className="w-full">
+            <Button className="w-full" onClick={handleLogout}>
               Sair
             </Button>
           </CardContent>
