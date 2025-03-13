@@ -1,8 +1,5 @@
-import { Button } from "@/components/ui/button";
 import LogInForm from "./sign-in-form";
-import { Github } from "lucide-react";
 import Link from "next/link";
-import { signInWithGithub } from "../actions";
 import Image from "next/image";
 import Background from '../../../../public/images/cover.png'
 
@@ -14,6 +11,10 @@ export default function SignInPage() {
       </div>
 
       <div className="flex w-full items-center justify-center">
+        {/* <Button asChild className="absolute top-8 right-8" variant={"outline"}>
+          <Link href={""} className="">Novo estabelecimento</Link>
+        </Button> */}
+
         <div className="w-full max-w-sm space-y-8 px-4">
           <div className="text-center">
             <h2 className="mt-6 text-3xl font-bold text-foreground">
