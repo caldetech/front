@@ -7,12 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Eye } from "lucide-react";
 
-export default function Users() {
+export default function Orders() {
   return (
     <div className="flex flex-col gap-4 p-8 pt-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Funcionários</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Ordens</h1>
         
         <Button className="absolute top-8 right-8" variant={"outline"}>
           Adicionar
@@ -24,7 +25,7 @@ export default function Users() {
           <Table>
             <TableHeader>
               <TableRow>
-                {/* <TableHead></TableHead> */}
+                <TableHead></TableHead>
                 <TableHead>Identificador</TableHead>
                 <TableHead>Realizado há</TableHead>
                 <TableHead>Status</TableHead>
@@ -35,13 +36,13 @@ export default function Users() {
 
             <TableBody>
               <TableRow>
-                {/* <TableCell>
+                <TableCell>
                   <Button variant={"outline"} size={"xs"}>
                     <Eye className="h-3 w-3" />
 
                     <span className="sr-only">Detalhes do pedido</span>
                   </Button>
-                </TableCell> */}
+                </TableCell>
 
                 <TableCell className="font-mono text-xs font-medium">
                   csacsacsa
