@@ -1,15 +1,20 @@
+import { auth } from "@/auth/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { BadgeCheck, Bell, CreditCard, LogOut, Sparkles } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { LogOut } from "lucide-react";
 
-export default function UserMenu() {
+export default async function UserMenu() {
+  const { user } = await auth()
+
+  console.log(user)
+
   return (
     <div className="ms-4">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar className="size-8 rounded-full">
             <AvatarImage
-              src={`${process.env.DASHBOARD_BASE_URL}/images/avatars/1.png`}
+              src={'images/avatars/1.png'}
               alt="shadcn ui kit"
             />
             <AvatarFallback className="rounded-lg">TB</AvatarFallback>
@@ -23,14 +28,14 @@ export default function UserMenu() {
             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage
-                  src={`${process.env.DASHBOARD_BASE_URL}/images/avatars/1.png`}
+                  src={'images/avatars/1.png'}
                   alt="shadcn ui kit"
                 />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">Toby Belhome</span>
-                <span className="truncate text-xs text-muted-foreground">contact@bundui.io</span>
+                <span className="truncate font-semibold">{user.name}</span>
+                <span className="truncate text-xs text-muted-foreground">{user.email}</span>
               </div>
             </div>
           </DropdownMenuLabel>
@@ -65,7 +70,7 @@ export default function UserMenu() {
 
           <DropdownMenuItem>
             <LogOut className="me-2 size-4" />
-            Log out
+            Sair
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

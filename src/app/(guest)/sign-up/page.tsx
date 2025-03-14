@@ -1,31 +1,27 @@
-import { Button } from "@/components/ui/button";
-import { Github } from "lucide-react";
+import Image from "next/image";
 import SignUpForm from "./sign-up-form";
+import Background from '../../../../public/images/cover.png'
 
 export default function SignUpPage() {
   return (
-    <div className="flex pb-8 lg:h-screen lg:pb-0">
-      <div className="hidden w-1/2 bg-gray-100 lg:block">
-        <img
-          src={'images/cover.png'}
-          alt="Login visual"
-          className="h-full w-full object-cover"
-        />
+    <div className="grid lg:grid-cols-2 grid-cols-1 h-screen w-full">
+      <div className="hidden bg-gray-100 lg:block">
+        <Image src={Background} className="h-full w-full object-cover" alt="" />
       </div>
 
-      <div className="flex w-full items-center justify-center lg:w-1/2">
-        <div className="w-full max-w-md space-y-8 px-4">
+      <div className="flex w-full items-center justify-center">
+        <div className="w-full max-w-sm space-y-8 px-4">
           <div className="text-center">
-            <h2 className="mt-6 text-3xl font-bold text-foreground">Register</h2>
+            <h2 className="mt-6 text-3xl font-bold text-foreground">Cadastre-se</h2>
             <p className="mt-2 text-sm text-foreground">
-              Create a new account to access the dashboard.
+              Crie uma nova conta para acessar a dashboard.
             </p>
           </div>
 
           <SignUpForm />
 
           <div className="mt-6">
-            <div className="relative">
+            {/* <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300" />
               </div>
@@ -56,16 +52,17 @@ export default function SignUpPage() {
                 </svg>
                 Google
               </Button>
+              
               <Button variant="outline" className="w-full">
                 <Github  className="mr-2 h-4 w-4" />
                 GitHub
               </Button>
-            </div>
+            </div> */}
 
             <p className="mt-6 text-center text-sm text-foreground">
-              Already have an account?{" "}
-              <a href="/dashboard/login/v1" className="text-foreground hover:underline">
-                Log in
+              Já tem uma conta?{" "}
+              <a href="/sign-in" className="text-foreground underline">
+                Entrar
               </a>
             </p>
           </div>
@@ -74,3 +71,4 @@ export default function SignUpPage() {
     </div>
   );
 }
+

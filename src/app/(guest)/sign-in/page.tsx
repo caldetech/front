@@ -11,10 +11,6 @@ export default function SignInPage() {
       </div>
 
       <div className="flex w-full items-center justify-center">
-        {/* <Button asChild className="absolute top-8 right-8" variant={"outline"}>
-          <Link href={""} className="">Novo estabelecimento</Link>
-        </Button> */}
-
         <div className="w-full max-w-sm space-y-8 px-4">
           <div className="text-center">
             <h2 className="mt-6 text-3xl font-bold text-foreground">
@@ -72,7 +68,7 @@ export default function SignInPage() {
 
             <div className="mt-6 text-center text-sm">
               Ainda não tem uma conta?{" "}
-              <Link href="/dashboard/register/v1" className="underline">
+              <Link href="/sign-up" className="underline">
                 Cadastre-se
               </Link>
             </div>
