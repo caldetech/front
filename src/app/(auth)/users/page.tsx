@@ -1,4 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -13,10 +18,99 @@ export default function Users() {
     <div className="flex flex-col gap-4 p-8 pt-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Funcionários</h1>
-        
-        <Button className="absolute top-8 right-8" variant={"outline"}>
-          Adicionar
-        </Button>
+
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="absolute top-8 right-8" variant={"outline"}>
+              Adicionar
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent className="w-auto">
+            <DialogHeader>
+              <DialogTitle>Adicionar funcionário</DialogTitle>
+              {/* <DialogDescription>
+              Crie um novo usuário  
+            </DialogDescription> */}
+            </DialogHeader>
+            <div className="flex flex-col gap-4 py-4">
+              <div className="flex flex-col w-full gap-1">
+                <Label htmlFor="name" className="text-right">
+                  Nome
+                </Label>
+
+                <Input
+                  className=""
+                />
+              </div>
+
+              <div className="flex flex-col w-full gap-1">
+                <Label htmlFor="number" className="text-right">
+                  Número
+                </Label>
+
+                <InputOTP
+                  maxLength={11}
+                  className="w-full"
+                  id="number"
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                    <InputOTPSlot index={6} />
+                    <InputOTPSlot index={7} />
+                    <InputOTPSlot index={8} />
+                    <InputOTPSlot index={9} />
+                    <InputOTPSlot index={10} />
+                  </InputOTPGroup>
+                </InputOTP>
+
+                {/* <Input id="number" value={number} onChange={(e) => setNumber(e.target.value)} className="" /> */}
+              </div>
+
+              <div className="flex flex-col w-full gap-1">
+                <Label htmlFor="email" className="text-right">
+                  E-mail
+                </Label>
+                <Input
+                  id="email"
+                  className=""
+                />
+              </div>
+
+              <div className="flex flex-col w-full gap-1">
+                <Label htmlFor="role" className="text-right">
+                  Função
+                </Label>
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Função</SelectLabel>
+                      <SelectItem value="user">Usuário</SelectItem>
+                      <SelectItem value="manager">Gerente</SelectItem>
+                      <SelectItem value="admin">Administrador</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button>Adicionar</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="space-y-2.5">
@@ -25,11 +119,10 @@ export default function Users() {
             <TableHeader>
               <TableRow>
                 {/* <TableHead></TableHead> */}
-                <TableHead>Identificador</TableHead>
-                <TableHead>Realizado há</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead>Função</TableHead>
+                <TableHead>Celular</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Total do pedido</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -43,25 +136,15 @@ export default function Users() {
                   </Button>
                 </TableCell> */}
 
-                <TableCell className="font-mono text-xs font-medium">
-                  csacsacsa
-                </TableCell>
-
                 <TableCell className="text-muted-foreground">
-                  ascascsacascas
+                  Kelven Souza
                 </TableCell>
 
-                <TableCell>
-                  sefewfwefe
-                </TableCell>
+                <TableCell>Desenvolvedor</TableCell>
 
-                <TableCell className="font-medium">
-                  qwdqwdwqd
-                </TableCell>
+                <TableCell className="font-medium">(16) 99407-2920</TableCell>
 
-                <TableCell className="font-medium">
-                  10
-                </TableCell>
+                <TableCell className="font-medium">Ativo</TableCell>
 
                 {/* <TableCell>
                     <Button

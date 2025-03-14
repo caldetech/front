@@ -2,7 +2,6 @@
 "use client";
 
 import { SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import Icon from "./icon";
 import { page_routes } from "@/data/routes";
 import { usePathname } from "next/navigation";
 import { Star } from "lucide-react";
@@ -11,22 +10,9 @@ import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-// import { ClientSideLogout } from "@/actions/user/client-logout";
-// import { ServerSideLogout } from "@/actions/user/server-logout";
 
 export default function Sidebar() {
   const pathname = usePathname();
-  // const { toggleSidebar, isMobile } = useSidebar();
-
-  // useEffect(() => {
-  //   if (isMobile) toggleSidebar();
-  // }, [pathname]);
-
-  // const onClick = () => {
-  //   ClientSideLogout()
-  //   ServerSideLogout()
-  // }
-
   const groupTitles: any = {
     Pages: "Páginas",
   };
@@ -81,14 +67,7 @@ export default function Sidebar() {
                                     tooltip={item.title}
                                     isActive={pathname === item.href}
                                   >
-                                    {item.icon && (
-                                      <Icon
-                                        name={item.icon}
-                                        className="size-4"
-                                      />
-                                    )}
                                     <span>{routeTitles[item.title]}</span>
-                                    {/* <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" /> */}
                                   </SidebarMenuButton>
                                 </Link>
                               </CollapsibleTrigger>
@@ -103,9 +82,6 @@ export default function Sidebar() {
                                 href={item.href}
                                 target={item.newTab ? "_blank" : ""}
                               >
-                                {item.icon && (
-                                  <Icon name={item.icon} className="size-4" />
-                                )}
                                 <span>{item.title}</span>
                               </Link>
                             </SidebarMenuButton>

@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/table";
 import { Eye } from "lucide-react";
 
-export default function Orders() {
+export default function Comissions() {
   return (
     <div className="flex flex-col gap-4 p-8 pt-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Ordens de Serviço</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Comissões</h1>
 
         <Button className="absolute top-8 right-8" variant={"outline"}>
           Adicionar
@@ -29,10 +29,9 @@ export default function Orders() {
               <TableRow>
                 <TableHead></TableHead>
                 <TableHead>Data</TableHead>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Serviço</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead>Percentual</TableHead>
                 <TableHead>Valor</TableHead>
-                <TableHead>Funcionário indicado</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -67,7 +66,7 @@ export default function Orders() {
                               </TableCell>
 
                               <TableCell className="flex justify-end">
-                                Concluído
+                                Concluída
                               </TableCell>
                             </TableRow>
 
@@ -83,31 +82,11 @@ export default function Orders() {
 
                             <TableRow>
                               <TableCell className="text-muted-foreground">
-                                Endereço
-                              </TableCell>
-
-                              <TableCell className="flex justify-end">
-                                <p>Rua Expedicionário Solano, 3379</p>
-                              </TableCell>
-                            </TableRow>
-
-                            <TableRow>
-                              <TableCell className="text-muted-foreground">
                                 Telefone
                               </TableCell>
 
                               <TableCell className="flex justify-end">
                                 (16) 99407-2920
-                              </TableCell>
-                            </TableRow>
-
-                            <TableRow>
-                              <TableCell className="text-muted-foreground">
-                                E-mail
-                              </TableCell>
-
-                              <TableCell className="flex justify-end">
-                                jose.amar@gmail.com
                               </TableCell>
                             </TableRow>
 
@@ -196,16 +175,11 @@ export default function Orders() {
                   Kelven
                 </TableCell>
 
-                <TableCell>Instalação de câmera</TableCell>
+                <TableCell>5%</TableCell>
 
-                <TableCell className="font-medium">R$ 4.499,99</TableCell>
+                <TableCell className="font-medium">R$ 249,99</TableCell>
 
-                <TableCell className="flex font-medium gap-1">
-                  <span className="bg-gray-100 rounded-4xl px-2 py-1 flex items-center justify-center w-fit">Kelven</span>
-                  <span className="bg-gray-100 rounded-4xl px-2 py-1 flex items-center justify-center w-fit">Edson</span>
-                </TableCell>
-
-                <TableCell className="font-medium">Concluído</TableCell>
+                <TableCell className="font-medium">Pago</TableCell>
               </TableRow>
             </TableBody>
           </Table>
