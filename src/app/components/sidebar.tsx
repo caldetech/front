@@ -1,18 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import React from "react";
 import { SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { page_routes } from "@/data/routes";
 import { usePathname } from "next/navigation";
-import { Star } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import IconComponent from "./icon";
+import { Star } from "lucide-react";
 
 export default function Sidebar() {
   const pathname = usePathname();
+  // const { toggleSidebar, isMobile } = useSidebar();
+
+  // useEffect(() => {
+  //   if (isMobile) toggleSidebar();
+  // }, [pathname]);
+
+  // const onClick = () => {
+  //   ClientSideLogout()
+  //   ServerSideLogout()
+  // }
+
   const groupTitles: any = {
     Pages: "Páginas",
   };
@@ -67,6 +80,7 @@ export default function Sidebar() {
                                     tooltip={item.title}
                                     isActive={pathname === item.href}
                                   >
+                                    <IconComponent iconName={item.icon || ''} />
                                     <span>{routeTitles[item.title]}</span>
                                   </SidebarMenuButton>
                                 </Link>

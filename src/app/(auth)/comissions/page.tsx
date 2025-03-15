@@ -153,7 +153,7 @@ export default function Comissions() {
                           <TableFooter>
                             <TableRow>
                               <TableCell colSpan={3}>
-                                Total do pedido
+                                Total
                               </TableCell>
 
                               <TableCell className="text-right font-medium">

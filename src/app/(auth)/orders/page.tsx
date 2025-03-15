@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Eye } from "lucide-react";
+import { CirclePlus, Eye } from "lucide-react";
 
 export default function Orders() {
   return (
@@ -32,7 +32,7 @@ export default function Orders() {
                 <TableHead>Cliente</TableHead>
                 <TableHead>Serviço</TableHead>
                 <TableHead>Valor</TableHead>
-                <TableHead>Funcionário indicado</TableHead>
+                <TableHead>Funcionário designado</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -174,7 +174,7 @@ export default function Orders() {
                           <TableFooter>
                             <TableRow>
                               <TableCell colSpan={3}>
-                                Total do pedido
+                                Total
                               </TableCell>
 
                               <TableCell className="text-right font-medium">
@@ -200,9 +200,12 @@ export default function Orders() {
 
                 <TableCell className="font-medium">R$ 4.499,99</TableCell>
 
-                <TableCell className="flex font-medium gap-1">
+                <TableCell className="flex font-medium gap-1 items-center">
                   <span className="bg-gray-100 rounded-4xl px-2 py-1 flex items-center justify-center w-fit">Kelven</span>
                   <span className="bg-gray-100 rounded-4xl px-2 py-1 flex items-center justify-center w-fit">Edson</span>
+                  <span>
+                    <CirclePlus />
+                  </span>
                 </TableCell>
 
                 <TableCell className="font-medium">Concluído</TableCell>
