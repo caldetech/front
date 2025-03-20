@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Eye } from "lucide-react";
+import { Eye, Plus } from "lucide-react";
 
 export default function Comissions() {
   return (
@@ -17,8 +17,10 @@ export default function Comissions() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Comissões</h1>
 
-        <Button className="absolute top-8 right-8" variant={"outline"}>
-          Adicionar
+        <Button variant={"outline"}>
+          <p className="hidden sm:flex">Adicionar</p>
+
+          <Plus className="sm:hidden" />
         </Button>
       </div>
 

@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { Plus } from "lucide-react";
 
 export default function Services() {
   return (
@@ -27,8 +28,10 @@ export default function Services() {
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="absolute top-8 right-8" variant={"outline"}>
-              Adicionar
+            <Button variant={"outline"}>
+              <p className="hidden sm:flex">Adicionar</p>
+
+              <Plus className="sm:hidden" />
             </Button>
           </DialogTrigger>
 

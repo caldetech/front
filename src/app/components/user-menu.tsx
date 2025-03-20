@@ -9,7 +9,7 @@ export default async function UserMenu() {
   console.log(user)
 
   return (
-    <div className="ms-4">
+    <div className="hidden sm:flex ms-4 absolute right-0 z-11 sm:static">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar className="size-8 rounded-full">

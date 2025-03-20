@@ -3,12 +3,16 @@ import UserMenu from "./user-menu";
 
 export default function Header() {
   return (
-    <div className="sticky top-0 z-10 flex flex-col">
-      <header className="flex h-14 items-center gap-2 border-b border-foreground/10 bg-background px-4 lg:h-[60px] justify-between">
-        <SidebarTrigger className="*:size-5" />
+    <div className="absolute sm:static top-0 sm:z-10 sm:flex sm:flex-col flex w-full">
+      <header className="sm:w-full sm:flex sm:h-14 sm:items-center sm:gap-2 sm:border-b sm:border-foreground/10 sm:bg-background sm:px-4 lg:h-[60px] sm:justify-between">
+        <SidebarTrigger className="*:size-5 hidden sm:flex" />
         <UserMenu />
       </header>
     </div>
   );
 }
+
+
+
+
 

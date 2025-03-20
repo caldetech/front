@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Plus } from "lucide-react";
 
 export default function Users() {
   return (
@@ -21,18 +22,18 @@ export default function Users() {
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="absolute top-8 right-8" variant={"outline"}>
-              Adicionar
+            <Button variant={"outline"}>
+              <p className="hidden sm:flex">Adicionar</p>
+
+              <Plus className="sm:hidden" />
             </Button>
           </DialogTrigger>
 
           <DialogContent className="w-auto">
             <DialogHeader>
               <DialogTitle>Adicionar funcionário</DialogTitle>
-              {/* <DialogDescription>
-              Crie um novo usuário  
-            </DialogDescription> */}
             </DialogHeader>
+
             <div className="flex flex-col gap-4 py-4">
               <div className="flex flex-col w-full gap-1">
                 <Label htmlFor="name" className="text-right">
@@ -71,8 +72,6 @@ export default function Users() {
                     <InputOTPSlot index={10} />
                   </InputOTPGroup>
                 </InputOTP>
-
-                {/* <Input id="number" value={number} onChange={(e) => setNumber(e.target.value)} className="" /> */}
               </div>
 
               <div className="flex flex-col w-full gap-1">
@@ -118,7 +117,6 @@ export default function Users() {
           <Table>
             <TableHeader>
               <TableRow>
-                {/* <TableHead></TableHead> */}
                 <TableHead>Nome</TableHead>
                 <TableHead>Função</TableHead>
                 <TableHead>Celular</TableHead>
@@ -128,15 +126,7 @@ export default function Users() {
 
             <TableBody>
               <TableRow>
-                {/* <TableCell>
-                  <Button variant={"outline"} size={"xs"}>
-                    <Eye className="h-3 w-3" />
-
-                    <span className="sr-only">Detalhes do pedido</span>
-                  </Button>
-                </TableCell> */}
-
-                <TableCell className="text-muted-foreground">
+                <TableCell className="font-medium">
                   Kelven Souza
                 </TableCell>
 
@@ -145,26 +135,6 @@ export default function Users() {
                 <TableCell className="font-medium">(16) 99407-2920</TableCell>
 
                 <TableCell className="font-medium">Ativo</TableCell>
-
-                {/* <TableCell>
-                    <Button
-                      variant={"outline"}
-                      size={"xs"}
-                    >
-                      <ArrowRight className="w-3 h-3 mr-2" />
-                      Aprovar
-                    </Button>
-                </TableCell>
-
-                <TableCell>
-                  <Button
-                    variant={"ghost"}
-                    size={"xs"}
-                  >
-                    <X className="w-3 h-3 mr-2" />
-                    Cancelar
-                  </Button>
-                </TableCell> */}
               </TableRow>
             </TableBody>
           </Table>

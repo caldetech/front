@@ -24,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Plus } from "lucide-react";
 
 export default function Customers() {
   return (
@@ -33,8 +34,10 @@ export default function Customers() {
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="absolute top-8 right-8" variant={"outline"}>
-              Adicionar
+            <Button variant={"outline"}>
+              <p className="hidden sm:flex">Adicionar</p>
+
+              <Plus className="sm:hidden" />
             </Button>
           </DialogTrigger>
 

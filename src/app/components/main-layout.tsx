@@ -1,5 +1,5 @@
-import Header from "../components/header";
-import Sidebar from "../components/sidebar";
+import Header from "./header";
+import Sidebar from "./sidebar";
 
 export default function MainLayout({
   children,
@@ -7,11 +7,11 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-      <div className="flex w-full h-screen overflow-hidden">
+      <div className="relative sm:static flex w-full h-screen overflow-hidden flex-col sm:flex-row">
         <Sidebar />
-        <div className="flex flex-col w-full h-full">
+        <div className="absolute sm:static w-full h-full">
           <Header />
-          <main className="flex-1 overflow-hidden relative">
+          <main className="top-14 sm:static flex-1 overflow-hidden relative">
             <div className="flex flex-col h-full w-full overflow-auto">
               {children}
             </div>
@@ -20,3 +20,6 @@ export default function MainLayout({
       </div>
   );
 }
+
+
+

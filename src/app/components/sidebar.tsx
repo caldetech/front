@@ -11,20 +11,10 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import IconComponent from "./icon";
-import { Star } from "lucide-react";
+import { AlignJustify, Star } from "lucide-react";
 
 export default function Sidebar() {
   const pathname = usePathname();
-  // const { toggleSidebar, isMobile } = useSidebar();
-
-  // useEffect(() => {
-  //   if (isMobile) toggleSidebar();
-  // }, [pathname]);
-
-  // const onClick = () => {
-  //   ClientSideLogout()
-  //   ServerSideLogout()
-  // }
 
   const groupTitles: any = {
     Pages: "Páginas",
@@ -45,8 +35,8 @@ export default function Sidebar() {
   }
 
   return (
-    <div className="flex flex-col h-full border-r border-foreground/10 min-w-60">
-      <SidebarHeader className="h-16 items-center justify-center">
+    <div className="flex flex-col sm:h-full border-r border-foreground/10 sm:min-w-60 z-10 items-center sm:items-start mt-2 px-2 sm:px-0 sm:mt-0 sm:w-fit">
+      <SidebarHeader className="h-16 items-center justify-center hidden sm:flex">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center justify-items-start select-none px-2">
             <Star className="me-2 group-data-[collapsible=icon]:me-0" />
@@ -55,17 +45,17 @@ export default function Sidebar() {
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent className="overflow-hidden flex-1">
-        <ScrollArea>
+      <SidebarContent className="bg-card text-card-foreground sm:border-none sm:shadow-none flex flex-row sm:flex-col gap-2 rounded-xl border shadow-sm overflow-hidden flex-1 w-full items-center justify-between sm:items-start sm:justify-items-start">
+        <ScrollArea className="w-full">
           {page_routes
             .filter((route) => Object.keys(groupTitles).includes(route.title))
             .map((route, key) => (
               <SidebarGroup key={key}>
-                <SidebarGroupLabel>
+                <SidebarGroupLabel className="hidden sm:flex">
                   {groupTitles[route.title]}
                 </SidebarGroupLabel>
                 <SidebarGroupContent>
-                  <SidebarMenu className="font-light">
+                  <SidebarMenu className="flex flex-row sm:flex-col font-light">
                     {route.items
                       .filter((item) =>
                         Object.keys(routeTitles).includes(item.title)
@@ -81,7 +71,7 @@ export default function Sidebar() {
                                     isActive={pathname === item.href}
                                   >
                                     <IconComponent iconName={item.icon || ''} />
-                                    <span>{routeTitles[item.title]}</span>
+                                    <span className="hidden sm:flex">{routeTitles[item.title]}</span>
                                   </SidebarMenuButton>
                                 </Link>
                               </CollapsibleTrigger>
@@ -117,9 +107,13 @@ export default function Sidebar() {
               </SidebarGroup>
             ))}
         </ScrollArea>
+
+        <div className="pr-4 sm:hidden">
+          <AlignJustify />
+        </div>
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="hidden sm:flex w-full">
         <Card className="group-data-[collapsible=icon]:hidden">
           <CardContent>
             <Button className="w-full" onClick={handleLogout}>
@@ -131,3 +125,5 @@ export default function Sidebar() {
     </div>
   );
 }
+
+
