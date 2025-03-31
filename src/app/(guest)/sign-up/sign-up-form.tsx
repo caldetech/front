@@ -13,7 +13,7 @@ export default function SignUpForm() {
   const router = useRouter()
 
   const [{ success, message, errors }, handleSubmit] = useFormState(signUpAction, () => {
-    router.push('/sign-in')
+    router.push('/entrar')
   })
 
   return (

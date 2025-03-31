@@ -1,220 +1,233 @@
+'use client'
+
+import CustomTable from "@/components/CustomTable";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { CirclePlus, Eye, Plus } from "lucide-react";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Plus } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
+import { searchCustomer } from "@/http/search-customer";
+
+interface CustomerSearch {
+  id: string;
+  customerType: "PERSONAL" | "COMPANY";
+  name: string;
+  document: string;
+  mainNumber: string;
+  contactNumber: string;
+  address: string;
+  createdAt: Date; 
+  updatedAt: Date;
+  organizationId: string;
+}
 
 export default function Orders() {
+  // CUSTOMER
+  const [customerTyped, setCustomerTyped] = useState<string | undefined>()
+  const [customerSuggestions, setCustomerSuggestions] = useState<CustomerSearch[] | undefined>([])
+  const [chosenCustomer, setChosenCustomer] = useState<CustomerSearch | undefined>()
+
+  useEffect(() => {
+    if (customerTyped && (customerTyped ?? '').length > 3) {
+      (async () => {
+        const result = await searchCustomer({ query: customerTyped }) as CustomerSearch[];
+
+        setCustomerSuggestions([...result]); 
+      })();
+    }
+
+    if (!(customerTyped ?? "").length) {
+      setCustomerSuggestions([]);
+    }
+
+    if (customerTyped != chosenCustomer?.name) {
+      setChosenCustomer(undefined)
+    }
+  }, [customerTyped]);
+
+  useEffect(() => {
+    setCustomerTyped(chosenCustomer?.name)
+    setCustomerSuggestions([])
+  }, [chosenCustomer])
+
+  // ###########################################################################
+  // ###########################################################################
+  // PRODUCT
+  // ###########################################################################
+  // ###########################################################################
+
+  const [productTyped, setProductTyped] = useState<string | undefined>()
+  const [productSuggestions, setProductSuggestions] = useState<CustomerSearch[] | undefined>([])
+  const [chosenProduct, setChosenProduct] = useState<CustomerSearch | undefined>()
+
+  // ###########################################################################
+  // ###########################################################################
+  // HANDLE SUBMIT
+  // ###########################################################################
+  // ###########################################################################
+
+  async function handleSubmit(formData: FormData) {
+    console.log(Object.fromEntries(formData.entries()))
+    // await createOrderAction(formData)
+  }
+
+  // ###########################################################################
+  // ###########################################################################
+  // CODE
+  // ###########################################################################
+  // ###########################################################################
+
   return (
     <div className="flex flex-col gap-4 p-8 pt-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Ordens de Serviço</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Ordens</h1>
 
-        <Button variant={"outline"}>
-          <p className="hidden sm:flex">Adicionar</p>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant={"outline"}>
+              <p className="hidden sm:flex">Adicionar</p>
 
-          <Plus className="sm:hidden" />
-        </Button>
+              <Plus className="sm:hidden" />
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Criar ordem</DialogTitle>
+            </DialogHeader>
+
+            <form action={handleSubmit} className="flex flex-col gap-4 py-4">
+              <div className="flex flex-col gap-1">
+                <Label>Cliente</Label>
+
+                <Command className="rounded-lg border shadow-md md:min-w-[450px]">
+                  <CommandInput setIconActivated={!!chosenCustomer} value={customerTyped ?? undefined} onValueChange={setCustomerTyped} placeholder="Pesquisar..." />
+                  
+                  <CommandList className={`${!!chosenCustomer ? 'hidden' : ''}`}>
+                    <CommandEmpty className={`flex items-center justify-center py-1`}>Nenhum resultado.</CommandEmpty>
+
+                    {(customerSuggestions as CustomerSearch[]).map((customerTyped) => (
+                      <CommandItem key={customerTyped.id} onSelect={() => setChosenCustomer(customerTyped)}>
+                        {customerTyped.name}
+                      </CommandItem>
+                    ))}
+                  </CommandList>
+                </Command>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <Label>Tipo de ordem</Label>
+
+                <Select name="type">
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecionar" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="SALE">Venda</SelectItem>
+                      <SelectItem value="BUDGET">Garantia</SelectItem>
+                      <SelectItem value="WARRANTY">Orçamento</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <Label>Adicionar produto</Label>
+
+                <Command className="rounded-lg border shadow-md md:min-w-[450px]">
+                  <CommandInput placeholder="Pesquisar..." />
+                  
+                  <CommandList>
+                    <CommandEmpty>Nenhum resultado.</CommandEmpty>
+
+                    <CommandGroup heading="Sugestões">
+                      <CommandItem>
+                        <span>Calendar</span>
+                      </CommandItem>
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <Label>Adicionar serviço</Label>
+
+                <Command className="rounded-lg border shadow-md md:min-w-[450px]">
+                  <CommandInput placeholder="Pesquisar..." />
+                  
+                  <CommandList>
+                    <CommandEmpty>Nenhum resultado.</CommandEmpty>
+
+                    <CommandGroup heading="Sugestões">
+                      <CommandItem>
+                        {/* <Calendar /> */}
+                        <span>Calendar</span>
+                      </CommandItem>
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <Label>Método de pagamento</Label>
+
+                <Select name="method">
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecionar" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="PIX">Pix</SelectItem>
+                      <SelectItem value="CARD">Cartão</SelectItem>
+                      <SelectItem value="BILL">Boleto</SelectItem>
+                      <SelectItem value="MONEY">Dinheiro</SelectItem>
+                      <SelectItem value="DEPOSIT">Depósito</SelectItem>
+                      <SelectItem value="PENDING">Pendente</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
+                <div className="flex flex-col gap-1">
+                  <Label>Valor total</Label>
+
+                  <Input name="price" type="text" />
+                </div>
+
+              <Button type="submit">Adicionar</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
-
-      <div className="space-y-2.5">
-        <div className="border rounded-md">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead></TableHead>
-                <TableHead>Data</TableHead>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Serviço</TableHead>
-                <TableHead>Valor</TableHead>
-                <TableHead>Funcionário designado</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              <TableRow>
-                <TableCell>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant={"outline"} size={"xs"}>
-                        <Eye className="h-3 w-3" />
-
-                        <span className="sr-only">Detalhes do pedido</span>
-                      </Button>
-                    </DialogTrigger>
-
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Ordem: #357</DialogTitle>
-
-                        <DialogDescription>
-                          Detalhes
-                        </DialogDescription>
-                      </DialogHeader>
-
-                      <div className="space-y-6">
-                        <Table>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="text-muted-foreground">
-                                Status
-                              </TableCell>
-
-                              <TableCell className="flex justify-end">
-                                Concluído
-                              </TableCell>
-                            </TableRow>
-
-                            <TableRow>
-                              <TableCell className="text-muted-foreground">
-                                Cliente
-                              </TableCell>
-
-                              <TableCell className="flex justify-end">
-                                José Amaral dos Santos
-                              </TableCell>
-                            </TableRow>
-
-                            <TableRow>
-                              <TableCell className="text-muted-foreground">
-                                Endereço
-                              </TableCell>
-
-                              <TableCell className="flex justify-end">
-                                <p>Rua Expedicionário Solano, 3379</p>
-                              </TableCell>
-                            </TableRow>
-
-                            <TableRow>
-                              <TableCell className="text-muted-foreground">
-                                Telefone
-                              </TableCell>
-
-                              <TableCell className="flex justify-end">
-                                (16) 99407-2920
-                              </TableCell>
-                            </TableRow>
-
-                            <TableRow>
-                              <TableCell className="text-muted-foreground">
-                                E-mail
-                              </TableCell>
-
-                              <TableCell className="flex justify-end">
-                                jose.amar@gmail.com
-                              </TableCell>
-                            </TableRow>
-
-                            <TableRow>
-                              <TableCell className="text-muted-foreground">
-                                Data
-                              </TableCell>
-
-                              <TableCell className="flex justify-end">
-                                02/03/2024
-                              </TableCell>
-                            </TableRow>
-
-                            <TableRow>
-                              <TableCell className="text-muted-foreground">
-                                Funcionários
-                              </TableCell>
-
-                              <TableCell className="flex justify-end gap-1">
-                                <span className="bg-gray-100 rounded-4xl px-2 py-1 flex items-center justify-center">Kelven</span>
-                                <span className="bg-gray-100 rounded-4xl px-2 py-1 flex items-center justify-center">Edson</span>
-                              </TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Serviço</TableHead>
-
-                              <TableHead className="text-right">
-                                Qtd.
-                              </TableHead>
-
-                              <TableHead className="text-right">
-                                Preço
-                              </TableHead>
-
-                              <TableHead className="text-right">
-                                Subtotal
-                              </TableHead>
-                            </TableRow>
-                          </TableHeader>
-
-                          <TableBody>
-                            <TableRow>
-                              <TableCell>Instalação de câmera</TableCell>
-
-                              <TableCell className="text-right">
-                                -
-                              </TableCell>
-
-                              <TableCell className="text-right">
-                                R$ 4.499,99
-                              </TableCell>
-
-                              <TableCell className="text-right">
-                                R$ 4.499,99
-                              </TableCell>
-                            </TableRow>
-                          </TableBody>
-
-                          <TableFooter>
-                            <TableRow>
-                              <TableCell colSpan={3}>
-                                Total
-                              </TableCell>
-
-                              <TableCell className="text-right font-medium">
-                                R$ 4.499,99
-                              </TableCell>
-                            </TableRow>
-                          </TableFooter>
-                        </Table>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </TableCell>
-
-                <TableCell className="font-mono text-xs font-medium">
-                  02/03/2024
-                </TableCell>
-
-                <TableCell className="text-muted-foreground">
-                  Kelven
-                </TableCell>
-
-                <TableCell>Instalação de câmera</TableCell>
-
-                <TableCell className="font-medium">R$ 4.499,99</TableCell>
-
-                <TableCell className="flex font-medium gap-1 items-center">
-                  <span className="bg-gray-100 rounded-4xl px-2 py-1 flex items-center justify-center w-fit">Kelven</span>
-                  <span className="bg-gray-100 rounded-4xl px-2 py-1 flex items-center justify-center w-fit">Edson</span>
-                  <span>
-                    <CirclePlus />
-                  </span>
-                </TableCell>
-
-                <TableCell className="font-medium">Concluído</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
+      
+      <div>
+          <CustomTable />
       </div>
     </div>
   );

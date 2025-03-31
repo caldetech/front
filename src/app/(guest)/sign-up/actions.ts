@@ -18,7 +18,7 @@ const signUpSchema = z.object({
 }).refine(data => data.password === data.password_confirmation, {
   message: 'Password confirmation does not match.',
   path: ['password_confirmation']
-})
+}) 
 
 export async function signUpAction(data: FormData) {
   const result = signUpSchema.safeParse(Object.fromEntries(data))
@@ -40,7 +40,7 @@ export async function signUpAction(data: FormData) {
       name,
       email,
       password
-    })
+    }) 
   } catch (err) {
     if (err  instanceof HTTPError) {
       const { message } = await err.response.json()

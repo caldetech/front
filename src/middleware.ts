@@ -7,16 +7,16 @@ export async function middleware(request: NextRequest) {
   const storedCookies = await isAuthenticated()
 
   if (storedCookies.get('token')?.value) {
-    if (['/sign-in', '/sign-up', '/'].includes(path)) {
+    if (['/sign-in', '/entrar', '/sign-up', '/cadastrar', '/'].includes(path)) {
       return NextResponse.redirect(new URL('/ordens', request.url))
     }
   } 
 
   if (!storedCookies.get('token')?.value) {
-    if (['/sign-in', '/sign-up'].includes(path)) {
+    if (['/sign-in', '/entrar', '/sign-up', '/cadastrar'].includes(path)) {
       return NextResponse.next();
     } else {
-      return NextResponse.redirect(new URL('/sign-in', request.url))
+      return NextResponse.redirect(new URL('/entrar', request.url))
     }
   } 
 

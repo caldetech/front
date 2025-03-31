@@ -1,3 +1,5 @@
+'use client'
+
 import Image from "next/image";
 import SignUpForm from "./sign-up-form";
 import Background from '../../../../public/images/cover.png'
@@ -61,7 +63,7 @@ export default function SignUpPage() {
 
             <p className="mt-6 text-center text-sm text-foreground">
               Já tem uma conta?{" "}
-              <a href="/sign-in" className="text-foreground underline">
+              <a href="/entrar" className="text-foreground underline">
                 Entrar
               </a>
             </p>

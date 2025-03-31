@@ -1,4 +1,4 @@
-import MainLayout from "../components/main-layout"; 
+import MainLayout from "../../components/main-layout"; 
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default async function AuthLayout({

@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
 
   const redirectUrl = request.nextUrl.clone()
 
-  redirectUrl.pathname = '/sign-in'
+  redirectUrl.pathname = '/entrar'
 
   const storedCookies = await cookies()
 

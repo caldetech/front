@@ -26,6 +26,14 @@ const nextConfig: NextConfig = {
       {
         source: '/funcionarios',
         destination: '/users',
+      },
+      {
+        source: '/entrar',
+        destination: '/sign-in',
+      },
+      {
+        source: '/cadastrar',
+        destination: '/sign-up',
       }
     ]
   },

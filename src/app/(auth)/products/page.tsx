@@ -1,6 +1,6 @@
 'use client'
 
-import { createServiceAction } from "@/app/actions/create-service";
+import { createProductAction } from "@/app/actions/create-product";
 import CustomTable from "@/components/CustomTable";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,15 +15,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
 
-export default function Services() {
+export default function Products() {
   async function handleSubmit(formData: FormData) {
-    await createServiceAction(formData)
+    await createProductAction(formData)
   }
 
   return (
     <div className="flex flex-col gap-4 p-8 pt-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Serviços</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Produtos</h1>
 
         <Dialog>
           <DialogTrigger asChild>
@@ -36,7 +36,7 @@ export default function Services() {
 
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Adicionar serviço</DialogTitle>
+              <DialogTitle>Adicionar produto</DialogTitle>
             </DialogHeader>
 
             <form action={handleSubmit} className="flex flex-col gap-4 py-4">
@@ -69,14 +69,42 @@ export default function Services() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="price">
-                  Preço
+                <Label htmlFor="stock">
+                  Estoque
+                </Label>
+
+                <Input
+                  type="number"
+                  id="stock"
+                  name="stock"
+                  autoComplete="off"
+                  spellCheck="false"
+                /> 
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="costPrice">
+                  Preço de custo
                 </Label>
 
                 <Input
                   type="text"
-                  id="price"
-                  name="price"
+                  id="costPrice"
+                  name="costPrice"
+                  autoComplete="off"
+                  spellCheck="false"
+                /> 
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="salesPrice">
+                  Preço de venda
+                </Label>
+
+                <Input
+                  type="text"
+                  id="salesPrice"
+                  name="salesPrice"
                   autoComplete="off"
                   spellCheck="false"
                 /> 

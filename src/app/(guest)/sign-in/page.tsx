@@ -68,7 +68,7 @@ export default function SignInPage() {
 
             <div className="mt-6 text-center text-sm">
               Ainda não tem uma conta?{" "}
-              <Link href="/sign-up" className="underline">
+              <Link href="/cadastrar" className="underline">
                 Cadastre-se
               </Link>
             </div>

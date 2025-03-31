@@ -12,7 +12,7 @@ export async function auth() {
   const token = storedCookies.get('token')?.value
 
   if (!token) {
-    redirect('/auth/sign-in')
+    redirect('/entrar')
   }
 
   try {
