@@ -1,17 +1,14 @@
-import { api } from "./api-client"
+import { api } from "./api-client";
 
 interface GetProfileResponse {
   user: {
-    id: string
-    name: string | null
-    email: string
-    avatarUrl: string | null
-  }
+    id: string;
+    name: string | null;
+    email: string;
+    avatarUrl: string | null;
+  };
 }
 
 export async function getProfile() {
-  const result = await api.get('profile').json<GetProfileResponse>()
-
-  return result
+  return await api.get("profile").json<GetProfileResponse>();
 }
-

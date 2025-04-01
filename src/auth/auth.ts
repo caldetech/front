@@ -3,23 +3,27 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function isAuthenticated() {
-  return await cookies()
+  console.log("isAuthenticated function");
+
+  return await cookies();
 }
 
 export async function auth() {
-  const storedCookies = await cookies()
+  const storedCookies = await cookies();
 
-  const token = storedCookies.get('token')?.value
+  const token = storedCookies.get("token")?.value;
+
+  console.log("Auth function", token);
 
   if (!token) {
-    redirect('/entrar')
+    redirect("/entrar");
   }
 
   try {
-    const { user } = await getProfile()
+    const { user } = await getProfile();
 
-    return { user }
+    return { user };
   } catch {}
 
-  redirect('/api/auth/sign-out')
+  redirect("/api/auth/sign-out");
 }
