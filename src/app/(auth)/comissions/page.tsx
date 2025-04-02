@@ -1,5 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -13,7 +20,7 @@ import { Eye, Plus } from "lucide-react";
 
 export default function Comissions() {
   return (
-    <div className="flex flex-col gap-4 p-8 pt-6">
+    <div className="flex flex-col gap-4 p-6 pt-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Comissões</h1>
 
@@ -54,9 +61,7 @@ export default function Comissions() {
                       <DialogHeader>
                         <DialogTitle>Ordem: #357</DialogTitle>
 
-                        <DialogDescription>
-                          Detalhes
-                        </DialogDescription>
+                        <DialogDescription>Detalhes</DialogDescription>
                       </DialogHeader>
 
                       <div className="space-y-6">
@@ -108,8 +113,12 @@ export default function Comissions() {
                               </TableCell>
 
                               <TableCell className="flex justify-end gap-1">
-                                <span className="bg-gray-100 rounded-4xl px-2 py-1 flex items-center justify-center">Kelven</span>
-                                <span className="bg-gray-100 rounded-4xl px-2 py-1 flex items-center justify-center">Edson</span>
+                                <span className="bg-gray-100 rounded-4xl px-2 py-1 flex items-center justify-center">
+                                  Kelven
+                                </span>
+                                <span className="bg-gray-100 rounded-4xl px-2 py-1 flex items-center justify-center">
+                                  Edson
+                                </span>
                               </TableCell>
                             </TableRow>
                           </TableBody>
@@ -120,9 +129,7 @@ export default function Comissions() {
                             <TableRow>
                               <TableHead>Serviço</TableHead>
 
-                              <TableHead className="text-right">
-                                Qtd.
-                              </TableHead>
+                              <TableHead className="text-right">Qtd.</TableHead>
 
                               <TableHead className="text-right">
                                 Preço
@@ -138,9 +145,7 @@ export default function Comissions() {
                             <TableRow>
                               <TableCell>Instalação de câmera</TableCell>
 
-                              <TableCell className="text-right">
-                                -
-                              </TableCell>
+                              <TableCell className="text-right">-</TableCell>
 
                               <TableCell className="text-right">
                                 R$ 4.499,99
@@ -154,9 +159,7 @@ export default function Comissions() {
 
                           <TableFooter>
                             <TableRow>
-                              <TableCell colSpan={3}>
-                                Total
-                              </TableCell>
+                              <TableCell colSpan={3}>Total</TableCell>
 
                               <TableCell className="text-right font-medium">
                                 R$ 4.499,99
@@ -173,9 +176,7 @@ export default function Comissions() {
                   02/03/2024
                 </TableCell>
 
-                <TableCell className="text-muted-foreground">
-                  Kelven
-                </TableCell>
+                <TableCell className="text-muted-foreground">Kelven</TableCell>
 
                 <TableCell>5%</TableCell>
 

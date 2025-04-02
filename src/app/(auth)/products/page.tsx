@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { createProductAction } from "@/app/actions/create-product";
 import CustomTable from "@/components/CustomTable";
@@ -17,11 +17,11 @@ import { Plus } from "lucide-react";
 
 export default function Products() {
   async function handleSubmit(formData: FormData) {
-    await createProductAction(formData)
+    await createProductAction(formData);
   }
 
   return (
-    <div className="flex flex-col gap-4 p-8 pt-6">
+    <div className="flex flex-col gap-4 p-6 pt-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Produtos</h1>
 
@@ -41,9 +41,7 @@ export default function Products() {
 
             <form action={handleSubmit} className="flex flex-col gap-4 py-4">
               <div className="flex flex-col gap-1">
-                <Label htmlFor="title">
-                  Título
-                </Label>
+                <Label htmlFor="title">Título</Label>
 
                 <Input
                   type="text"
@@ -51,27 +49,22 @@ export default function Products() {
                   name="title"
                   autoComplete="off"
                   spellCheck="false"
-                /> 
+                />
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="description">
-                  Descrição
-                </Label>
+                <Label htmlFor="description">Descrição</Label>
 
-                <Textarea 
+                <Textarea
                   id="description"
                   name="description"
                   autoComplete="off"
                   spellCheck="false"
-                >
-                </Textarea>
+                ></Textarea>
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="stock">
-                  Estoque
-                </Label>
+                <Label htmlFor="stock">Estoque</Label>
 
                 <Input
                   type="number"
@@ -79,13 +72,11 @@ export default function Products() {
                   name="stock"
                   autoComplete="off"
                   spellCheck="false"
-                /> 
+                />
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="costPrice">
-                  Preço de custo
-                </Label>
+                <Label htmlFor="costPrice">Preço de custo</Label>
 
                 <Input
                   type="text"
@@ -93,13 +84,11 @@ export default function Products() {
                   name="costPrice"
                   autoComplete="off"
                   spellCheck="false"
-                /> 
+                />
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="salesPrice">
-                  Preço de venda
-                </Label>
+                <Label htmlFor="salesPrice">Preço de venda</Label>
 
                 <Input
                   type="text"
@@ -107,7 +96,7 @@ export default function Products() {
                   name="salesPrice"
                   autoComplete="off"
                   spellCheck="false"
-                /> 
+                />
               </div>
 
               <Button type="submit">Adicionar</Button>
@@ -115,9 +104,9 @@ export default function Products() {
           </DialogContent>
         </Dialog>
       </div>
-      
+
       <div>
-          <CustomTable />
+        <CustomTable />
       </div>
     </div>
   );

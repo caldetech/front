@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@nestjs/platform-fastify": "^11.0.12",
     "@radix-ui/react-avatar": "^1.1.3",
     "@radix-ui/react-collapsible": "^1.1.3",
     "@radix-ui/react-dialog": "^1.1.6",

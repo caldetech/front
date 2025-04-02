@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import CustomTable from "@/components/CustomTable";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -26,7 +26,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { searchCustomer } from "@/http/search-customer";
@@ -39,23 +39,29 @@ interface CustomerSearch {
   mainNumber: string;
   contactNumber: string;
   address: string;
-  createdAt: Date; 
+  createdAt: Date;
   updatedAt: Date;
   organizationId: string;
 }
 
 export default function Orders() {
   // CUSTOMER
-  const [customerTyped, setCustomerTyped] = useState<string | undefined>()
-  const [customerSuggestions, setCustomerSuggestions] = useState<CustomerSearch[] | undefined>([])
-  const [chosenCustomer, setChosenCustomer] = useState<CustomerSearch | undefined>()
+  const [customerTyped, setCustomerTyped] = useState<string | undefined>();
+  const [customerSuggestions, setCustomerSuggestions] = useState<
+    CustomerSearch[] | undefined
+  >([]);
+  const [chosenCustomer, setChosenCustomer] = useState<
+    CustomerSearch | undefined
+  >();
 
   useEffect(() => {
-    if (customerTyped && (customerTyped ?? '').length > 3) {
+    if (customerTyped && (customerTyped ?? "").length > 3) {
       (async () => {
-        const result = await searchCustomer({ query: customerTyped }) as CustomerSearch[];
+        const result = (await searchCustomer({
+          query: customerTyped,
+        })) as CustomerSearch[];
 
-        setCustomerSuggestions([...result]); 
+        setCustomerSuggestions([...result]);
       })();
     }
 
@@ -64,14 +70,14 @@ export default function Orders() {
     }
 
     if (customerTyped != chosenCustomer?.name) {
-      setChosenCustomer(undefined)
+      setChosenCustomer(undefined);
     }
   }, [customerTyped]);
 
   useEffect(() => {
-    setCustomerTyped(chosenCustomer?.name)
-    setCustomerSuggestions([])
-  }, [chosenCustomer])
+    setCustomerTyped(chosenCustomer?.name);
+    setCustomerSuggestions([]);
+  }, [chosenCustomer]);
 
   // ###########################################################################
   // ###########################################################################
@@ -79,9 +85,13 @@ export default function Orders() {
   // ###########################################################################
   // ###########################################################################
 
-  const [productTyped, setProductTyped] = useState<string | undefined>()
-  const [productSuggestions, setProductSuggestions] = useState<CustomerSearch[] | undefined>([])
-  const [chosenProduct, setChosenProduct] = useState<CustomerSearch | undefined>()
+  const [productTyped, setProductTyped] = useState<string | undefined>();
+  const [productSuggestions, setProductSuggestions] = useState<
+    CustomerSearch[] | undefined
+  >([]);
+  const [chosenProduct, setChosenProduct] = useState<
+    CustomerSearch | undefined
+  >();
 
   // ###########################################################################
   // ###########################################################################
@@ -90,7 +100,7 @@ export default function Orders() {
   // ###########################################################################
 
   async function handleSubmit(formData: FormData) {
-    console.log(Object.fromEntries(formData.entries()))
+    console.log(Object.fromEntries(formData.entries()));
     // await createOrderAction(formData)
   }
 
@@ -101,7 +111,7 @@ export default function Orders() {
   // ###########################################################################
 
   return (
-    <div className="flex flex-col gap-4 p-8 pt-6">
+    <div className="flex flex-col gap-4 p-6 pt-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Ordens</h1>
 
@@ -124,16 +134,32 @@ export default function Orders() {
                 <Label>Cliente</Label>
 
                 <Command className="rounded-lg border shadow-md md:min-w-[450px]">
-                  <CommandInput setIconActivated={!!chosenCustomer} value={customerTyped ?? undefined} onValueChange={setCustomerTyped} placeholder="Pesquisar..." />
-                  
-                  <CommandList className={`${!!chosenCustomer ? 'hidden' : ''}`}>
-                    <CommandEmpty className={`flex items-center justify-center py-1`}>Nenhum resultado.</CommandEmpty>
+                  <CommandInput
+                    setIconActivated={!!chosenCustomer}
+                    value={customerTyped ?? undefined}
+                    onValueChange={setCustomerTyped}
+                    placeholder="Pesquisar..."
+                  />
 
-                    {(customerSuggestions as CustomerSearch[]).map((customerTyped) => (
-                      <CommandItem key={customerTyped.id} onSelect={() => setChosenCustomer(customerTyped)}>
-                        {customerTyped.name}
-                      </CommandItem>
-                    ))}
+                  <CommandList
+                    className={`${!!chosenCustomer ? "hidden" : ""}`}
+                  >
+                    <CommandEmpty
+                      className={`flex items-center justify-center py-1`}
+                    >
+                      Nenhum resultado.
+                    </CommandEmpty>
+
+                    {(customerSuggestions as CustomerSearch[]).map(
+                      (customerTyped) => (
+                        <CommandItem
+                          key={customerTyped.id}
+                          onSelect={() => setChosenCustomer(customerTyped)}
+                        >
+                          {customerTyped.name}
+                        </CommandItem>
+                      )
+                    )}
                   </CommandList>
                 </Command>
               </div>
@@ -161,7 +187,7 @@ export default function Orders() {
 
                 <Command className="rounded-lg border shadow-md md:min-w-[450px]">
                   <CommandInput placeholder="Pesquisar..." />
-                  
+
                   <CommandList>
                     <CommandEmpty>Nenhum resultado.</CommandEmpty>
 
@@ -179,7 +205,7 @@ export default function Orders() {
 
                 <Command className="rounded-lg border shadow-md md:min-w-[450px]">
                   <CommandInput placeholder="Pesquisar..." />
-                  
+
                   <CommandList>
                     <CommandEmpty>Nenhum resultado.</CommandEmpty>
 
@@ -214,20 +240,20 @@ export default function Orders() {
                 </Select>
               </div>
 
-                <div className="flex flex-col gap-1">
-                  <Label>Valor total</Label>
+              <div className="flex flex-col gap-1">
+                <Label>Valor total</Label>
 
-                  <Input name="price" type="text" />
-                </div>
+                <Input name="price" type="text" />
+              </div>
 
               <Button type="submit">Adicionar</Button>
             </form>
           </DialogContent>
         </Dialog>
       </div>
-      
+
       <div>
-          <CustomTable />
+        <CustomTable />
       </div>
     </div>
   );

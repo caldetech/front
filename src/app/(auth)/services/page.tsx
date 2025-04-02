@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { createServiceAction } from "@/app/actions/create-service";
 import CustomTable from "@/components/CustomTable";
@@ -17,11 +17,11 @@ import { Plus } from "lucide-react";
 
 export default function Services() {
   async function handleSubmit(formData: FormData) {
-    await createServiceAction(formData)
+    await createServiceAction(formData);
   }
 
   return (
-    <div className="flex flex-col gap-4 p-8 pt-6">
+    <div className="flex flex-col gap-4 p-6 pt-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Serviços</h1>
 
@@ -41,9 +41,7 @@ export default function Services() {
 
             <form action={handleSubmit} className="flex flex-col gap-4 py-4">
               <div className="flex flex-col gap-1">
-                <Label htmlFor="title">
-                  Título
-                </Label>
+                <Label htmlFor="title">Título</Label>
 
                 <Input
                   type="text"
@@ -51,27 +49,22 @@ export default function Services() {
                   name="title"
                   autoComplete="off"
                   spellCheck="false"
-                /> 
+                />
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="description">
-                  Descrição
-                </Label>
+                <Label htmlFor="description">Descrição</Label>
 
-                <Textarea 
+                <Textarea
                   id="description"
                   name="description"
                   autoComplete="off"
                   spellCheck="false"
-                >
-                </Textarea>
+                ></Textarea>
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="price">
-                  Preço
-                </Label>
+                <Label htmlFor="price">Preço</Label>
 
                 <Input
                   type="text"
@@ -79,7 +72,7 @@ export default function Services() {
                   name="price"
                   autoComplete="off"
                   spellCheck="false"
-                /> 
+                />
               </div>
 
               <Button type="submit">Adicionar</Button>
@@ -87,9 +80,9 @@ export default function Services() {
           </DialogContent>
         </Dialog>
       </div>
-      
+
       <div>
-          <CustomTable />
+        <CustomTable />
       </div>
     </div>
   );

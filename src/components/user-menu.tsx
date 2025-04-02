@@ -1,4 +1,3 @@
-import { auth } from "@/auth/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -8,10 +7,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { getProfile } from "@/http/get-profile";
 import { LogOut } from "lucide-react";
 
 export default async function UserMenu() {
-  const { user } = await auth();
+  const user = await getProfile();
 
   return (
     <div className="hidden sm:flex ms-4 absolute right-0 z-11 sm:static">

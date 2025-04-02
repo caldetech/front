@@ -8,7 +8,7 @@ export async function middleware(request: NextRequest) {
 
   if (storedCookies.get("token")?.value) {
     if (["/sign-in", "/entrar", "/sign-up", "/cadastrar", "/"].includes(path)) {
-      return NextResponse.redirect(new URL("/ordens", request.url));
+      return NextResponse.redirect(new URL("/contas", request.url));
     }
   }
 

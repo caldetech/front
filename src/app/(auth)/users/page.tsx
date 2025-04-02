@@ -1,21 +1,34 @@
-"use client"
+"use client";
 
 import { createInviteAction } from "@/app/actions/create-invite";
 import CustomTable from "@/components/CustomTable";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Plus } from "lucide-react";
 
 export default function Users() {
   async function handleSubmit(formData: FormData) {
-    await createInviteAction(formData)
-  } 
- 
+    await createInviteAction(formData);
+  }
+
   return (
-    <div className="flex flex-col gap-4 p-8 pt-6">
+    <div className="flex flex-col gap-4 p-6 pt-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Funcionários</h1>
 
@@ -32,11 +45,17 @@ export default function Users() {
             <DialogHeader>
               <DialogTitle>Enviar convite</DialogTitle>
             </DialogHeader>
-            
+
             <form className="flex flex-col gap-4" action={handleSubmit}>
               <div className="flex flex-col gap-1">
                 <Label htmlFor="email">E-mail</Label>
-                <Input name="email" type="email" id="email" autoComplete="off" spellCheck="false" />
+                <Input
+                  name="email"
+                  type="email"
+                  id="email"
+                  autoComplete="off"
+                  spellCheck="false"
+                />
               </div>
 
               <div className="flex flex-col gap-1">
@@ -64,7 +83,7 @@ export default function Users() {
       </div>
 
       <div>
-          <CustomTable />
+        <CustomTable />
       </div>
     </div>
   );

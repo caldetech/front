@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { createCustomerAction } from "@/app/actions/create-customer";
 import CustomTable from "@/components/CustomTable";
@@ -23,15 +23,15 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 
 export default function Customers() {
-  const [customerType, setCustomerType] = useState<string>("PERSONAL")
+  const [customerType, setCustomerType] = useState<string>("PERSONAL");
 
   async function handleSubmit(formData: FormData) {
-    formData.append('customerType', customerType)
-    await createCustomerAction(formData)
+    formData.append("customerType", customerType);
+    await createCustomerAction(formData);
   }
 
   return (
-    <div className="flex flex-col gap-4 p-8 pt-6">
+    <div className="flex flex-col gap-4 p-6 pt-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Clientes</h1>
 
@@ -67,28 +67,16 @@ export default function Customers() {
               </RadioGroup>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="name">
-                  Nome
-                </Label>
+                <Label htmlFor="name">Nome</Label>
 
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                />
+                <Input id="name" name="name" type="text" />
               </div>
 
-              {customerType == 'PERSONAL' && (
+              {customerType == "PERSONAL" && (
                 <div className="flex flex-col gap-1">
-                  <Label htmlFor="document">
-                    CPF
-                  </Label>
+                  <Label htmlFor="document">CPF</Label>
 
-                  <InputOTP
-                    maxLength={11}
-                    id="document"
-                    name="document"
-                  >
+                  <InputOTP maxLength={11} id="document" name="document">
                     <InputOTPGroup className="flex flex-wrap gap-1">
                       <InputOTPSlot index={0} />
                       <InputOTPSlot index={1} />
@@ -106,17 +94,11 @@ export default function Customers() {
                 </div>
               )}
 
-              {customerType == 'COMPANY' && (
+              {customerType == "COMPANY" && (
                 <div className="flex flex-col gap-1">
-                  <Label htmlFor="document">
-                    CNPJ
-                  </Label>
+                  <Label htmlFor="document">CNPJ</Label>
 
-                  <InputOTP
-                    maxLength={14}
-                    id="document"
-                    name="document"
-                  >
+                  <InputOTP maxLength={14} id="document" name="document">
                     <InputOTPGroup className="flex flex-wrap gap-1">
                       <InputOTPSlot index={0} />
                       <InputOTPSlot index={1} />
@@ -138,26 +120,15 @@ export default function Customers() {
               )}
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="address">
-                  Endereço
-                </Label>
+                <Label htmlFor="address">Endereço</Label>
 
-                <Input
-                  id="address"
-                  name="address"
-                />
+                <Input id="address" name="address" />
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="mainNumber">
-                  Contato (Principal)
-                </Label>
+                <Label htmlFor="mainNumber">Contato (Principal)</Label>
 
-                <InputOTP
-                  maxLength={11}
-                  id="mainNumber"
-                  name="mainNumber"
-                >
+                <InputOTP maxLength={11} id="mainNumber" name="mainNumber">
                   <InputOTPGroup>
                     <InputOTPSlot index={0} />
                     <InputOTPSlot index={1} />
@@ -180,9 +151,7 @@ export default function Customers() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="contactNumber">
-                  Contato (Recado)
-                </Label>
+                <Label htmlFor="contactNumber">Contato (Recado)</Label>
 
                 <InputOTP
                   maxLength={11}

@@ -3,8 +3,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function isAuthenticated() {
-  console.log("isAuthenticated function");
-
   return await cookies();
 }
 
@@ -13,16 +11,12 @@ export async function auth() {
 
   const token = storedCookies.get("token")?.value;
 
-  console.log("Auth function", token);
-
   if (!token) {
     redirect("/entrar");
   }
 
   try {
-    const { user } = await getProfile();
-
-    return { user };
+    return await getProfile();
   } catch {}
 
   redirect("/api/auth/sign-out");
