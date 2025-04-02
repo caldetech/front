@@ -9,23 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import {
   Card,
@@ -35,9 +19,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useState } from "react";
+import { createOrganizationAction } from "@/app/actions/create-organization";
 
 export default function Accounts() {
-  function handleSubmit() {}
+  const [accounts, setAccounts] = useState([]);
+
+  async function handleSubmit(formData: FormData) {
+    await createOrganizationAction(formData);
+  }
 
   return (
     <div className="flex flex-col gap-4 p-6 pt-6">
@@ -60,89 +50,25 @@ export default function Accounts() {
 
             <form action={handleSubmit} className="flex flex-col gap-4 py-4">
               <div className="flex flex-col gap-1">
-                <Label>Cliente</Label>
+                <Label htmlFor="name">Nome</Label>
+
+                <Input
+                  id="name"
+                  placeholder="Ex: CALDETECH"
+                  name="name"
+                  type="text"
+                />
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label>Tipo de ordem</Label>
+                <Label htmlFor="slug">Usuário</Label>
 
-                <Select name="type">
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecionar" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="SALE">Venda</SelectItem>
-                      <SelectItem value="BUDGET">Garantia</SelectItem>
-                      <SelectItem value="WARRANTY">Orçamento</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <Label>Adicionar produto</Label>
-
-                <Command className="rounded-lg border shadow-md md:min-w-[450px]">
-                  <CommandInput placeholder="Pesquisar..." />
-
-                  <CommandList>
-                    <CommandEmpty>Nenhum resultado.</CommandEmpty>
-
-                    <CommandGroup heading="Sugestões">
-                      <CommandItem>
-                        <span>Calendar</span>
-                      </CommandItem>
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <Label>Adicionar serviço</Label>
-
-                <Command className="rounded-lg border shadow-md md:min-w-[450px]">
-                  <CommandInput placeholder="Pesquisar..." />
-
-                  <CommandList>
-                    <CommandEmpty>Nenhum resultado.</CommandEmpty>
-
-                    <CommandGroup heading="Sugestões">
-                      <CommandItem>
-                        {/* <Calendar /> */}
-                        <span>Calendar</span>
-                      </CommandItem>
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <Label>Método de pagamento</Label>
-
-                <Select name="method">
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecionar" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="PIX">Pix</SelectItem>
-                      <SelectItem value="CARD">Cartão</SelectItem>
-                      <SelectItem value="BILL">Boleto</SelectItem>
-                      <SelectItem value="MONEY">Dinheiro</SelectItem>
-                      <SelectItem value="DEPOSIT">Depósito</SelectItem>
-                      <SelectItem value="PENDING">Pendente</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <Label>Valor total</Label>
-
-                <Input name="price" type="text" />
+                <Input
+                  id="slug"
+                  placeholder="Ex: caldetech"
+                  name="slug"
+                  type="text"
+                />
               </div>
 
               <Button type="submit">Adicionar</Button>
@@ -152,18 +78,28 @@ export default function Accounts() {
       </div>
 
       <div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Card Title</CardTitle>
-            <CardDescription>Card Description</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p>Card Content</p>
-          </CardContent>
-          <CardFooter>
-            <p>Card Footer</p>
-          </CardFooter>
-        </Card>
+        {accounts.length === 0 ? (
+          <p className="text-center bg-card text-card-foreground flex flex-col gap-6 rounded-md border py-6">
+            Nenhuma conta encontrada.
+          </p>
+        ) : (
+          <div>
+            {accounts.map((account) => (
+              <Card key={account.id}>
+                <CardHeader>
+                  <CardTitle>{account.title}</CardTitle>
+                  <CardDescription>{account.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p>{account.content}</p>
+                </CardContent>
+                <CardFooter>
+                  <p>{account.footer}</p>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
