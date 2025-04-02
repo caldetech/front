@@ -1,12 +1,14 @@
 "use server";
 
-import type { createOrganizationProps } from "@/interfaces/create-organization";
-import { api } from "./api-client";
+import { api } from "../lib/api-client";
 
 export async function createOrganization({
   name,
   slug,
-}: createOrganizationProps) {
+}: {
+  name: string;
+  slug: string;
+}): Promise<void> {
   try {
     await api.post(`organizations/${slug}/create`, {
       json: {

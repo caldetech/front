@@ -1,17 +1,24 @@
-"use server"
+"use server";
 
-import { api } from "./api-client";
+import { api } from "../lib/api-client";
 
 interface createProductProps {
-  slug?: string
-  title: string
-  description?: string
-  costPrice: number
-  salesPrice: number
-  stock: number
+  slug?: string;
+  title: string;
+  description?: string;
+  costPrice: number;
+  salesPrice: number;
+  stock: number;
 }
 
-export async function createProduct({slug = "caldetech", title, description, costPrice, salesPrice, stock}: createProductProps) {
+export async function createProduct({
+  slug = "caldetech",
+  title,
+  description,
+  costPrice,
+  salesPrice,
+  stock,
+}: createProductProps) {
   try {
     await api.post(`organizations/${slug}/products`, {
       json: {
@@ -19,20 +26,20 @@ export async function createProduct({slug = "caldetech", title, description, cos
         description,
         costPrice,
         salesPrice,
-        stock
-      }
-    }) 
+        stock,
+      },
+    });
 
     return {
       success: true,
-      message: "Produto criado com sucesso!"
-    }
-  } catch(error) {
-    console.error(error)
+      message: "Produto criado com sucesso!",
+    };
+  } catch (error) {
+    console.error(error);
 
     return {
       success: false,
-      message: "Erro ao criar o produto."
-    }
+      message: "Erro ao criar o produto.",
+    };
   }
-}  
+}

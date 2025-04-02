@@ -1,32 +1,36 @@
-"use server"
+"use server";
 
-import { api } from "./api-client";
+import { api } from "../lib/api-client";
 
 interface createInviteProps {
-  slug?: string
-  email: string
-  role: string
+  slug?: string;
+  email: string;
+  role: string;
 }
 
-export async function createInvite({slug = "caldetech", email, role}: createInviteProps) {
+export async function createInvite({
+  slug = "caldetech",
+  email,
+  role,
+}: createInviteProps) {
   try {
     await api.post(`organizations/${slug}/invites`, {
       json: {
         email,
-        role
-      }
-    })
+        role,
+      },
+    });
 
     return {
       success: true,
-      message: "Convite criado com sucesso!"
-    }
-  } catch(error) {
-    console.error(error)
+      message: "Convite criado com sucesso!",
+    };
+  } catch (error) {
+    console.error(error);
 
     return {
       success: false,
-      message: "Erro ao criar o convite."
-    }
+      message: "Erro ao criar o convite.",
+    };
   }
-}  
+}

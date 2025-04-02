@@ -7,8 +7,8 @@ export async function middleware(request: NextRequest) {
   const storedCookies = await isAuthenticated();
 
   if (storedCookies.get("token")?.value) {
-    if (["/sign-in", "/entrar", "/sign-up", "/cadastrar", "/"].includes(path)) {
-      return NextResponse.redirect(new URL("/contas", request.url));
+    if (["/sign-in", "/entrar", "/sign-up", "/cadastrar"].includes(path)) {
+      return NextResponse.redirect(new URL("/", request.url));
     }
   }
 

@@ -11,19 +11,17 @@ import {
 import { Plus } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useState } from "react";
+import { Card } from "@/components/ui/card";
 import { createOrganizationAction } from "@/app/actions/create-organization";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
+import type { OrganizationProps } from "@/types/organization";
 
 export default function Accounts() {
-  const [accounts, setAccounts] = useState([]);
+  const { data, error, isLoading } = useSWR<OrganizationProps[]>(
+    "organizations/all",
+    fetcher
+  );
 
   async function handleSubmit(formData: FormData) {
     await createOrganizationAction(formData);
@@ -78,24 +76,19 @@ export default function Accounts() {
       </div>
 
       <div>
-        {accounts.length === 0 ? (
+        {isLoading ? (
           <p className="text-center bg-card text-card-foreground flex flex-col gap-6 rounded-md border py-6">
             Nenhuma conta encontrada.
           </p>
         ) : (
-          <div>
-            {accounts.map((account) => (
-              <Card key={account.id}>
-                <CardHeader>
-                  <CardTitle>{account.title}</CardTitle>
-                  <CardDescription>{account.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p>{account.content}</p>
-                </CardContent>
-                <CardFooter>
-                  <p>{account.footer}</p>
-                </CardFooter>
+          <div className="flex flex-col gap-2">
+            {data?.map((organization) => (
+              <Card className="w-full flex" key={organization.id}>
+                <div>
+                  <p>{organization.name}</p>
+                  <p>{organization.members[0].role}</p>
+                </div>
+                <span></span>
               </Card>
             ))}
           </div>

@@ -1,5 +1,5 @@
+import Accounts from "./(auth)/_accounts/page";
+
 export default async function Home() {
-  return (
-    <h1>Deu certo!</h1>
-  )
+  return <Accounts />;
 }
