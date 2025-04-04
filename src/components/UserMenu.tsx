@@ -10,7 +10,7 @@ import {
 import { getProfile } from "@/http/get-profile";
 import { LogOut } from "lucide-react";
 
-export default async function UserMenu({ slug }: { slug: string }) {
+export default async function UserMenu({ slug }: { slug?: string }) {
   const user = await getProfile();
 
   return (

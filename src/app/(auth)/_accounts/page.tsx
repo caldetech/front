@@ -114,7 +114,7 @@ export default function Accounts() {
       </div>
 
       <div>
-        {isLoading || data?.length == 0 ? (
+        {isLoading || !data?.length ? (
           <p className="text-center bg-card text-card-foreground flex flex-col gap-6 rounded-md border py-6">
             Nenhuma conta encontrada.
           </p>

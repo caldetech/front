@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from "react";
@@ -24,14 +23,14 @@ import { Button } from "@/components/ui/button";
 import IconComponent from "./Icon";
 import { Power, Star } from "lucide-react";
 
-export default function Sidebar({ slug }: { slug: string }) {
+export default function Sidebar({ slug }: { slug?: string }) {
   const pathname = usePathname();
 
-  const groupTitles: any = {
+  const groupTitles = {
     Pages: "Páginas",
   };
 
-  const routeTitles: any = {
+  const routeTitles = {
     Orders: "Ordens",
     Services: "Serviços",
     Products: "Produtos",
@@ -63,7 +62,7 @@ export default function Sidebar({ slug }: { slug: string }) {
             .map((route, key) => (
               <SidebarGroup key={key}>
                 <SidebarGroupLabel className="hidden sm:flex">
-                  {groupTitles[route.title]}
+                  {groupTitles[route.title as keyof typeof groupTitles]}
                 </SidebarGroupLabel>
 
                 <SidebarGroupContent>
@@ -90,7 +89,11 @@ export default function Sidebar({ slug }: { slug: string }) {
                                         iconName={item.icon || ""}
                                       />
                                       <span className="hidden sm:flex">
-                                        {routeTitles[item.title]}
+                                        {
+                                          routeTitles[
+                                            item.title as keyof typeof routeTitles
+                                          ]
+                                        }
                                       </span>
                                     </SidebarMenuButton>
                                   </Link>
