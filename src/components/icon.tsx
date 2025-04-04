@@ -1,5 +1,12 @@
 import React, { type JSX } from "react";
-import { StickyNote, Users, Drill, Package, WalletMinimal, HardHat } from "lucide-react";
+import {
+  StickyNote,
+  Users,
+  Drill,
+  Package,
+  WalletMinimal,
+  HardHat,
+} from "lucide-react";
 
 const routeIcons: Record<string, JSX.Element> = {
   StickyNote: <StickyNote />,
@@ -11,11 +18,11 @@ const routeIcons: Record<string, JSX.Element> = {
 };
 
 interface IconProps {
-  iconName: keyof typeof routeIcons; 
+  iconName: keyof typeof routeIcons;
 }
 
-const IconComponent: React.FC<IconProps> = ({ iconName }) => {
+const Icon: React.FC<IconProps> = ({ iconName }) => {
   return routeIcons[iconName] || null;
 };
 
-export default IconComponent;
+export default Icon;

@@ -1,6 +1,6 @@
 "use client";
 
-import { createProductAction } from "@/app/actions/create-product";
+import { createProductAction } from "@/actions/create-product";
 import CustomTable from "@/components/CustomTable";
 import { Button } from "@/components/ui/button";
 import {

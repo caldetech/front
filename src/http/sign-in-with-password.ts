@@ -1,18 +1,12 @@
 import { api } from "../lib/api-client";
 
-interface SignInWithPasswordRequest {
-  email: string;
-  password: string;
-}
-
-interface SignInWithPasswordResponse {
-  token: string;
-}
-
 export async function signInWithPassword({
   email,
   password,
-}: SignInWithPasswordRequest) {
+}: {
+  email: string;
+  password: string;
+}): Promise<{ token: string }> {
   return await api
     .post("auth/sign-in", {
       json: {
@@ -20,5 +14,5 @@ export async function signInWithPassword({
         password,
       },
     })
-    .json<SignInWithPasswordResponse>();
+    .json<{ token: string }>();
 }

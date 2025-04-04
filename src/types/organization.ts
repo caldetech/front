@@ -1,5 +1,5 @@
 import type { OrganizationStatus } from "@/enums/organization-status";
-import type { Member } from "./member";
+import type { MemberProps } from "./member";
 
 export type OrganizationProps = {
   avatarUrl: string | null;
@@ -7,7 +7,7 @@ export type OrganizationProps = {
   domain: string | null;
   id: string;
   name: string;
-  members: Member[];
+  members: MemberProps[];
   ownerId: string;
   shouldAttachUsersByDomain: boolean;
   slug: string;

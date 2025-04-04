@@ -8,31 +8,61 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
+import { ChevronRight, Plus } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { createOrganizationAction } from "@/app/actions/create-organization";
+import { createOrganizationAction } from "@/actions/create-organization";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import type { OrganizationProps } from "@/types/organization";
+import Link from "next/link";
+import { useState } from "react";
+import ErrorNotification from "@/components/ErrorNotification";
+import { isError } from "@/validations/is-error";
+import { isOrganization } from "@/validations/ir-organization";
+import SuccessNotification from "@/components/SuccessNotification";
 
 export default function Accounts() {
   const { data, error, isLoading } = useSWR<OrganizationProps[]>(
     "organizations/all",
     fetcher
   );
+  const [creationErrorMessage, setCreationErrorMessage] = useState<
+    string | null
+  >(null);
+  const [successfulCreationMessage, setSuccessfulCreationMessage] = useState<
+    string | null
+  >(null);
+  const [open, setOpen] = useState(false);
 
   async function handleSubmit(formData: FormData) {
-    await createOrganizationAction(formData);
+    const organization = await createOrganizationAction(formData);
+
+    if (isError(organization)) {
+      setCreationErrorMessage(organization.message);
+    }
+
+    if (isOrganization(organization)) {
+      setSuccessfulCreationMessage("Organização criada com sucesso");
+    }
   }
+
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+
+    if (!isOpen) {
+      setCreationErrorMessage(null);
+      setSuccessfulCreationMessage(null);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4 p-6 pt-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Contas</h1>
 
-        <Dialog>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
             <Button variant={"outline"}>
               <p className="hidden sm:flex">Adicionar</p>
@@ -69,6 +99,14 @@ export default function Accounts() {
                 />
               </div>
 
+              {creationErrorMessage && (
+                <ErrorNotification message={creationErrorMessage} />
+              )}
+
+              {successfulCreationMessage && (
+                <SuccessNotification message={successfulCreationMessage} />
+              )}
+
               <Button type="submit">Adicionar</Button>
             </form>
           </DialogContent>
@@ -76,20 +114,25 @@ export default function Accounts() {
       </div>
 
       <div>
-        {isLoading ? (
+        {isLoading || data?.length == 0 ? (
           <p className="text-center bg-card text-card-foreground flex flex-col gap-6 rounded-md border py-6">
             Nenhuma conta encontrada.
           </p>
         ) : (
           <div className="flex flex-col gap-2">
             {data?.map((organization) => (
-              <Card className="w-full flex" key={organization.id}>
-                <div>
-                  <p>{organization.name}</p>
-                  <p>{organization.members[0].role}</p>
-                </div>
-                <span></span>
-              </Card>
+              <Link href={`${organization.slug}/ordens`} key={organization.id}>
+                <Card className="w-full flex flex-row items-center px-6 justify-between">
+                  <div>
+                    <p>{organization.name}</p>
+                    <p>{organization.members[0].role}</p>
+                  </div>
+
+                  <span className="border border-[#EFEFEF] p-2 rounded-sm m-2 hover:bg-[#F3F4F6] cursor-pointer">
+                    <ChevronRight />
+                  </span>
+                </Card>
+              </Link>
             ))}
           </div>
         )}

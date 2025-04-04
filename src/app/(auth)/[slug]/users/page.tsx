@@ -1,6 +1,6 @@
 "use client";
 
-import { createInviteAction } from "@/app/actions/create-invite";
+import { createInviteAction } from "@/actions/create-invite";
 import CustomTable from "@/components/CustomTable";
 import { Button } from "@/components/ui/button";
 import {

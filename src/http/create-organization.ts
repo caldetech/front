@@ -1,6 +1,8 @@
 "use server";
 
+import type { OrganizationProps } from "@/types/organization";
 import { api } from "../lib/api-client";
+import type { ErrorProps } from "@/types/error";
 
 export async function createOrganization({
   name,
@@ -8,14 +10,36 @@ export async function createOrganization({
 }: {
   name: string;
   slug: string;
-}): Promise<void> {
+}): Promise<OrganizationProps | ErrorProps> {
   try {
-    await api.post(`organizations/${slug}/create`, {
+    const organization = await api.post(`organizations/${slug}/create`, {
       json: {
         name,
       },
     });
+
+    return organization.json<OrganizationProps>();
   } catch (error) {
-    console.error(error);
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      typeof error.response === "object" &&
+      error.response !== null
+    ) {
+      const typedError = error as {
+        response: {
+          json: () => Promise<unknown>;
+        };
+      };
+
+      return typedError.response.json() as Promise<ErrorProps>;
+    }
+
+    return {
+      error: "Internal Server Error",
+      message: "Erro inesperado",
+      statusCode: 500,
+    };
   }
 }

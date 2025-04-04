@@ -4,28 +4,28 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/ordens",
-        destination: "/orders",
+        source: "/:slug/ordens",
+        destination: "/:slug/orders",
       },
       {
-        source: "/clientes",
-        destination: "/customers",
+        source: "/:slug/clientes",
+        destination: "/:slug/customers",
       },
       {
-        source: "/servicos",
-        destination: "/services",
+        source: "/:slug/servicos",
+        destination: "/:slug/services",
       },
       {
-        source: "/produtos",
-        destination: "/products",
+        source: "/:slug/produtos",
+        destination: "/:slug/products",
       },
       {
-        source: "/comissoes",
-        destination: "/comissions",
+        source: "/:slug/comissoes",
+        destination: "/:slug/comissions",
       },
       {
-        source: "/funcionarios",
-        destination: "/users",
+        source: "/:slug/funcionarios",
+        destination: "/:slug/users",
       },
       {
         source: "/entrar",
@@ -36,8 +36,8 @@ const nextConfig: NextConfig = {
         destination: "/sign-up",
       },
       {
-        source: "/contas",
-        destination: "/accounts",
+        source: "/:slug/contas",
+        destination: "/:slug/accounts",
       },
     ];
   },

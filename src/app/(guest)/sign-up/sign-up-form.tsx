@@ -1,20 +1,24 @@
-'use client'
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useFormState } from "@/hooks/use-form-state";
 import { useRouter } from "next/navigation";
-import { signUpAction } from "./actions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
- 
-export default function SignUpForm() {
-  const router = useRouter()
+import { createUserAction } from "@/actions/create-user";
+import NotificationError from "@/components/ErrorNotification";
 
-  const [{ success, message, errors }, handleSubmit] = useFormState(signUpAction, () => {
-    router.push('/entrar')
-  })
+export default function SignUpForm() {
+  const router = useRouter();
+
+  const [{ success, message, errors }, handleSubmit] = useFormState(
+    createUserAction,
+    () => {
+      router.push("/entrar");
+    }
+  );
 
   return (
     <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -42,10 +46,6 @@ export default function SignUpForm() {
             className="w-full"
             placeholder="Nome"
           />
-
-          {errors?.name && (
-            <p className="text-sm font-medium text-red-500 dark:text-red-400">{errors.name[0]}</p>
-          )}
         </div>
 
         <div>
@@ -56,16 +56,12 @@ export default function SignUpForm() {
           <Input
             id="email"
             name="email"
-            type="email"
+            type="text"
             autoComplete="email"
             required
             className="w-full"
             placeholder="E-mail"
           />
-
-          {errors?.email && (
-            <p className="text-sm font-medium text-red-500 dark:text-red-400">{errors.email[0]}</p>
-          )}
         </div>
 
         <div>
@@ -82,17 +78,13 @@ export default function SignUpForm() {
             className="w-full"
             placeholder="Senha"
           />
-
-          {errors?.password && (
-            <p className="text-sm font-medium text-red-500 dark:text-red-400">{errors.password[0]}</p>
-          )}
         </div>
 
         <div>
           <Label htmlFor="password_confirmation" className="sr-only">
             Confirme sua senha
           </Label>
-          
+
           <Input
             id="password_confirmation"
             name="password_confirmation"
@@ -102,14 +94,20 @@ export default function SignUpForm() {
             className="w-full"
             placeholder="Confirme sua senha"
           />
-
-          {errors?.password_confirmation && (
-            <p className="text-sm font-medium text-red-500 dark:text-red-400">{errors.password_confirmation[0]}</p>
-          )}
         </div>
       </div>
 
-      <div>
+      <div className="flex flex-col gap-6">
+        {errors?.name && <NotificationError message={errors.name[0]} />}
+
+        {errors?.email && <NotificationError message={errors.email[0]} />}
+
+        {errors?.password && <NotificationError message={errors.password[0]} />}
+
+        {errors?.password_confirmation && (
+          <NotificationError message={errors.password_confirmation[0]} />
+        )}
+
         <Button type="submit" className="w-full">
           Criar conta
         </Button>
@@ -117,4 +115,3 @@ export default function SignUpForm() {
     </form>
   );
 }
-

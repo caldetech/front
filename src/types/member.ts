@@ -1,6 +1,6 @@
 import type { MemberRole } from "@/enums/member-role";
 
-export type Member = {
+export type MemberProps = {
   id: string;
   organizationId: string;
   role: MemberRole;

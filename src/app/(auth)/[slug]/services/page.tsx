@@ -1,6 +1,6 @@
 "use client";
 
-import { createServiceAction } from "@/app/actions/create-service";
+import { createServiceAction } from "@/actions/create-service";
 import CustomTable from "@/components/CustomTable";
 import { Button } from "@/components/ui/button";
 import {
