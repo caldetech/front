@@ -20,7 +20,7 @@ import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Icon from "./Icon";
+import NewIcon from "./NewIcon";
 import { Power, Star } from "lucide-react";
 
 export default function NewSidebar({ slug }: { slug: string }) {
@@ -85,7 +85,7 @@ export default function NewSidebar({ slug }: { slug: string }) {
                                       }
                                       className="cursor-pointer"
                                     >
-                                      <Icon iconName={item.icon || ""} />
+                                      <NewIcon iconName={item.icon || ""} />
                                       <span className="hidden sm:flex">
                                         {
                                           routeTitles[
