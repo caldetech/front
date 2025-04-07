@@ -39,6 +39,10 @@ const nextConfig: NextConfig = {
         source: "/:slug/contas",
         destination: "/:slug/accounts",
       },
+      {
+        source: "/:slug/integracoes",
+        destination: "/:slug/integrations",
+      },
     ];
   },
 };

@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { createOrganizationAction } from "@/actions/create-organization";
 import useSWR from "swr";
-import { fetcher } from "@/lib/fetcher";
+import { fetcher } from "@/utils/fetcher";
 import type { OrganizationProps } from "@/types/organization";
 import Link from "next/link";
 import { useState } from "react";

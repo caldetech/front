@@ -37,6 +37,7 @@ export default function NewSidebar({ slug }: { slug: string }) {
     Customers: "Clientes",
     Users: "Funcionários",
     Comissions: "Comissões",
+    Integrations: "Integrações",
   };
 
   async function handleLogout() {
