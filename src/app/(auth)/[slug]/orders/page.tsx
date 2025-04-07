@@ -1,6 +1,5 @@
 "use client";
 
-import { createInviteAction } from "@/actions/create-invite";
 import CustomTable from "@/components/CustomTable";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,20 +11,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Plus, Search } from "lucide-react";
 
 export default function Orders() {
-  async function handleSubmit(formData: FormData) {
-    await createInviteAction(formData);
-  }
+  async function handleSubmit(formData: FormData) {}
 
   return (
     <div className="flex flex-col gap-4 p-6 pt-6">
