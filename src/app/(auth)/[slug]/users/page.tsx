@@ -20,11 +20,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSlug } from "@/contexts/SlugContext";
 import { Plus } from "lucide-react";
 
 export default function Users() {
+  const slug = useSlug();
+
   async function handleSubmit(formData: FormData) {
-    await createInviteAction(formData);
+    await createInviteAction({ formData, slug });
   }
 
   return (

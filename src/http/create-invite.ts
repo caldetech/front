@@ -1,23 +1,21 @@
 "use server";
 
+import type { Role } from "@/schemas/role";
 import { api } from "../lib/api-client";
 
 interface createInviteProps {
-  slug?: string;
   email: string;
-  role: string;
+  role: Role;
+  slug: string;
 }
 
-export async function createInvite({
-  slug = "caldetech",
-  email,
-  role,
-}: createInviteProps) {
+export async function createInvite({ email, role, slug }: createInviteProps) {
   try {
-    await api.post(`organizations/${slug}/invites`, {
+    await api.post("invite/create", {
       json: {
         email,
         role,
+        slug,
       },
     });
 

@@ -6,6 +6,7 @@ import {
   Package,
   WalletMinimal,
   HardHat,
+  Puzzle,
 } from "lucide-react";
 
 const routeIcons: Record<string, JSX.Element> = {
@@ -15,6 +16,7 @@ const routeIcons: Record<string, JSX.Element> = {
   Package: <Package />,
   WalletMinimal: <WalletMinimal />,
   HardHat: <HardHat />,
+  Puzzle: <Puzzle />,
 };
 
 interface IconProps {
