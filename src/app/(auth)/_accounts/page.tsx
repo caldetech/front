@@ -40,10 +40,12 @@ export default function Accounts() {
     const organization = await createOrganizationAction(formData);
 
     if (isError(organization)) {
+      setSuccessfulCreationMessage(null);
       setCreationErrorMessage(organization.message);
     }
 
     if (isOrganization(organization)) {
+      setCreationErrorMessage(null);
       setSuccessfulCreationMessage("Organização criada com sucesso");
     }
   }

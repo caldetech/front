@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { signInWithEmailAndPassword } from "../actions/log-in";
+import { LogInAction } from "../actions/log-in";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useFormState } from "@/hooks/use-form-state";
@@ -14,7 +14,7 @@ export default function LogInForm() {
   const router = useRouter();
 
   const [{ success, message, errors }, handleSubmit, isPending] = useFormState(
-    signInWithEmailAndPassword,
+    LogInAction,
     () => {
       router.push("/");
     }
@@ -25,7 +25,7 @@ export default function LogInForm() {
       {success === false && message && (
         <Alert variant={"destructive"}>
           <AlertTriangle className="size-4" />
-          <AlertTitle>Sign in failed!</AlertTitle>
+          <AlertTitle>Falha no login!</AlertTitle>
           <AlertDescription>
             <p>{message}</p>
           </AlertDescription>
