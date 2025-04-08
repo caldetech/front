@@ -1,9 +1,23 @@
+"use client";
+
 import LogInForm from "../../../components/login-form";
 import Link from "next/link";
 import Image from "next/image";
 import Background from "../../../../public/images/cover.png";
+import { BeatLoader } from "react-spinners";
+import { useSearchParams } from "next/navigation";
+import useSWR from "swr";
+import { fetcher } from "@/utils/fetcher";
 
-export default function LogInPage() {
+export default function ConfirmAccountPage() {
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+  console.log(token);
+  // const { data, error, isLoading } = useSWR(
+  //   `confirmar-conta?token=${token}`,
+  //   fetcher
+  // );
+
   return (
     <div className="grid lg:grid-cols-2 grid-cols-1 h-screen w-full">
       <div className="hidden bg-gray-100 lg:block">

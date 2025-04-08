@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!storedCookies.get("token")?.value) {
-    if (["/entrar", "/cadastrar"].includes(path)) {
+    if (["/entrar", "/cadastrar", "/confirmar-conta"].includes(path)) {
       return NextResponse.next();
     } else {
       return NextResponse.redirect(new URL("/entrar", request.url));

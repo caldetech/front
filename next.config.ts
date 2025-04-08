@@ -43,6 +43,10 @@ const nextConfig: NextConfig = {
         source: "/:slug/integracoes",
         destination: "/:slug/integrations",
       },
+      {
+        source: "/confirmar-conta",
+        destination: "/confirm-account",
+      },
     ];
   },
 };
