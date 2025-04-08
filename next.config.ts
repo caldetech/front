@@ -29,11 +29,11 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/entrar",
-        destination: "/sign-in",
+        destination: "/login",
       },
       {
         source: "/cadastrar",
-        destination: "/sign-up",
+        destination: "/register",
       },
       {
         source: "/:slug/contas",
