@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { signUp } from "@/http/create-user";
+import { createUser } from "@/http/create-user";
 
 const signUpSchema = z
   .object({
@@ -36,7 +36,7 @@ export async function createUserAction(data: FormData) {
 
   const { name, email, password } = result.data;
 
-  await signUp({
+  await createUser({
     name,
     email,
     password,

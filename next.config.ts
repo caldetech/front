@@ -29,7 +29,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/entrar",
-        destination: "/login",
+        destination: "/log-in",
       },
       {
         source: "/cadastrar",

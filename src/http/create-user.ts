@@ -1,14 +1,9 @@
-import type { CreateUserProps } from "@/types/create-user";
+import { CreateUserProps } from "@/types/create-user";
 import { api } from "../lib/api-client";
-import type { UserProps } from "@/types/user";
 
-export async function signUp({
-  name,
-  email,
-  password,
-}: CreateUserProps): Promise<UserProps> {
+export async function createUser({ name, email, password }: CreateUserProps) {
   try {
-    const user = await api.post("users/sign-up", {
+    const user = await api.post("users/register", {
       json: {
         name,
         email,
