@@ -47,6 +47,14 @@ const nextConfig: NextConfig = {
         source: "/confirmar-conta",
         destination: "/confirm-account",
       },
+      {
+        source: "/recuperar-senha",
+        destination: "/password-recover",
+      },
+      {
+        source: "/nova-senha",
+        destination: "/new-password",
+      },
     ];
   },
 };

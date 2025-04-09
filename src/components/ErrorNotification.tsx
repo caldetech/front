@@ -1,7 +1,7 @@
 import { CircleAlert } from "lucide-react";
 import React from "react";
 
-export default function NotificationError({ message }: { message?: string }) {
+export default function ErrorNotification({ message }: { message?: string }) {
   if (!message) return null;
 
   return (

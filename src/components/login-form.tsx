@@ -75,7 +75,7 @@ export default function LogInForm() {
         </div>
         <div className="text-end">
           <Link
-            href="/dashboard/forgot-password"
+            href="/recuperar-senha"
             className="ml-auto inline-block text-sm underline"
           >
             Esqueceu a senha?

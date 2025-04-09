@@ -15,13 +15,13 @@ import { Card } from "@/components/ui/card";
 import { createOrganizationAction } from "@/actions/create-organization";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
-import type { OrganizationProps } from "@/types/organization";
+import { OrganizationProps } from "@/types/organization";
 import Link from "next/link";
 import { useState } from "react";
-import ErrorNotification from "@/components/ErrorNotification";
 import { isError } from "@/validations/is-error";
 import { isOrganization } from "@/validations/ir-organization";
 import SuccessNotification from "@/components/SuccessNotification";
+import ErrorNotification from "@/components/ErrorNotification";
 
 export default function Accounts() {
   const { data, error, isLoading } = useSWR<OrganizationProps[]>(
