@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function IntegrationsPage() {
-  const [blingConnection, setBlingConnection] = useState(false);
+  const [blingConnection, setBlingConnection] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const slug = useSlug();
@@ -20,11 +20,15 @@ export default function IntegrationsPage() {
 
     router.push(blingAuthorize.url);
   }
+
   useEffect(() => {
     async function handleBlingAccessToken() {
       const accessToken = await getValidAccessToken({ slug });
 
-      if (accessToken) {
+      if (!accessToken) {
+        setBlingConnection(false);
+        setLoading(false);
+      } else {
         setBlingConnection(true);
         setLoading(false);
       }
@@ -33,7 +37,7 @@ export default function IntegrationsPage() {
     handleBlingAccessToken();
   }, []);
 
-  if (!blingConnection) return null;
+  if (loading) return null;
 
   return (
     <div className="flex flex-col gap-4 p-6 pt-6">
@@ -59,7 +63,7 @@ export default function IntegrationsPage() {
                 </div>
               </div>
 
-              {loading ? (
+              {!blingConnection ? (
                 <Button variant="outline" size="sm" onClick={handleSubmit}>
                   Conectar
                 </Button>
