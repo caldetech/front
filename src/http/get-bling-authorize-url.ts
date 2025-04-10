@@ -1,8 +1,16 @@
 import { api } from "../lib/api-client";
 
-export async function getBlingAuthorizeUrl(): Promise<{ url: string }> {
+export async function getBlingAuthorizeUrl({
+  slug,
+}: {
+  slug: string;
+}): Promise<{ url: string }> {
   try {
-    const user = await api.get("bling/get-authorize-url");
+    const user = await api.post("bling/get-authorize-url", {
+      json: {
+        slug,
+      },
+    });
 
     return user.json();
   } catch (error) {

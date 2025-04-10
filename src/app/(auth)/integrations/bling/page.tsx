@@ -1,7 +1,9 @@
 "use client";
 
+import { useSlug } from "@/contexts/SlugContext";
 import { getBlingTokens } from "@/http/get-bling-tokens";
-import { useSearchParams } from "next/navigation";
+import type { BlingTokensSchema } from "@/schemas/bling-tokens";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 
@@ -9,11 +11,17 @@ export default function BlingPage() {
   const [loading, setLoading] = useState(true);
   const params = useSearchParams();
   const code = params.get("code");
+  const state = params.get("state");
+  const router = useRouter();
 
   useEffect(() => {
     async function handleBlingTokens() {
-      if (code) {
-        await getBlingTokens({ code });
+      if (code && state) {
+        const tokens = await getBlingTokens({ code, state });
+
+        if (tokens) {
+          router.push(`${state}/integracoes`);
+        }
       }
     }
 

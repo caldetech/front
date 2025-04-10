@@ -2,21 +2,38 @@
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { useSlug } from "@/contexts/SlugContext";
+import { getValidAccessToken } from "@/http/get-valid-bling-tokens";
 import { getBlingAuthorizeUrl } from "@/http/get-bling-authorize-url";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function IntegrationsPage() {
   const [blingConnection, setBlingConnection] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const slug = useSlug();
 
   async function handleSubmit() {
-    const blingAuthorize = await getBlingAuthorizeUrl();
+    const blingAuthorize = await getBlingAuthorizeUrl({ slug });
 
     router.push(blingAuthorize.url);
   }
+  useEffect(() => {
+    async function handleBlingAccessToken() {
+      const accessToken = await getValidAccessToken({ slug });
+
+      if (accessToken) {
+        setBlingConnection(true);
+        setLoading(false);
+      }
+    }
+
+    handleBlingAccessToken();
+  }, []);
+
+  if (!blingConnection) return null;
 
   return (
     <div className="flex flex-col gap-4 p-6 pt-6">
@@ -42,7 +59,7 @@ export default function IntegrationsPage() {
                 </div>
               </div>
 
-              {!blingConnection ? (
+              {loading ? (
                 <Button variant="outline" size="sm" onClick={handleSubmit}>
                   Conectar
                 </Button>
