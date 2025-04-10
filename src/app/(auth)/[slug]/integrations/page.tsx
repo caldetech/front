@@ -3,10 +3,20 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getBlingAuthorizeUrl } from "@/http/get-bling-authorize-url";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function Integrations() {
+export default function IntegrationsPage() {
   const [blingConnection, setBlingConnection] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  async function handleSubmit() {
+    const blingAuthorize = await getBlingAuthorizeUrl();
+
+    router.push(blingAuthorize.url);
+  }
 
   return (
     <div className="flex flex-col gap-4 p-6 pt-6">
@@ -33,7 +43,7 @@ export default function Integrations() {
               </div>
 
               {!blingConnection ? (
-                <Button variant="outline" size="sm" onClick={() => {}}>
+                <Button variant="outline" size="sm" onClick={handleSubmit}>
                   Conectar
                 </Button>
               ) : (
