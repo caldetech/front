@@ -11,7 +11,7 @@ import { confirmAccount } from "@/http/confirm-account";
 
 export default function ConfirmAccountPage() {
   const searchParams = useSearchParams();
-  const tokenId = searchParams.get("token");
+  const tokenId = searchParams.get("tokenId");
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {

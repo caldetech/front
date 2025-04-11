@@ -2,14 +2,12 @@
 
 import { employees } from "@/data/employees";
 import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
   PaginationPrevious,
-  PaginationLink,
-  PaginationEllipsis,
   PaginationNext,
 } from "./ui/pagination";
 
@@ -74,9 +72,11 @@ export default function CustomTable() {
                 <td className="p-2 text-xs text-left text-muted-foreground select-none">
                   {e[columnNames[count - 1] as keyof typeof e]}
                 </td>
+
                 <td className="p-2 text-xs text-left text-muted-foreground select-none">
                   {e[columnNames[count] as keyof typeof e]}
                 </td>
+
                 <td className="flex justify-end">
                   <span className="border border-[#EFEFEF] p-2 rounded-sm m-2 hover:bg-[#F3F4F6] cursor-pointer">
                     <Eye className="size-4" />

@@ -5,6 +5,7 @@ import { createUser } from "@/http/create-user";
 
 const signUpSchema = z
   .object({
+    inviteId: z.string().optional(),
     name: z.string().refine((value) => value.split(" ").length > 1, {
       message: "Please, enter your full name.",
     }),
@@ -34,12 +35,13 @@ export async function createUserAction(data: FormData) {
     };
   }
 
-  const { name, email, password } = result.data;
+  const { name, email, password, inviteId } = result.data;
 
   await createUser({
     name,
     email,
     password,
+    inviteId,
   });
 
   return {
