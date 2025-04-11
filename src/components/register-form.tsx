@@ -3,35 +3,57 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useFormState } from "@/hooks/use-form-state";
-import { useRouter } from "next/navigation";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createUserAction } from "@/actions/create-user";
 import NotificationError from "@/components/ErrorNotification";
+import SuccessNotification from "./SuccessNotification";
+import { useActionState, useEffect } from "react";
+
+interface FormState {
+  success: boolean | null;
+  message: string | null;
+  errors: Record<string, string[]> | null;
+}
+
+const initialState: FormState = {
+  success: null,
+  message: null,
+  errors: null,
+};
 
 export default function RegisterForm() {
+  const searchParams = useSearchParams();
+  const inviteId = searchParams.get("inviteId");
   const router = useRouter();
+  const actionWrapper = async (
+    prevState: FormState,
+    formData: FormData
+  ): Promise<FormState> => {
+    formData.append("inviteId", inviteId || "");
 
-  const [{ success, message, errors }, handleSubmit] = useFormState(
-    createUserAction,
-    () => {
-      router.push("/entrar");
-    }
+    return await createUserAction(formData);
+  };
+
+  const [state, formAction, isPending] = useActionState<FormState, FormData>(
+    actionWrapper,
+    initialState
   );
 
-  return (
-    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-      {success === false && message && (
-        <Alert variant={"destructive"}>
-          <AlertTriangle className="size-4" />
-          <AlertTitle>Falha no cadastro!</AlertTitle>
-          <AlertDescription>
-            <p>{message}</p>
-          </AlertDescription>
-        </Alert>
-      )}
+  useEffect(() => {
+    if (state.success) {
+      router.push("/entrar");
+    }
+  }, [state]);
 
+  // const [{ success, message, errors }, handleSubmit] = useFormState(
+  //   createUserAction,
+  //   () => {
+  //     router.push("/entrar");
+  //   }
+  // );
+
+  return (
+    <form className="mt-8 space-y-6" action={formAction}>
       <div className="space-y-4">
         <div>
           <Label htmlFor="name" className="sr-only">
@@ -98,14 +120,24 @@ export default function RegisterForm() {
       </div>
 
       <div className="flex flex-col gap-6">
-        {errors?.name && <NotificationError message={errors.name[0]} />}
+        {state.errors?.name && (
+          <NotificationError message={state.errors.name[0]} />
+        )}
 
-        {errors?.email && <NotificationError message={errors.email[0]} />}
+        {state.errors?.email && (
+          <NotificationError message={state.errors.email[0]} />
+        )}
 
-        {errors?.password && <NotificationError message={errors.password[0]} />}
+        {state.errors?.password && (
+          <NotificationError message={state.errors.password[0]} />
+        )}
 
-        {errors?.password_confirmation && (
-          <NotificationError message={errors.password_confirmation[0]} />
+        {state.errors?.password_confirmation && (
+          <NotificationError message={state.errors.password_confirmation[0]} />
+        )}
+
+        {state.success && (
+          <SuccessNotification message={"Usuário criado com sucesso"} />
         )}
 
         <Button type="submit" className="w-full">

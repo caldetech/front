@@ -1,13 +1,21 @@
 import { CreateUserProps } from "@/types/create-user";
 import { api } from "../lib/api-client";
 
-export async function createUser({ name, email, password }: CreateUserProps) {
+export async function createUser({
+  name,
+  email,
+  tokenId,
+  password,
+  inviteId,
+}: CreateUserProps) {
   try {
     const user = await api.post("users/register", {
       json: {
         name,
         email,
         password,
+        inviteId,
+        tokenId,
       },
     });
 

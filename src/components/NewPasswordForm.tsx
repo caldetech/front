@@ -23,7 +23,7 @@ const initialState: FormState = {
 
 export default function NewPasswordForm() {
   const searchParams = useSearchParams();
-  const tokenId = searchParams.get("token");
+  const tokenId = searchParams.get("tokenId");
   const router = useRouter();
 
   const actionWrapper = async (

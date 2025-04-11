@@ -1,5 +1,11 @@
-import { Inter, Roboto, Montserrat, Poppins, Overpass_Mono } from "next/font/google";
-import type { Metadata } from "next";
+import {
+  Inter,
+  Roboto,
+  Montserrat,
+  Poppins,
+  Overpass_Mono,
+} from "next/font/google";
+import { Metadata } from "next";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -39,7 +45,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.className} ${inter.variable} ${roboto.variable} ${montserrat.variable} ${poppins.variable} ${overpass_mono.variable}`}>
+      <body
+        className={`${inter.className} ${inter.variable} ${roboto.variable} ${montserrat.variable} ${poppins.variable} ${overpass_mono.variable}`}
+      >
         {children}
       </body>
     </html>

@@ -55,6 +55,14 @@ const nextConfig: NextConfig = {
         source: "/nova-senha",
         destination: "/new-password",
       },
+      {
+        source: "/integracoes/bling",
+        destination: "/integrations/bling",
+      },
+      {
+        source: "/:slug/integracoes",
+        destination: "/:slug/integrations",
+      },
     ];
   },
 };

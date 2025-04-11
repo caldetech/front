@@ -20,21 +20,5 @@ export async function createInviteAction({
     };
   }
 
-  const result = await createInvite({ email, role, slug });
-
-  // const inviteLink = `http://localhost:3000/cadastrar`
-
-  // if (result.success) {
-  //   await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/send-email`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify({
-  //       recipientEmail: email,
-  //       role,
-  //       inviteLink
-  //     })
-  //   })
-  // }
+  return await createInvite({ email, role, slug });
 }
