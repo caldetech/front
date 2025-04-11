@@ -19,8 +19,8 @@ type CustomTableProps<T extends GenericRecord> = {
   data: T[];
   currentPage: number;
   onPageChange: (page: number) => void;
-  totalItems: number;
   itemsPerPage: number;
+  totalItems?: number;
 };
 
 export default function CustomTable<T extends GenericRecord>({
@@ -36,7 +36,9 @@ export default function CustomTable<T extends GenericRecord>({
 
   const [columnIndex, setColumnIndex] = useState(1);
 
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const totalPages = totalItems
+    ? Math.ceil(totalItems / itemsPerPage)
+    : undefined;
 
   return (
     <div className="flex flex-col">
@@ -114,7 +116,10 @@ export default function CustomTable<T extends GenericRecord>({
         <PaginationContent className="justify-end">
           <PaginationItem>
             <PaginationPrevious
-              onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+              onClick={(e) => {
+                e.preventDefault();
+                onPageChange(Math.max(1, currentPage - 1));
+              }}
               className={
                 currentPage === 1 ? "pointer-events-none opacity-50" : ""
               }
@@ -123,19 +128,20 @@ export default function CustomTable<T extends GenericRecord>({
 
           <PaginationItem>
             <span className="text-xs text-muted-foreground px-2">
-              Página {currentPage} de {totalPages}
+              Página {currentPage}
+              {totalPages &&
+                ` de ${currentPage > totalPages ? currentPage : totalPages}`}
             </span>
           </PaginationItem>
 
           <PaginationItem>
             <PaginationNext
-              onClick={() =>
-                onPageChange(Math.min(currentPage + 1, totalPages))
-              }
+              onClick={(e) => {
+                e.preventDefault();
+                onPageChange(currentPage + 1);
+              }}
               className={
-                currentPage === totalPages
-                  ? "pointer-events-none opacity-50"
-                  : ""
+                data.length === 0 ? "pointer-events-none opacity-50" : ""
               }
             />
           </PaginationItem>

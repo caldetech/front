@@ -22,7 +22,7 @@ export const useProducts = (page: number, limit = 5, slug: string) => {
   return {
     currentPage: page,
     data: data?.data || [],
-    total: data?.page?.total || 0,
+    total: data?.data.length || 0,
     error,
     isLoading,
   };

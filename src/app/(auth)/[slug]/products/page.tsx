@@ -14,10 +14,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useSlug } from "@/contexts/SlugContext";
+import { useProducts } from "@/hooks/use-product";
 import { Plus } from "lucide-react";
+import { useState } from "react";
+
+const ITEMS_PER_PAGE = 5;
 
 export default function Products() {
   const slug = useSlug();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, total, isLoading, error } = useProducts(
+    currentPage,
+    ITEMS_PER_PAGE,
+    slug
+  );
+
+  if (isLoading) return <p>Carregando...</p>;
+  if (error) return <p>Erro ao carregar produtos</p>;
+
   async function handleSubmit(formData: FormData) {
     await createProductAction(formData);
   }
@@ -107,7 +121,15 @@ export default function Products() {
         </Dialog>
       </div>
 
-      <div>{/* <CustomTable /> */}</div>
+      <div>
+        <CustomTable
+          data={data}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          totalItems={total}
+          itemsPerPage={ITEMS_PER_PAGE}
+        />
+      </div>
     </div>
   );
 }
