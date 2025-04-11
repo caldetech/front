@@ -1,6 +1,5 @@
 "use client";
 
-import { employees } from "@/data/employees";
 import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import { useState } from "react";
 import {
@@ -13,16 +12,28 @@ import {
 
 const ITEMS_PER_PAGE = 5;
 
-export default function CustomTable() {
-  const columnNames = employees?.length
-    ? Object.keys(employees[0]).filter((key) => key !== "id")
+type GenericRecord = {
+  id: number;
+  [key: string]: unknown;
+};
+
+type CustomTableProps<T extends GenericRecord> = {
+  data: T[];
+};
+
+export default function CustomTable<T extends GenericRecord>({
+  data,
+}: CustomTableProps<T>) {
+  const columnNames = data?.length
+    ? Object.keys(data[0]).filter((key) => key !== "id")
     : [];
-  const [count, setCount] = useState<number>(1); // controle das colunas visíveis
-  const [currentPage, setCurrentPage] = useState(1); // controle de páginas
 
-  const totalPages = Math.ceil(employees.length / ITEMS_PER_PAGE);
+  const [count, setCount] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const paginatedEmployees = employees.slice(
+  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+
+  const paginatedItems = data.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -33,12 +44,12 @@ export default function CustomTable() {
         <thead>
           <tr className="border-b border-[#EFEFEF]">
             <th className="w-1/3 p-2 text-xs text-left text-muted-foreground select-none">
-              {columnNames[count - 1][0].toUpperCase() +
-                columnNames[count - 1].substr(1)}
+              {columnNames[count - 1]?.[0].toUpperCase() +
+                columnNames[count - 1]?.substring(1)}
             </th>
             <th className="w-1/3 p-2 text-xs text-left text-muted-foreground select-none">
-              {columnNames[count][0].toUpperCase() +
-                columnNames[count].substr(1)}
+              {columnNames[count]?.[0].toUpperCase() +
+                columnNames[count]?.substring(1)}
             </th>
 
             <th className="w-1/3 p-2">
@@ -54,7 +65,11 @@ export default function CustomTable() {
 
                 <span className="flex w-6 h-6 bg-[#F5F7F9] rounded-full items-center justify-center cursor-pointer">
                   <ChevronRight
-                    className={`${count < columnNames.length - 1 ? "opacity-100" : "opacity-20"} size-4`}
+                    className={`${
+                      count < columnNames.length - 1
+                        ? "opacity-100"
+                        : "opacity-20"
+                    } size-4`}
                     onClick={() => {
                       if (count < columnNames.length - 1) setCount(count + 1);
                     }}
@@ -66,15 +81,15 @@ export default function CustomTable() {
         </thead>
 
         <tbody>
-          {paginatedEmployees.map((e, i) => {
+          {paginatedItems.map((item, i) => {
             return (
-              <tr className="border-b border-[#EFEFEF]" key={i}>
+              <tr className="border-b border-[#EFEFEF]" key={item.id}>
                 <td className="p-2 text-xs text-left text-muted-foreground select-none">
-                  {e[columnNames[count - 1] as keyof typeof e]}
+                  {String(item[columnNames[count - 1]])}
                 </td>
 
                 <td className="p-2 text-xs text-left text-muted-foreground select-none">
-                  {e[columnNames[count] as keyof typeof e]}
+                  {String(item[columnNames[count]])}
                 </td>
 
                 <td className="flex justify-end">

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { useSlug } from "@/contexts/SlugContext";
 import { Plus } from "lucide-react";
+import { employees } from "@/data/employees";
 
 export default function Users() {
   const slug = useSlug();
@@ -86,7 +87,7 @@ export default function Users() {
       </div>
 
       <div>
-        <CustomTable />
+        <CustomTable data={employees} />
       </div>
     </div>
   );

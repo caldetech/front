@@ -20,7 +20,7 @@ export default function BlingPage() {
         const tokens = await getBlingTokens({ code, state });
 
         if (tokens) {
-          router.push(`${state}/integracoes`);
+          router.push(`${state}`);
         }
       }
     }
