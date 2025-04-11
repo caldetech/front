@@ -4,9 +4,7 @@ import { createOrganization } from "@/http/create-organization";
 import type { ErrorProps } from "@/types/error";
 import type { OrganizationProps } from "@/types/organization";
 
-export async function createOrganizationAction(
-  formData: FormData
-): Promise<OrganizationProps | ErrorProps> {
+export async function createOrganizationAction(formData: FormData) {
   const name = formData.get("name") as string;
   const slug = formData.get("slug") as string;
 

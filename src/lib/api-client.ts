@@ -3,7 +3,7 @@ import type { CookiesFn } from "cookies-next";
 import cookiesNext from "cookies-next";
 
 export const api = ky.create({
-  prefixUrl: "http://localhost:4444",
+  prefixUrl: process.env.NEXT_PUBLIC_API_URL,
   hooks: {
     beforeRequest: [
       async (request) => {

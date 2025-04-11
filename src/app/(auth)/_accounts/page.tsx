@@ -8,20 +8,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ChevronRight, Plus } from "lucide-react";
+import { ChevronRight, Plus, Power } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { createOrganizationAction } from "@/actions/create-organization";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
-import type { OrganizationProps } from "@/types/organization";
+import { OrganizationProps } from "@/types/organization";
 import Link from "next/link";
 import { useState } from "react";
-import ErrorNotification from "@/components/ErrorNotification";
 import { isError } from "@/validations/is-error";
 import { isOrganization } from "@/validations/ir-organization";
 import SuccessNotification from "@/components/SuccessNotification";
+import ErrorNotification from "@/components/ErrorNotification";
 
 export default function Accounts() {
   const { data, error, isLoading } = useSWR<OrganizationProps[]>(
@@ -40,10 +40,12 @@ export default function Accounts() {
     const organization = await createOrganizationAction(formData);
 
     if (isError(organization)) {
+      setSuccessfulCreationMessage(null);
       setCreationErrorMessage(organization.message);
     }
 
     if (isOrganization(organization)) {
+      setCreationErrorMessage(null);
       setSuccessfulCreationMessage("Organização criada com sucesso");
     }
   }
@@ -57,8 +59,13 @@ export default function Accounts() {
     }
   };
 
+  async function handleLogout() {
+    await fetch("/api/auth/sign-out", { method: "GET" });
+    window.location.href = "/entrar";
+  }
+
   return (
-    <div className="flex flex-col gap-4 p-6 pt-6">
+    <div className="flex flex-col gap-4 p-6 pt-6 h-screen">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Contas</h1>
 
@@ -137,6 +144,13 @@ export default function Accounts() {
           </div>
         )}
       </div>
+
+      <Button
+        className="sm:hidden absolute rounded-full w-12 h-12 bottom-4 right-4"
+        onClick={handleLogout}
+      >
+        <Power />
+      </Button>
     </div>
   );
 }

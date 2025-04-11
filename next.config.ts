@@ -29,15 +29,35 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/entrar",
-        destination: "/sign-in",
+        destination: "/log-in",
       },
       {
         source: "/cadastrar",
-        destination: "/sign-up",
+        destination: "/register",
       },
       {
         source: "/:slug/contas",
         destination: "/:slug/accounts",
+      },
+      {
+        source: "/:slug/integracoes",
+        destination: "/:slug/integrations",
+      },
+      {
+        source: "/confirmar-conta",
+        destination: "/confirm-account",
+      },
+      {
+        source: "/recuperar-senha",
+        destination: "/password-recover",
+      },
+      {
+        source: "/nova-senha",
+        destination: "/new-password",
+      },
+      {
+        source: "/integracoes/bling",
+        destination: "/integrations/bling",
       },
       {
         source: "/:slug/integracoes",

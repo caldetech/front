@@ -8,7 +8,7 @@ export const SlugProvider = ({
   slug,
   children,
 }: {
-  slug: string;
+  slug?: string;
   children: ReactNode;
 }) => {
   return <SlugContext.Provider value={slug}>{children}</SlugContext.Provider>;
