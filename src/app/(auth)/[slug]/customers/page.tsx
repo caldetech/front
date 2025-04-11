@@ -2,6 +2,7 @@
 
 import { createCustomerAction } from "@/actions/create-customer";
 import CustomTable from "@/components/CustomTable";
+// import CustomTable from "@/components/CustomTable";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,15 +20,30 @@ import {
 } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useSlug } from "@/contexts/SlugContext";
+import { useCustomers } from "@/hooks/use-customer";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { BeatLoader } from "react-spinners";
+
+const ITEMS_PER_PAGE = 5;
 
 export default function Customers() {
   const [customerType, setCustomerType] = useState<string>("PERSONAL");
+  const slug = useSlug();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, total, isLoading, error } = useCustomers(
+    currentPage,
+    ITEMS_PER_PAGE,
+    slug
+  );
+
+  if (isLoading) return <BeatLoader />;
+  if (error) return <p>Erro ao carregar funcionários</p>;
 
   async function handleSubmit(formData: FormData) {
     formData.append("customerType", customerType);
-    await createCustomerAction(formData);
+    await createCustomerAction({ slug, formData });
   }
 
   return (
@@ -186,7 +202,13 @@ export default function Customers() {
       </div>
 
       <div>
-        <CustomTable />
+        <CustomTable
+          data={data}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          totalItems={total}
+          itemsPerPage={ITEMS_PER_PAGE}
+        />
       </div>
     </div>
   );

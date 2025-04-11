@@ -13,11 +13,28 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useSlug } from "@/contexts/SlugContext";
+import { useServices } from "@/hooks/use-services";
 import { Plus } from "lucide-react";
+import { useState } from "react";
+import { BeatLoader } from "react-spinners";
+
+const ITEMS_PER_PAGE = 5;
 
 export default function Services() {
+  const slug = useSlug();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, total, isLoading, error } = useServices(
+    currentPage,
+    ITEMS_PER_PAGE,
+    slug
+  );
+
+  if (isLoading) return <BeatLoader />;
+  if (error) return <p>Erro ao carregar produtos</p>;
+
   async function handleSubmit(formData: FormData) {
-    await createServiceAction(formData);
+    await createServiceAction({ slug, formData });
   }
 
   return (
@@ -82,7 +99,13 @@ export default function Services() {
       </div>
 
       <div>
-        <CustomTable />
+        <CustomTable
+          data={data}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          totalItems={total}
+          itemsPerPage={ITEMS_PER_PAGE}
+        />
       </div>
     </div>
   );

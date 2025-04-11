@@ -1,23 +1,35 @@
-"use server"
+"use server";
 
-import { createProduct } from "@/http/create-product"
-import { parseBRL } from "@/lib/currency" 
+import { createOrder } from "@/http/create-order";
 
-export async function createOrderAction(formData: FormData) {
-  const title = formData.get('title') as string
-  const description = formData.get('description') ? formData.get('description') as string : undefined
-  const costPrice = parseBRL(formData.get('costPrice') as string)
-  const salesPrice = parseBRL(formData.get('salesPrice') as string)
-  const stock =  parseInt(formData.get('stock') as string)
+export async function createOrderAction({
+  formData,
+  slug,
+}: {
+  formData: FormData;
+  slug: string;
+}) {
+  const customer = formData.get("customer") as string;
+  const description = formData.get("description") as string;
+  const type = formData.get("type") as string;
+  const value = formData.get("value") as string;
+  const payment = formData.get("payment") as string;
+  const commission = formData.get("commission") as string;
 
-  if (!title || !costPrice || !salesPrice || !stock) {
+  if (!customer || !description || !type || !value || !payment) {
     return {
       success: false,
-      message: "Campos obrigatórios ausentes!"
-    }
+      message: "Preencha todos os campos obrigatórios.",
+    };
   }
 
-  const result = await createProduct({ title, description, costPrice, salesPrice, stock })
-
-  return result
-}  
+  return await createOrder({
+    slug,
+    customer,
+    description,
+    type,
+    value,
+    payment,
+    commission,
+  });
+}

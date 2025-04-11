@@ -27,6 +27,7 @@ import { fetcher } from "@/utils/fetcher";
 import { useEffect, useState } from "react";
 import { User } from "@/schemas/user";
 import { useEmployees } from "@/hooks/use-employees";
+import { BeatLoader } from "react-spinners";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -39,7 +40,7 @@ export default function Users() {
     slug
   );
 
-  if (isLoading) return <p>Carregando...</p>;
+  if (isLoading) return <BeatLoader />;
   if (error) return <p>Erro ao carregar funcionários</p>;
 
   async function handleSubmit(formData: FormData) {

@@ -1,5 +1,6 @@
 "use server";
 
+import type { CustomerTypes } from "@/enums/customer-types";
 import { api } from "../lib/api-client";
 
 interface createCustomerProps {
@@ -13,17 +14,26 @@ interface createCustomerProps {
 }
 
 export async function createCustomer({
-  slug = "caldetech",
+  slug,
   customerType,
   name,
   document,
   address,
   mainNumber,
   contactNumber,
-}: createCustomerProps) {
+}: {
+  slug: string;
+  customerType: CustomerTypes;
+  name: string;
+  document?: string;
+  address: string;
+  mainNumber?: string;
+  contactNumber?: string;
+}) {
   try {
-    await api.post(`organizations/${slug}/customers`, {
+    await api.post("customers/create", {
       json: {
+        slug,
         customerType,
         name,
         document,

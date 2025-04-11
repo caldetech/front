@@ -14,9 +14,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useSlug } from "@/contexts/SlugContext";
-import { useProducts } from "@/hooks/use-product";
+import { useProducts } from "@/hooks/use-products";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { BeatLoader } from "react-spinners";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -29,7 +30,7 @@ export default function Products() {
     slug
   );
 
-  if (isLoading) return <p>Carregando...</p>;
+  if (isLoading) return <BeatLoader />;
   if (error) return <p>Erro ao carregar produtos</p>;
 
   async function handleSubmit(formData: FormData) {

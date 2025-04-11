@@ -2,22 +2,21 @@
 
 import { api } from "../lib/api-client";
 
-interface createServiceProps {
-  slug?: string;
-  title: string;
-  description?: string;
-  price: number;
-}
-
 export async function createService({
-  slug = "caldetech",
+  slug,
   title,
   description,
   price,
-}: createServiceProps) {
+}: {
+  slug: string;
+  title: string;
+  description?: string;
+  price: number;
+}) {
   try {
-    const response = await api.post(`organizations/${slug}/services`, {
+    const response = await api.post("services/create", {
       json: {
+        slug,
         title,
         description,
         price,

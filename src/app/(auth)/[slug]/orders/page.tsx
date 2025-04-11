@@ -1,6 +1,6 @@
 "use client";
 
-import CustomTable from "@/components/CustomTable";
+import { createOrderAction } from "@/actions/create-order";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,10 +11,23 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Search } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useSlug } from "@/contexts/SlugContext";
+import { Plus } from "lucide-react";
 
 export default function Orders() {
-  async function handleSubmit(formData: FormData) {}
+  const slug = useSlug();
+  async function handleSubmit(formData: FormData) {
+    await createOrderAction({ formData, slug });
+  }
 
   return (
     <div className="flex flex-col gap-4 p-6 pt-6">
@@ -23,9 +36,8 @@ export default function Orders() {
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant={"outline"} className="cursor-pointer">
+            <Button variant="outline" className="cursor-pointer">
               <p className="hidden sm:flex">Adicionar</p>
-
               <Plus className="sm:hidden" />
             </Button>
           </DialogTrigger>
@@ -38,36 +50,56 @@ export default function Orders() {
             <form className="flex flex-col gap-4" action={handleSubmit}>
               <div className="flex flex-col gap-1">
                 <Label htmlFor="customer">Cliente</Label>
-
-                <div className="flex relative">
-                  <Input
-                    name="customer"
-                    type="text"
-                    id="customer"
-                    autoComplete="off"
-                    spellCheck="false"
-                    className="pl-8"
-                  />
-
-                  <Search className="h-4 w-4 absolute top-[10px] ml-[10px] opacity-50" />
-                </div>
+                <Input name="customer" id="customer" type="text" />
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor="customer">Produto</Label>
+                <Label htmlFor="description">Descrição do serviço</Label>
+                <Textarea name="description" id="description" />
+              </div>
 
-                <div className="flex relative">
-                  <Input
-                    name="customer"
-                    type="text"
-                    id="customer"
-                    autoComplete="off"
-                    spellCheck="false"
-                    className="pl-8"
-                  />
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="type">Tipo</Label>
+                <Select name="type">
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione um tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="SALE">Venda</SelectItem>
+                      <SelectItem value="BUDGET">Orçamento</SelectItem>
+                      <SelectItem value="WARRANTY">Garantia</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
 
-                  <Search className="h-4 w-4 absolute top-[10px] ml-[10px] opacity-50" />
-                </div>
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="value">Valor</Label>
+                <Input name="value" id="value" type="text" />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="payment">Pagamento</Label>
+                <Select name="payment">
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione um método" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="PIX">PIX</SelectItem>
+                      <SelectItem value="CARTAO">Cartão</SelectItem>
+                      <SelectItem value="BOLETO">Boleto</SelectItem>
+                      <SelectItem value="DEPOSITO">Depósito</SelectItem>
+                      <SelectItem value="INDEFINIDO">Indefinido</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="commission">Comissão</Label>
+                <Input name="commission" id="commission" type="text" />
               </div>
 
               <Button type="submit">Criar</Button>
@@ -76,9 +108,7 @@ export default function Orders() {
         </Dialog>
       </div>
 
-      <div>
-        <CustomTable />
-      </div>
+      <div>{/* Tabela de ordens aqui futuramente */}</div>
     </div>
   );
 }
