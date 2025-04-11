@@ -1,5 +1,4 @@
 import useSWR from "swr";
-import ky from "ky";
 import { fetcher } from "@/utils/fetcher";
 
 type Employee = {
@@ -14,9 +13,9 @@ type Response = {
   };
 };
 
-export const useEmployees = (page: number, limit = 5) => {
+export const useEmployees = (page: number, limit = 5, slug: string) => {
   const { data, error, isLoading } = useSWR<Response>(
-    `users/all?page=${page}&limit=${limit}`,
+    `users/all?slug=${slug}&page=${page}&limit=${limit}`,
     fetcher
   );
 

@@ -13,9 +13,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useSlug } from "@/contexts/SlugContext";
 import { Plus } from "lucide-react";
 
 export default function Products() {
+  const slug = useSlug();
   async function handleSubmit(formData: FormData) {
     await createProductAction(formData);
   }

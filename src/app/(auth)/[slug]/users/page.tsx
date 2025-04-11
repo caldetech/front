@@ -35,7 +35,8 @@ export default function Users() {
   const [currentPage, setCurrentPage] = useState(1);
   const { data, total, isLoading, error } = useEmployees(
     currentPage,
-    ITEMS_PER_PAGE
+    ITEMS_PER_PAGE,
+    slug
   );
 
   if (isLoading) return <p>Carregando...</p>;

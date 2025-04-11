@@ -1,6 +1,5 @@
-// hooks/useProducts.ts
 import useSWR from "swr";
-import ky from "ky";
+import { fetcher } from "@/utils/fetcher";
 
 type Product = {
   id: string;
@@ -14,11 +13,9 @@ type Response = {
   };
 };
 
-const fetcher = (url: string) => ky.get(url).json<Response>();
-
-export const useProducts = (page: number, limit = 5) => {
-  const { data, error, isLoading } = useSWR(
-    `/api/bling/products?page=${page}&limit=${limit}`,
+export const useProducts = (page: number, limit = 5, slug: string) => {
+  const { data, error, isLoading } = useSWR<Response>(
+    `bling/get-products?slug=${slug}&page=${page}&limit=${limit}`,
     fetcher
   );
 
