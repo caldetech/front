@@ -105,9 +105,7 @@ export default function Products() {
         </Dialog>
       </div>
 
-      <div>
-        <CustomTable />
-      </div>
+      <div>{/* <CustomTable /> */}</div>
     </div>
   );
 }

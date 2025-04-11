@@ -22,10 +22,24 @@ import {
 } from "@/components/ui/select";
 import { useSlug } from "@/contexts/SlugContext";
 import { Plus } from "lucide-react";
-import { employees } from "@/data/employees";
+import useSWR from "swr";
+import { fetcher } from "@/utils/fetcher";
+import { useEffect, useState } from "react";
+import { User } from "@/schemas/user";
+import { useEmployees } from "@/hooks/use-employees";
+
+const ITEMS_PER_PAGE = 5;
 
 export default function Users() {
   const slug = useSlug();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, total, isLoading, error } = useEmployees(
+    currentPage,
+    ITEMS_PER_PAGE
+  );
+
+  if (isLoading) return <p>Carregando...</p>;
+  if (error) return <p>Erro ao carregar funcionários</p>;
 
   async function handleSubmit(formData: FormData) {
     await createInviteAction({ formData, slug });
@@ -87,7 +101,13 @@ export default function Users() {
       </div>
 
       <div>
-        <CustomTable data={employees} />
+        <CustomTable
+          data={data}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          totalItems={total}
+          itemsPerPage={ITEMS_PER_PAGE}
+        />
       </div>
     </div>
   );
