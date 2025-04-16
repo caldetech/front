@@ -4,53 +4,50 @@ import { api } from "../lib/api-client";
 
 export async function createOrder({
   slug,
-  customer,
-  description,
   type,
-  value,
-  payment,
-  commission,
+  paymentMethod,
+  paymentAmount,
+  products,
+  members,
+  commissionPercent,
+  memberCommissions,
+  customer,
 }: {
   slug: string;
-  customer: string;
-  description: string;
   type: string;
-  value: string;
-  payment: string;
-  commission: string;
+  paymentMethod: string;
+  paymentAmount: number;
+  products: { id: string; title: string; quantity: number }[];
+  members: { id: string; name: string }[];
+  commissionPercent: number;
+  memberCommissions: { memberId: string; value: number }[];
+  customer: { id: string; name: string };
 }) {
-  console.log({
-    slug,
-    customer,
-    description,
-    type,
-    value,
-    payment,
-    commission,
-  });
-  // try {
-  //   await api.post("create/order", {
-  //     json: {
-  //       slug,
-  //       customer,
-  //       description,
-  //       type,
-  //       value,
-  //       payment,
-  //       commission,
-  //     },
-  //   });
+  try {
+    await api.post("orders/create", {
+      json: {
+        slug,
+        type,
+        paymentMethod,
+        paymentAmount,
+        products,
+        members,
+        commissionPercent,
+        memberCommissions,
+        customer,
+      },
+    });
 
-  //   return {
-  //     success: true,
-  //     message: "Ordem criada com sucesso!",
-  //   };
-  // } catch (error) {
-  //   console.error(error);
+    return {
+      success: true,
+      message: "Ordem criada com sucesso!",
+    };
+  } catch (error) {
+    console.error(error);
 
-  //   return {
-  //     success: false,
-  //     message: "Erro ao criar a ordem.",
-  //   };
-  // }
+    return {
+      success: false,
+      message: "Erro ao criar a ordem.",
+    };
+  }
 }

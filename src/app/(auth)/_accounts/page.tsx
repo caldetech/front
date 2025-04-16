@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ChevronRight, Plus, Power } from "lucide-react";
+import { Briefcase, Building2, ChevronRight, Plus, Power } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -22,6 +22,7 @@ import { isError } from "@/validations/is-error";
 import { isOrganization } from "@/validations/ir-organization";
 import SuccessNotification from "@/components/SuccessNotification";
 import ErrorNotification from "@/components/ErrorNotification";
+import { Badge } from "@/components/ui/badge";
 
 export default function Accounts() {
   const { data, error, isLoading } = useSWR<OrganizationProps[]>(
@@ -130,9 +131,30 @@ export default function Accounts() {
             {data?.map((organization) => (
               <Link href={`${organization.slug}/ordens`} key={organization.id}>
                 <Card className="w-full flex flex-row items-center px-6 justify-between">
-                  <div>
-                    <p>{organization.name}</p>
-                    <p>{organization.members[0].role}</p>
+                  <div className="flex flex-col gap-4">
+                    <p className="flex items-center gap-2">
+                      <Building2 className="h-4 w-4" />
+                      <Badge variant={"outline"}>{organization.name}</Badge>
+                    </p>
+
+                    <p className="flex items-center gap-2">
+                      {/* <Briefcase className="h-4 w-4" /> */}
+
+                      <Badge variant={"secondary"}>
+                        {organization.members[0].role == "ADMIN"
+                          ? "Administrador"
+                          : ""}
+                        {organization.members[0].role == "MEMBER"
+                          ? "Membro"
+                          : ""}
+                        {organization.members[0].role == "BILLING"
+                          ? "Financeiro"
+                          : ""}
+                        {organization.members[0].role == "MANAGER"
+                          ? "Gerente"
+                          : ""}
+                      </Badge>
+                    </p>
                   </div>
 
                   <span className="border border-[#EFEFEF] p-2 rounded-sm m-2 hover:bg-[#F3F4F6] cursor-pointer">

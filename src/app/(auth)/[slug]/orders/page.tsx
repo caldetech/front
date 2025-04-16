@@ -19,44 +19,122 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useSlug } from "@/contexts/SlugContext";
+import { searchCustomer } from "@/http/search-customer";
+import { searchEmployee } from "@/http/search-employee";
+import { searchProduct } from "@/http/search-product";
+import type { Customer } from "@/schemas/customer";
+import type { Employee } from "@/schemas/employee";
+import type { Product } from "@/schemas/products";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
-// MOCK DATA
-
-const customers = [
-  { id: "1", name: "João da Silva" },
-  { id: "2", name: "Maria Oliveira" },
-  { id: "3", name: "Carlos Souza" },
-];
-
-const members = [
-  { id: "1", user: { name: "Ana Técnico" } },
-  { id: "2", user: { name: "Bruno Mecânico" } },
-  { id: "3", user: { name: "Fernanda Elétrica" } },
-];
-
-const products = [
-  { id: "1", title: "Bateria 60Ah" },
-  { id: "2", title: "Filtro de óleo" },
-  { id: "3", title: "Pneu Aro 15" },
-];
-
 export default function Orders() {
-  const [query, setQuery] = useState("");
-  const [filtered, setFiltered] = useState(products);
+  const [productQuery, setProductQuery] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>();
+  const [selectedMembers, setSelectedMembers] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const [memberQuery, setMemberQuery] = useState("");
+  const [totalCommissionPercent, setTotalCommissionPercent] = useState(0);
+  const [selected, setSelected] = useState<Product[]>([]);
+  const [customerQuery, setCustomerQuery] = useState("");
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
+  const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
+  const [selectedClient, setSelectedClient] = useState(false);
+  const [customer, setCustomer] = useState<{ id: string; name: string } | null>(
+    null
+  );
+
+  const slug = useSlug();
 
   useEffect(() => {
-    const q = query.toLowerCase();
-    setFiltered(products.filter((p) => p.title.toLowerCase().includes(q)));
-  }, [query]);
-  const [selected, setSelected] = useState<
-    { id: string; title: string; quantity: number }[]
-  >([]);
+    const fetchProducts = async () => {
+      if (productQuery.length < 3) {
+        setFilteredProducts([]);
+        return;
+      }
 
-  function handleAddProduct(product: { id: string; title: string }) {
+      try {
+        const products = await searchProduct({ query: productQuery, slug });
+
+        if (products) {
+          setFilteredProducts(products);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar clientes:", error);
+      }
+    };
+
+    const delayDebounce = setTimeout(() => {
+      fetchProducts();
+    }, 300); // debounce de 300ms
+
+    return () => clearTimeout(delayDebounce);
+  }, [productQuery]);
+
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      if (customerQuery.length < 3) {
+        setFilteredCustomers([]);
+        return;
+      }
+
+      try {
+        const customers = await searchCustomer({ query: customerQuery, slug });
+
+        if (customers) {
+          setFilteredCustomers(customers);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar clientes:", error);
+      }
+    };
+
+    const delayDebounce = setTimeout(() => {
+      fetchCustomers();
+    }, 300); // debounce de 300ms
+
+    return () => clearTimeout(delayDebounce);
+  }, [customerQuery]);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      if (memberQuery.length < 3) {
+        setFilteredEmployees([]);
+        return;
+      }
+
+      try {
+        const employees = await searchEmployee({ query: memberQuery, slug });
+
+        if (employees) {
+          setFilteredEmployees(employees);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar clientes:", error);
+      }
+    };
+
+    const delayDebounce = setTimeout(() => {
+      fetchEmployees();
+    }, 300); // debounce de 300ms
+
+    return () => clearTimeout(delayDebounce);
+  }, [memberQuery]);
+
+  const handleAddEmployee = (employee: Employee) => {
+    setSelectedMembers((prev) => {
+      const exists = prev.find((m) => m.id === employee.id);
+      if (!exists) {
+        return [...prev, { id: employee.id, name: employee.name }];
+      }
+      return prev;
+    });
+  };
+
+  // Funções de manipulação de produtos
+  const handleAddProduct = (product: Product) => {
     setSelected((prev) => {
       const exists = prev.find((p) => p.id === product.id);
       if (exists) {
@@ -67,29 +145,64 @@ export default function Orders() {
         return [...prev, { ...product, quantity: 1 }];
       }
     });
-  }
+  };
 
-  function updateQuantity(productId: string, quantity: number) {
+  const updateQuantity = (productId: number, quantity: number) => {
     setSelected((prev) =>
       prev.map((p) => (p.id === productId ? { ...p, quantity } : p))
     );
-  }
+  };
 
-  function removeProduct(productId: string) {
+  const removeProduct = (productId: number) => {
     setSelected((prev) => prev.filter((p) => p.id !== productId));
-  }
+  };
 
-  const slug = useSlug();
-  async function handleSubmit(formData: FormData) {
+  const handleSelectedClient = (customer: { id: string; name: string }) => {
+    setSelectedClient(true);
+    setCustomer(customer);
+    setCustomerQuery(customer.name);
+  };
+
+  const resetForm = () => {
+    setProductQuery("");
+    setFilteredProducts([]);
+    setSelected([]);
+    setMemberQuery("");
+    setSelectedMembers([]);
+    setTotalCommissionPercent(0);
+    setCustomerQuery("");
+    setFilteredCustomers([]);
+    setSelectedClient(false);
+    setCustomer(null);
+  };
+
+  const handleSubmit = async (formData: FormData) => {
+    formData.append("products", JSON.stringify(selected));
+    formData.append("members", JSON.stringify(selectedMembers));
+    formData.append("commissionPercent", String(totalCommissionPercent));
+    formData.append("customer", JSON.stringify(customer));
+
+    const individualCommissions = selectedMembers.map((member) => ({
+      memberId: member.id,
+      value: totalCommissionPercent / selectedMembers.length,
+    }));
+
+    formData.append("memberCommissions", JSON.stringify(individualCommissions));
+
     await createOrderAction({ formData, slug });
-  }
+  };
 
   return (
     <div className="flex flex-col gap-4 p-6 pt-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Ordens</h1>
-
-        <Dialog>
+        <Dialog
+          onOpenChange={(isOpen) => {
+            if (!isOpen) {
+              resetForm();
+            }
+          }}
+        >
           <DialogTrigger asChild>
             <Button variant="outline" className="cursor-pointer">
               <p className="hidden sm:flex">Adicionar</p>
@@ -105,18 +218,57 @@ export default function Orders() {
               {/* Cliente */}
               <div className="flex flex-col gap-1">
                 <Label htmlFor="customerId">Cliente</Label>
-                <Select name="customerId">
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecione um cliente" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {customers.map((customer) => (
-                      <SelectItem key={customer.id} value={customer.id}>
-                        {customer.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Input
+                  id="customer-search"
+                  placeholder="Digite para buscar..."
+                  value={customerQuery}
+                  onChange={(e) => setCustomerQuery(e.target.value)}
+                  disabled={selectedClient}
+                />
+
+                {selectedClient ? (
+                  <div className="mt-2 flex justify-between items-center bg-gray-100 py-2 pl-4 rounded">
+                    <p className="text-sm text-gray-700">
+                      Cliente: <strong>{customerQuery}</strong>
+                    </p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="text-red-500"
+                      onClick={() => {
+                        setSelectedClient(false);
+                        setCustomerQuery("");
+                      }}
+                    >
+                      Editar
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    {filteredCustomers.length > 0 ? (
+                      <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
+                        {filteredCustomers.map((customer) => (
+                          <button
+                            key={customer.id}
+                            type="button"
+                            onClick={() => {
+                              handleSelectedClient(customer);
+                            }}
+                            className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                          >
+                            {customer.name}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      customerQuery && (
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Nenhum cliente encontrado.
+                        </p>
+                      )
+                    )}
+                  </>
+                )}
               </div>
 
               {/* Tipo de ordem */}
@@ -134,45 +286,50 @@ export default function Orders() {
                 </Select>
               </div>
 
+              {/* Pesquisa de produto */}
               <div className="flex flex-col gap-2">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="product-search">Pesquisar produto</Label>
-                  <Input
-                    id="product-search"
-                    placeholder="Digite para buscar..."
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                  />
+                <Label htmlFor="product-search">Pesquisar produto</Label>
+                <Input
+                  id="product-search"
+                  placeholder="Digite para buscar..."
+                  value={productQuery}
+                  onChange={(e) => setProductQuery(e.target.value)}
+                />
+                {filteredProducts ? (
+                  <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
+                    {filteredProducts.map((product) => (
+                      <button
+                        key={product.id}
+                        type="button"
+                        onClick={() => {
+                          handleAddProduct(product);
+                          setProductQuery("");
+                        }}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        {product.nome}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  productQuery && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Nenhum produto encontrado.
+                    </p>
+                  )
+                )}
+              </div>
 
-                  {filtered.length > 0 ? (
-                    <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
-                      {filtered.map((product) => (
-                        <button
-                          key={product.id}
-                          type="button"
-                          onClick={() => {
-                            handleAddProduct(product);
-                            setQuery(""); // limpa o campo após adicionar
-                          }}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                        >
-                          {product.title}
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    query && (
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Nenhum produto encontrado.
-                      </p>
-                    )
-                  )}
-                </div>
+              {/* Produtos selecionados */}
+              <div className="flex flex-col gap-2">
+                {selected.map((p) => (
+                  <div
+                    key={p.id}
+                    className="flex items-center gap-2 justify-between"
+                  >
+                    <span>{p.nome}</span>
 
-                <div className="mt-4 flex flex-col gap-2">
-                  {selected.map((p) => (
-                    <div key={p.id} className="flex items-center gap-2">
-                      <span>{p.title}</span>
+                    <div className="flex">
                       <Input
                         type="number"
                         min={1}
@@ -180,10 +337,8 @@ export default function Orders() {
                         onChange={(e) =>
                           updateQuantity(p.id, Number(e.target.value))
                         }
-                        name={`product_quantity_${p.id}`}
                         className="w-20"
                       />
-                      <input type="hidden" name="products[]" value={p.id} />
                       <Button
                         variant="ghost"
                         onClick={() => removeProduct(p.id)}
@@ -191,11 +346,17 @@ export default function Orders() {
                         Remover
                       </Button>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
 
-              {/* Pagamento */}
+              {/* Valor do pagamento */}
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="paymentAmount">Valor do pagamento</Label>
+                <Input name="paymentAmount" type="text" />
+              </div>
+
+              {/* Método de pagamento */}
               <div className="flex flex-col gap-1">
                 <Label htmlFor="paymentMethod">Método de pagamento</Label>
                 <Select name="paymentMethod">
@@ -212,34 +373,85 @@ export default function Orders() {
                 </Select>
               </div>
 
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="paymentAmount">Valor do pagamento</Label>
-                <Input name="paymentAmount" type="text" />
+              {/* Comissão */}
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="total-commission-percent">
+                  Valor Total da Comissão (%)
+                </Label>
+                <Input
+                  id="total-commission-percent"
+                  type="number"
+                  value={totalCommissionPercent}
+                  onChange={(e) =>
+                    setTotalCommissionPercent(Number(e.target.value))
+                  }
+                  placeholder="Digite o valor percentual total"
+                />
               </div>
 
-              {/* Comissão por funcionário */}
+              {/* Buscar Funcionário */}
               <div className="flex flex-col gap-2">
-                <Label>Comissões</Label>
-                {members.map((member) => (
-                  <div key={member.id} className="flex gap-2 items-center">
-                    <span>{member.user.name}</span>
-                    <Input
-                      type="number"
-                      name={`commission_${member.id}`}
-                      placeholder="R$"
-                      className="w-24"
-                    />
+                <Label htmlFor="commission-search">Buscar Funcionário</Label>
+                <Input
+                  id="commission-search"
+                  placeholder="Digite o nome do funcionário..."
+                  value={memberQuery}
+                  onChange={(e) => setMemberQuery(e.target.value)}
+                />
+                {filteredEmployees.length > 0 ? (
+                  <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
+                    {filteredEmployees.map((employee) => (
+                      <button
+                        key={employee.id}
+                        type="button"
+                        onClick={() => {
+                          handleAddEmployee(employee);
+                          setMemberQuery("");
+                        }}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        {employee.name}
+                      </button>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  memberQuery && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Nenhum funcionário encontrado.
+                    </p>
+                  )
+                )}
               </div>
+
+              {selectedMembers.length > 0 && (
+                <div className="flex flex-col gap-2 mt-4">
+                  <Label>Comissões</Label>
+                  {selectedMembers.map((member) => {
+                    const individualCommission =
+                      totalCommissionPercent / selectedMembers.length;
+                    return (
+                      <div
+                        key={member.id}
+                        className="flex gap-2 items-center justify-between"
+                      >
+                        <span>{member.name}</span>
+                        <Input
+                          type="number"
+                          value={individualCommission}
+                          readOnly
+                          className="w-24"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
               <Button type="submit">Criar</Button>
             </form>
           </DialogContent>
         </Dialog>
       </div>
-
-      <div>{/* Tabela de ordens aqui futuramente */}</div>
     </div>
   );
 }

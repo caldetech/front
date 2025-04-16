@@ -8,6 +8,7 @@ import { getValidAccessToken } from "@/http/get-valid-bling-tokens";
 import { getBlingAuthorizeUrl } from "@/http/get-bling-authorize-url";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { BeatLoader } from "react-spinners";
 
 export default function IntegrationsPage() {
   const [blingConnection, setBlingConnection] = useState<boolean | null>(null);
@@ -37,7 +38,13 @@ export default function IntegrationsPage() {
     handleBlingAccessToken();
   }, []);
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <BeatLoader />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4 p-6 pt-6">

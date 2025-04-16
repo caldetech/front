@@ -6,6 +6,7 @@ import type { BlingTokensSchema } from "@/schemas/bling-tokens";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
+import { usePathname } from "next/navigation";
 
 export default function BlingPage() {
   const [loading, setLoading] = useState(true);
@@ -13,6 +14,7 @@ export default function BlingPage() {
   const code = params.get("code");
   const state = params.get("state");
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     async function handleBlingTokens() {
@@ -20,7 +22,8 @@ export default function BlingPage() {
         const tokens = await getBlingTokens({ code, state });
 
         if (tokens) {
-          router.push(`${state}`);
+          console.log(pathname);
+          // router.push(`${state}`);
         }
       }
     }

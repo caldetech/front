@@ -3,33 +3,60 @@
 import { createOrder } from "@/http/create-order";
 
 export async function createOrderAction({
-  formData,
   slug,
+  formData,
 }: {
-  formData: FormData;
   slug: string;
+  formData: FormData;
 }) {
-  const customer = formData.get("customer") as string;
-  const description = formData.get("description") as string;
   const type = formData.get("type") as string;
-  const value = formData.get("value") as string;
-  const payment = formData.get("payment") as string;
-  const commission = formData.get("commission") as string;
+  const paymentMethod = formData.get("paymentMethod") as string;
+  const paymentAmount = parseFloat(
+    formData.get("paymentAmount")
+      ? (formData.get("paymentAmount") as string)
+      : "0"
+  );
 
-  if (!customer || !description || !type || !value || !payment) {
+  const products = JSON.parse(formData.get("products") as string) as {
+    id: string;
+    title: string;
+    quantity: number;
+  }[];
+
+  const customer = JSON.parse(formData.get("customer") as string) as {
+    id: string;
+    name: string;
+  };
+
+  const members = JSON.parse(formData.get("members") as string) as {
+    id: string;
+    name: string;
+  }[];
+
+  const commissionPercent = Number(formData.get("commissionPercent"));
+
+  const memberCommissions = JSON.parse(
+    formData.get("memberCommissions") as string
+  ) as { memberId: string; value: number }[];
+
+  if (!slug || !type || !products.length) {
     return {
       success: false,
-      message: "Preencha todos os campos obrigatórios.",
+      message: "Campos obrigatórios ausentes!",
     };
   }
 
-  return await createOrder({
+  await createOrder({
     slug,
-    customer,
-    description,
     type,
-    value,
-    payment,
-    commission,
+    paymentMethod,
+    paymentAmount,
+    products,
+    members,
+    commissionPercent,
+    memberCommissions,
+    customer,
   });
+
+  return { success: true };
 }

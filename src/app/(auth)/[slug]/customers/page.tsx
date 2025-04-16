@@ -38,7 +38,14 @@ export default function Customers() {
     slug
   );
 
-  if (isLoading) return <BeatLoader />;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <BeatLoader />
+      </div>
+    );
+  }
+
   if (error) return <p>Erro ao carregar funcionários</p>;
 
   async function handleSubmit(formData: FormData) {

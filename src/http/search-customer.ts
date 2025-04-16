@@ -1,30 +1,27 @@
 "use server";
 
+import type { Customer } from "@/schemas/customer";
 import { api } from "../lib/api-client";
 
-interface getCustomerProps {
-  slug?: string;
-  query: string;
-}
-
 export async function searchCustomer({
-  slug = "caldetech",
+  slug,
   query,
-}: getCustomerProps) {
+}: {
+  slug: string;
+  query: string;
+}) {
   try {
-    const result = await api.post(`organizations/${slug}/customers/search`, {
+    const result = await api.post("customers/search", {
       json: {
+        slug,
         query,
       },
     });
 
-    return result.json();
+    return result.json<Customer[]>();
   } catch (error) {
     console.error(error);
 
-    return {
-      success: false,
-      message: "Erro ao obter o cliente.",
-    };
+    return [];
   }
 }
