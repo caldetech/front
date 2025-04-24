@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, Paperclip } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -9,6 +9,8 @@ import {
   PaginationNext,
 } from "./ui/pagination";
 import { useState } from "react";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "./ui/dialog";
+import FileUploader from "./FileUploader";
 
 export type GenericRecord = {
   id: string;
@@ -102,8 +104,21 @@ export default function CustomTable<T extends GenericRecord>({
                   : String(item[columnNames[columnIndex]])}
               </td>
 
-              <td className="flex justify-end">
-                <span className="border border-[#EFEFEF] p-2 rounded-sm m-2 hover:bg-[#F3F4F6] cursor-pointer">
+              <td className="flex justify-end m-2 gap-1">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                      <Paperclip className="size-4" />
+                    </span>
+                  </DialogTrigger>
+
+                  <DialogContent>
+                    <DialogTitle>File uploader</DialogTitle>
+                    <FileUploader />
+                  </DialogContent>
+                </Dialog>
+
+                <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
                   <Eye className="size-4" />
                 </span>
               </td>

@@ -17,7 +17,7 @@ export async function createOrderAction({
       : "0"
   );
 
-  const products = JSON.parse(formData.get("products") as string) as {
+  const blingProducts = JSON.parse(formData.get("blingProducts") as string) as {
     id: string;
     title: string;
     quantity: number;
@@ -39,7 +39,7 @@ export async function createOrderAction({
     formData.get("memberCommissions") as string
   ) as { memberId: string; value: number }[];
 
-  if (!slug || !type || !products.length) {
+  if (!slug || !type || !blingProducts.length) {
     return {
       success: false,
       message: "Campos obrigatórios ausentes!",
@@ -51,7 +51,7 @@ export async function createOrderAction({
     type,
     paymentMethod,
     paymentAmount,
-    products,
+    blingProducts,
     members,
     commissionPercent,
     memberCommissions,

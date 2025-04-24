@@ -1,6 +1,7 @@
 "use client";
 
 import { createOrderAction } from "@/actions/create-order";
+import CustomTable from "@/components/CustomTable";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useSlug } from "@/contexts/SlugContext";
+import { useOrders } from "@/hooks/use-orders";
 import { searchCustomer } from "@/http/search-customer";
 import { searchEmployee } from "@/http/search-employee";
 import { searchProduct } from "@/http/search-product";
@@ -28,6 +30,9 @@ import type { Employee } from "@/schemas/employee";
 import type { Product } from "@/schemas/products";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { BeatLoader } from "react-spinners";
+
+const ITEMS_PER_PAGE = 5;
 
 export default function Orders() {
   const [productQuery, setProductQuery] = useState("");
@@ -47,6 +52,12 @@ export default function Orders() {
   );
 
   const slug = useSlug();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, total, isLoading, error } = useOrders(
+    currentPage,
+    ITEMS_PER_PAGE,
+    slug
+  );
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -177,7 +188,7 @@ export default function Orders() {
   };
 
   const handleSubmit = async (formData: FormData) => {
-    formData.append("products", JSON.stringify(selected));
+    formData.append("blingProducts", JSON.stringify(selected));
     formData.append("members", JSON.stringify(selectedMembers));
     formData.append("commissionPercent", String(totalCommissionPercent));
     formData.append("customer", JSON.stringify(customer));
@@ -191,6 +202,16 @@ export default function Orders() {
 
     await createOrderAction({ formData, slug });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <BeatLoader />
+      </div>
+    );
+  }
+
+  if (error) return <p>Erro ao carregar produtos</p>;
 
   return (
     <div className="flex flex-col gap-4 p-6 pt-6">
@@ -391,10 +412,10 @@ export default function Orders() {
 
               {/* Buscar Funcionário */}
               <div className="flex flex-col gap-2">
-                <Label htmlFor="commission-search">Buscar Funcionário</Label>
+                <Label htmlFor="commission-search">Funcionário</Label>
                 <Input
                   id="commission-search"
-                  placeholder="Digite o nome do funcionário..."
+                  placeholder="Digite para buscar..."
                   value={memberQuery}
                   onChange={(e) => setMemberQuery(e.target.value)}
                 />
@@ -451,6 +472,16 @@ export default function Orders() {
             </form>
           </DialogContent>
         </Dialog>
+      </div>
+
+      <div>
+        <CustomTable
+          data={data}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          totalItems={total}
+          itemsPerPage={ITEMS_PER_PAGE}
+        />
       </div>
     </div>
   );

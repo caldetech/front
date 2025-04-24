@@ -7,7 +7,7 @@ export async function createOrder({
   type,
   paymentMethod,
   paymentAmount,
-  products,
+  blingProducts,
   members,
   commissionPercent,
   memberCommissions,
@@ -17,7 +17,7 @@ export async function createOrder({
   type: string;
   paymentMethod: string;
   paymentAmount: number;
-  products: { id: string; title: string; quantity: number }[];
+  blingProducts: { id: string; title: string; quantity: number }[];
   members: { id: string; name: string }[];
   commissionPercent: number;
   memberCommissions: { memberId: string; value: number }[];
@@ -30,7 +30,7 @@ export async function createOrder({
         type,
         paymentMethod,
         paymentAmount,
-        products,
+        blingProducts,
         members,
         commissionPercent,
         memberCommissions,
