@@ -22,10 +22,7 @@ import {
 } from "@/components/ui/select";
 import { useSlug } from "@/contexts/SlugContext";
 import { Plus } from "lucide-react";
-import useSWR from "swr";
-import { fetcher } from "@/utils/fetcher";
-import { useEffect, useState } from "react";
-import { User } from "@/schemas/user";
+import { useState } from "react";
 import { useEmployees } from "@/hooks/use-employees";
 import { BeatLoader } from "react-spinners";
 

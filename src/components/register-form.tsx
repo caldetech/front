@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createUserAction } from "@/actions/create-user";
-import NotificationError from "@/components/ErrorNotification";
+import ErrorNotification from "@/components/ErrorNotification";
 import SuccessNotification from "./SuccessNotification";
 import { useActionState, useEffect } from "react";
 
@@ -44,13 +44,6 @@ export default function RegisterForm() {
       router.push("/entrar");
     }
   }, [state]);
-
-  // const [{ success, message, errors }, handleSubmit] = useFormState(
-  //   createUserAction,
-  //   () => {
-  //     router.push("/entrar");
-  //   }
-  // );
 
   return (
     <form className="mt-8 space-y-6" action={formAction}>
@@ -121,19 +114,19 @@ export default function RegisterForm() {
 
       <div className="flex flex-col gap-6">
         {state.errors?.name && (
-          <NotificationError message={state.errors.name[0]} />
+          <ErrorNotification message={state.errors.name[0]} />
         )}
 
         {state.errors?.email && (
-          <NotificationError message={state.errors.email[0]} />
+          <ErrorNotification message={state.errors.email[0]} />
         )}
 
         {state.errors?.password && (
-          <NotificationError message={state.errors.password[0]} />
+          <ErrorNotification message={state.errors.password[0]} />
         )}
 
         {state.errors?.password_confirmation && (
-          <NotificationError message={state.errors.password_confirmation[0]} />
+          <ErrorNotification message={state.errors.password_confirmation[0]} />
         )}
 
         {state.success && (

@@ -12,14 +12,6 @@ export async function createProductAction(formData: FormData) {
   const salesPrice = parseBRL(formData.get("salesPrice") as string);
   const stock = parseInt(formData.get("stock") as string);
 
-  // console.log({
-  //   title,
-  //   description,
-  //   costPrice,
-  //   salesPrice,
-  //   stock,
-  // });
-
   if (!title || !costPrice || !salesPrice) {
     return {
       success: false,

@@ -11,8 +11,6 @@ export async function createOrganization({
   name: string;
   slug: string;
 }): Promise<OrganizationProps | ErrorProps> {
-  console.log("createOrganization", { name, slug });
-
   try {
     const organization = await api.post("organizations/create", {
       json: {

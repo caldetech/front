@@ -1,6 +1,13 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Eye, Paperclip } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  FileCheck,
+  FileX,
+  Paperclip,
+} from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -8,7 +15,7 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "./ui/pagination";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "./ui/dialog";
 import FileUploader from "./FileUploader";
 
@@ -23,6 +30,7 @@ type CustomTableProps<T extends GenericRecord> = {
   onPageChange: (page: number) => void;
   itemsPerPage: number;
   totalItems?: number;
+  attachment?: boolean;
 };
 
 export default function CustomTable<T extends GenericRecord>({
@@ -31,9 +39,12 @@ export default function CustomTable<T extends GenericRecord>({
   onPageChange,
   totalItems,
   itemsPerPage,
+  attachment,
 }: CustomTableProps<T>) {
   const columnNames = data?.length
-    ? Object.keys(data[0]).filter((key) => key !== "id")
+    ? Object.keys(data[0]).filter(
+        (key) => key !== "id" && key !== "orderAttachment"
+      )
     : [];
 
   const [columnIndex, setColumnIndex] = useState(1);
@@ -90,40 +101,57 @@ export default function CustomTable<T extends GenericRecord>({
         </thead>
 
         <tbody>
-          {data.map((item) => (
-            <tr className="border-b border-[#EFEFEF]" key={item.id}>
-              <td className="p-2 text-xs text-left text-muted-foreground select-none">
-                {!item[columnNames[columnIndex - 1]]
-                  ? "Não definido"
-                  : String(item[columnNames[columnIndex - 1]])}
-              </td>
+          {data.map((item) => {
+            return (
+              <tr className="border-b border-[#EFEFEF]" key={item.id}>
+                <td className="p-2 text-xs text-left text-muted-foreground select-none">
+                  {!item[columnNames[columnIndex - 1]]
+                    ? "Não definido"
+                    : String(item[columnNames[columnIndex - 1]])}
+                </td>
 
-              <td className="p-2 text-xs text-left text-muted-foreground select-none">
-                {!item[columnNames[columnIndex]]
-                  ? "Não definido"
-                  : String(item[columnNames[columnIndex]])}
-              </td>
+                <td className="p-2 text-xs text-left text-muted-foreground select-none">
+                  {!item[columnNames[columnIndex]]
+                    ? "Não definido"
+                    : String(item[columnNames[columnIndex]])}
+                </td>
 
-              <td className="flex justify-end m-2 gap-1">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
-                      <Paperclip className="size-4" />
-                    </span>
-                  </DialogTrigger>
+                <td className="flex justify-end m-2 gap-1">
+                  {Array.isArray(item.orderAttachment) &&
+                  item.orderAttachment.length > 0 ? (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                          <FileCheck className="text-blue-500 size-4" />
+                        </span>
+                      </DialogTrigger>
 
-                  <DialogContent>
-                    <DialogTitle>File uploader</DialogTitle>
-                    <FileUploader />
-                  </DialogContent>
-                </Dialog>
+                      <DialogContent className="flex flex-col items-center">
+                        <DialogTitle>Anexar ordem</DialogTitle>
+                        <FileUploader orderId={item.id} />
+                      </DialogContent>
+                    </Dialog>
+                  ) : (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                          <FileX className="text-gray-500 size-4" />
+                        </span>
+                      </DialogTrigger>
 
-                <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
-                  <Eye className="size-4" />
-                </span>
-              </td>
-            </tr>
-          ))}
+                      <DialogContent>
+                        <DialogTitle>File uploader</DialogTitle>
+                        <FileUploader orderId={item.id} />
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                  <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                    <Eye className="size-4" />
+                  </span>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 

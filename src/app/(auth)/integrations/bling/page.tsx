@@ -22,7 +22,6 @@ export default function BlingPage() {
         const tokens = await getBlingTokens({ code, state });
 
         if (tokens) {
-          console.log(`${state}/${pathname.split("/")[1]}`);
           router.push(`${state}/${pathname.split("/")[1]}`);
         }
       }

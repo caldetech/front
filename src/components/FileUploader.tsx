@@ -1,92 +1,134 @@
+"use client";
+
 import { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import type { JSX, SVGProps } from "react";
+import { Progress } from "@/components/ui/progress";
+import { api } from "@/lib/api-client";
+import { FileIcon } from "lucide-react";
+import SuccessNotification from "./SuccessNotification";
+import ErrorNotification from "./ErrorNotification";
 
-export default function FileUploader() {
+export default function FileUploader({ orderId }: { orderId: string }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+
+  const uploadToS3WithProgress = (file: File, url: string) => {
+    return new Promise<void>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.addEventListener("progress", (event) => {
+        if (event.lengthComputable) {
+          const percent = (event.loaded / event.total) * 100;
+          setProgress(percent);
+        }
+      });
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve();
+            setShowSuccessMessage(true);
+          } else {
+            setShowErrorMessage(true);
+            reject(new Error(`Upload failed with status ${xhr.status}`));
+          }
+        }
+      };
+
+      xhr.open("PUT", url, true);
+      xhr.setRequestHeader("Content-Type", file.type);
+      xhr.send(file);
+    });
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      console.log("Arquivo selecionado:", file);
     }
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!selectedFile) return;
 
-    // Aqui você pode mandar pra API, por exemplo com FormData
-    const formData = new FormData();
-    formData.append("file", selectedFile);
+    setUploading(true);
+    setProgress(0);
 
-    console.log(selectedFile);
-
-    fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Upload concluído:", data);
-      })
-      .catch((err) => {
-        console.error("Erro ao enviar arquivo:", err);
+    try {
+      // 1. Pedir URL assinada ao backend
+      const signRes = await api.post("attachments/sign-upload", {
+        json: {
+          filename: selectedFile.name,
+          mimetype: selectedFile.type,
+        },
       });
+
+      const { url, key } = await signRes.json<{ key: string; url: string }>();
+
+      // 2. Enviar direto ao S3 com a signed URL usando ky
+      await uploadToS3WithProgress(selectedFile, url);
+
+      // 3. Notificar backend que upload foi concluído
+      await api.post("attachments/confirm-upload", {
+        json: {
+          orderId,
+          filename: selectedFile.name,
+          mimetype: selectedFile.type,
+          size: selectedFile.size,
+          key,
+        },
+      });
+
+      // Reset
+      setSelectedFile(null);
+      setProgress(100);
+    } catch (err) {
+      console.error("Erro durante o upload:", err);
+      alert("Erro durante o upload");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
     <Card>
       <CardContent className="p-6 space-y-4">
-        <div className="border-2 border-dashed border-gray-200 rounded-lg flex flex-col gap-1 p-6 items-center">
-          <FileIcon className="w-12 h-12" />
-          <span className="text-sm font-medium text-gray-500">
-            Drag and drop a file or click to browse
-          </span>
-          <span className="text-xs text-gray-500">
-            PDF, image, video, or audio
-          </span>
-        </div>
         <div className="space-y-2 text-sm">
-          <Label htmlFor="file" className="text-sm font-medium">
-            File
-          </Label>
           <Input
-            id="file"
             type="file"
             accept="image/*"
             onChange={handleFileChange}
+            className="border-2 border-dashed border-gray-200 rounded-lg flex flex-col"
           />
         </div>
+
+        {uploading && <Progress value={progress} className="w-full" />}
       </CardContent>
-      <CardFooter>
-        <Button size="lg" onClick={handleUpload} disabled={!selectedFile}>
-          Upload
+
+      <CardFooter className="flex flex-col gap-2">
+        {showSuccessMessage && (
+          <SuccessNotification message="Enviado com sucesso!" />
+        )}
+
+        {showErrorMessage && (
+          <ErrorNotification message="Falha ao enviar arquivo!" />
+        )}
+
+        <Button
+          size="lg"
+          onClick={handleUpload}
+          disabled={!selectedFile || uploading}
+          className="w-full"
+        >
+          {uploading ? "Enviando..." : "Carregar"}
         </Button>
       </CardFooter>
     </Card>
-  );
-}
-
-function FileIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-      <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-    </svg>
   );
 }
