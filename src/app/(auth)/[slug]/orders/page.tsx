@@ -2,6 +2,7 @@
 
 import { createOrderAction } from "@/actions/create-order";
 import CustomTable from "@/components/CustomTable";
+import SuccessNotification from "@/components/SuccessNotification";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,7 +16,6 @@ import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -28,6 +28,7 @@ import { searchProduct } from "@/http/search-product";
 import type { Customer } from "@/schemas/customer";
 import type { Employee } from "@/schemas/employee";
 import type { Product } from "@/schemas/products";
+import { useStore } from "@/stores/use-mutate";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
@@ -50,14 +51,22 @@ export default function Orders() {
   const [customer, setCustomer] = useState<{ id: string; name: string } | null>(
     null
   );
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [refreshFlag, setRefreshFlag] = useState(false);
 
   const slug = useSlug();
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, total, isLoading, error } = useOrders(
+  const { data, total, isLoading, error, mutate } = useOrders(
     currentPage,
     ITEMS_PER_PAGE,
     slug
   );
+
+  const { setMutate } = useStore();
+
+  useEffect(() => {
+    setMutate(mutate);
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -200,7 +209,12 @@ export default function Orders() {
 
     formData.append("memberCommissions", JSON.stringify(individualCommissions));
 
-    await createOrderAction({ formData, slug });
+    const order = await createOrderAction({ formData, slug });
+
+    if (order.success) {
+      resetForm();
+      setShowSuccessNotification(true);
+    }
   };
 
   if (isLoading) {
@@ -218,7 +232,7 @@ export default function Orders() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Ordens</h1>
         <Dialog
-          onOpenChange={(isOpen) => {
+          onOpenChange={async (isOpen) => {
             if (!isOpen) {
               resetForm();
             }
@@ -388,7 +402,7 @@ export default function Orders() {
                     <SelectItem value="PIX">PIX</SelectItem>
                     <SelectItem value="CARTAO">Cartão</SelectItem>
                     <SelectItem value="BOLETO">Boleto</SelectItem>
-                    <SelectItem value="DEPÓSITO">Depósito</SelectItem>
+                    <SelectItem value="DEPOSITO">Depósito</SelectItem>
                     <SelectItem value="PENDENTE">Pendente</SelectItem>
                   </SelectContent>
                 </Select>
@@ -468,7 +482,13 @@ export default function Orders() {
                 </div>
               )}
 
-              <Button type="submit">Criar</Button>
+              <div className="flex flex-col gap-4">
+                {showSuccessNotification && (
+                  <SuccessNotification message="Ordem de serviço criada com sucesso!" />
+                )}
+
+                <Button type="submit">Criar</Button>
+              </div>
             </form>
           </DialogContent>
         </Dialog>
@@ -481,6 +501,7 @@ export default function Orders() {
           onPageChange={setCurrentPage}
           totalItems={total}
           itemsPerPage={ITEMS_PER_PAGE}
+          attachment={true}
         />
       </div>
     </div>

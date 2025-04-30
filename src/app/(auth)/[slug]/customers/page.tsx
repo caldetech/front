@@ -21,7 +21,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useSlug } from "@/contexts/SlugContext";
-import { useCustomers } from "@/hooks/use-customer";
+import { useCustomers } from "@/hooks/use-customers";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";

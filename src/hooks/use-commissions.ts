@@ -1,30 +1,29 @@
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
 
-type Order = {
+type Commission = {
   id: string;
   [key: string]: unknown;
 };
 
 type Response = {
-  data: Order[];
+  data: Commission[];
   page: {
     total: number;
   };
 };
 
-export const useOrders = (page: number, limit = 5, slug: string) => {
-  const { data, error, isLoading, mutate } = useSWR<Response>(
-    `orders/all?slug=${slug}&page=${page}&limit=${limit}`,
+export const useCommissions = (page: number, limit = 5, slug: string) => {
+  const { data, error, isLoading } = useSWR<Response>(
+    `commissions/all?slug=${slug}&page=${page}&limit=${limit}`,
     fetcher
   );
 
   return {
     currentPage: page,
     data: data?.data || [],
-    total: data?.data.length || 0,
+    total: data?.page?.total || 0,
     error,
     isLoading,
-    mutate,
   };
 };

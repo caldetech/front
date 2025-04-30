@@ -14,7 +14,6 @@ export default function BlingPage() {
   const code = params.get("code");
   const state = params.get("state");
   const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     async function handleBlingTokens() {
@@ -22,7 +21,7 @@ export default function BlingPage() {
         const tokens = await getBlingTokens({ code, state });
 
         if (tokens) {
-          router.push(`${state}/${pathname.split("/")[1]}`);
+          router.push(`http://localhost:3000/${state}/integracoes`);
         }
       }
     }

@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { createOrganizationAction } from "@/actions/create-organization";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { fetcher } from "@/utils/fetcher";
 import { OrganizationProps } from "@/types/organization";
 import Link from "next/link";
@@ -48,6 +48,7 @@ export default function Accounts() {
     if (isOrganization(organization)) {
       setCreationErrorMessage(null);
       setSuccessfulCreationMessage("Organização criada com sucesso");
+      await mutate("organizations/all");
     }
   }
 

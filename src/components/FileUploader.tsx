@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { api } from "@/lib/api-client";
-import { FileIcon } from "lucide-react";
 import SuccessNotification from "./SuccessNotification";
 import ErrorNotification from "./ErrorNotification";
+import { useStore } from "@/stores/use-mutate";
 
 export default function FileUploader({ orderId }: { orderId: string }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -17,6 +16,12 @@ export default function FileUploader({ orderId }: { orderId: string }) {
   const [progress, setProgress] = useState(0);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+
+  const { mutate } = useStore();
+
+  function handleMutate() {
+    mutate();
+  }
 
   const uploadToS3WithProgress = (file: File, url: string) => {
     return new Promise<void>((resolve, reject) => {
@@ -33,7 +38,10 @@ export default function FileUploader({ orderId }: { orderId: string }) {
         if (xhr.readyState === 4) {
           if (xhr.status >= 200 && xhr.status < 300) {
             resolve();
-            setShowSuccessMessage(true);
+            setTimeout(() => {
+              setShowSuccessMessage(true);
+              handleMutate();
+            }, 1000);
           } else {
             setShowErrorMessage(true);
             reject(new Error(`Upload failed with status ${xhr.status}`));
@@ -111,7 +119,7 @@ export default function FileUploader({ orderId }: { orderId: string }) {
         {uploading && <Progress value={progress} className="w-full" />}
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-2">
+      <CardFooter className="flex flex-col gap-4">
         {showSuccessMessage && (
           <SuccessNotification message="Enviado com sucesso!" />
         )}
