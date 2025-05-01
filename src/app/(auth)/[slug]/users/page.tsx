@@ -25,17 +25,22 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useEmployees } from "@/hooks/use-employees";
 import { BeatLoader } from "react-spinners";
+import SuccessNotification from "@/components/SuccessNotification";
+import ErrorNotification from "@/components/ErrorNotification";
 
 const ITEMS_PER_PAGE = 5;
 
 export default function Users() {
   const slug = useSlug();
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, total, isLoading, error } = useEmployees(
+  const { data, total, isLoading, error, mutate } = useEmployees(
     currentPage,
     ITEMS_PER_PAGE,
     slug
   );
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [showErrorNotification, setShowErrorNotification] = useState(false);
+  const [role, setRole] = useState("MEMBER");
 
   if (isLoading) {
     return (
@@ -48,7 +53,21 @@ export default function Users() {
   if (error) return <p>Erro ao carregar funcionários</p>;
 
   async function handleSubmit(formData: FormData) {
-    await createInviteAction({ formData, slug });
+    const employee = await createInviteAction({ formData, slug });
+
+    if (employee?.success) {
+      setShowErrorNotification(false);
+      setShowSuccessNotification(true);
+      await mutate();
+    } else {
+      setShowSuccessNotification(false);
+      setShowErrorNotification(true);
+    }
+  }
+
+  function handleNotifications() {
+    setShowSuccessNotification(false);
+    setShowErrorNotification(false);
   }
 
   return (
@@ -56,7 +75,7 @@ export default function Users() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Funcionários</h1>
 
-        <Dialog>
+        <Dialog onOpenChange={handleNotifications}>
           <DialogTrigger asChild>
             <Button variant={"outline"} className="cursor-pointer">
               <p className="hidden sm:flex">Adicionar</p>
@@ -84,7 +103,7 @@ export default function Users() {
 
               <div className="flex flex-col gap-1">
                 <Label htmlFor="role">Função</Label>
-                <Select name="role">
+                <Select name="role" value={role} onValueChange={setRole}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecione uma função" />
                   </SelectTrigger>
@@ -100,7 +119,17 @@ export default function Users() {
                 </Select>
               </div>
 
-              <Button type="submit">Enviar</Button>
+              <div className="flex flex-col gap-4">
+                {showSuccessNotification && (
+                  <SuccessNotification message="Convite enviado com sucesso!" />
+                )}
+
+                {showErrorNotification && (
+                  <ErrorNotification message="Erro ao enviar convite!" />
+                )}
+
+                <Button type="submit">Enviar</Button>
+              </div>
             </form>
           </DialogContent>
         </Dialog>

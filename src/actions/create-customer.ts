@@ -30,7 +30,7 @@ export async function createCustomerAction({
     };
   }
 
-  await createCustomer({
+  return await createCustomer({
     slug,
     customerType,
     name,

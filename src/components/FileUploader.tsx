@@ -106,8 +106,8 @@ export default function FileUploader({ orderId }: { orderId: string }) {
 
   return (
     <Card>
-      <CardContent className="p-6 space-y-4">
-        <div className="space-y-2 text-sm">
+      <CardContent>
+        <div className="text-sm">
           <Input
             type="file"
             accept="image/*"

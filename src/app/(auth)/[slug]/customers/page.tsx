@@ -2,6 +2,8 @@
 
 import { createCustomerAction } from "@/actions/create-customer";
 import CustomTable from "@/components/CustomTable";
+import ErrorNotification from "@/components/ErrorNotification";
+import SuccessNotification from "@/components/SuccessNotification";
 // import CustomTable from "@/components/CustomTable";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,11 +34,16 @@ export default function Customers() {
   const [customerType, setCustomerType] = useState<string>("PERSONAL");
   const slug = useSlug();
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, total, isLoading, error } = useCustomers(
+  const { data, total, isLoading, error, mutate } = useCustomers(
     currentPage,
     ITEMS_PER_PAGE,
     slug
   );
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [showErrorNotification, setShowErrorNotification] = useState(false);
+  const [documentValue, setDocumentValue] = useState("");
+  const [mainNumberValue, setMainNumberValue] = useState("");
+  const [contactNumberValue, setContactNumberValue] = useState("");
 
   if (isLoading) {
     return (
@@ -50,7 +57,29 @@ export default function Customers() {
 
   async function handleSubmit(formData: FormData) {
     formData.append("customerType", customerType);
-    await createCustomerAction({ slug, formData });
+    formData.set("document", documentValue);
+    formData.set("mainNumber", mainNumberValue);
+    formData.set("contactNumber", contactNumberValue);
+
+    const customer = await createCustomerAction({ slug, formData });
+
+    if (customer?.success) {
+      setDocumentValue("");
+      setMainNumberValue("");
+      setContactNumberValue("");
+      setShowErrorNotification(false);
+      setShowSuccessNotification(true);
+      await mutate();
+    } else {
+      setShowSuccessNotification(false);
+      setShowErrorNotification(true);
+    }
+  }
+
+  function handleOpenChange() {
+    setShowSuccessNotification(false);
+    setShowErrorNotification(false);
+    setCustomerType("PERSONAL");
   }
 
   return (
@@ -58,7 +87,7 @@ export default function Customers() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Clientes</h1>
 
-        <Dialog>
+        <Dialog onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
             <Button variant={"outline"}>
               <p className="hidden sm:flex">Adicionar</p>
@@ -99,7 +128,13 @@ export default function Customers() {
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="document">CPF</Label>
 
-                  <InputOTP maxLength={11} id="document" name="document">
+                  <InputOTP
+                    maxLength={11}
+                    id="document"
+                    name="document"
+                    value={documentValue}
+                    onChange={(val) => setDocumentValue(val)}
+                  >
                     <InputOTPGroup className="flex flex-wrap gap-1">
                       <InputOTPSlot index={0} />
                       <InputOTPSlot index={1} />
@@ -121,7 +156,13 @@ export default function Customers() {
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="document">CNPJ</Label>
 
-                  <InputOTP maxLength={14} id="document" name="document">
+                  <InputOTP
+                    maxLength={14}
+                    id="document"
+                    name="document"
+                    value={documentValue}
+                    onChange={(val) => setDocumentValue(val)}
+                  >
                     <InputOTPGroup className="flex flex-wrap gap-1">
                       <InputOTPSlot index={0} />
                       <InputOTPSlot index={1} />
@@ -151,7 +192,13 @@ export default function Customers() {
               <div className="flex flex-col gap-1">
                 <Label htmlFor="mainNumber">Contato (Principal)</Label>
 
-                <InputOTP maxLength={11} id="mainNumber" name="mainNumber">
+                <InputOTP
+                  maxLength={11}
+                  id="mainNumber"
+                  name="mainNumber"
+                  value={mainNumberValue}
+                  onChange={(val) => setMainNumberValue(val)}
+                >
                   <InputOTPGroup>
                     <InputOTPSlot index={0} />
                     <InputOTPSlot index={1} />
@@ -180,6 +227,8 @@ export default function Customers() {
                   maxLength={11}
                   id="contactNumber"
                   name="contactNumber"
+                  value={contactNumberValue}
+                  onChange={(val) => setContactNumberValue(val)}
                 >
                   <InputOTPGroup>
                     <InputOTPSlot index={0} />
@@ -202,7 +251,17 @@ export default function Customers() {
                 </InputOTP>
               </div>
 
-              <Button type="submit">Adicionar</Button>
+              <div className="flex flex-col gap-4">
+                {showSuccessNotification && (
+                  <SuccessNotification message="Cliente adicionado com sucesso!" />
+                )}
+
+                {showErrorNotification && (
+                  <ErrorNotification message="Erro ao adicionar cliente!" />
+                )}
+
+                <Button type="submit">Adicionar</Button>
+              </div>
             </form>
           </DialogContent>
         </Dialog>

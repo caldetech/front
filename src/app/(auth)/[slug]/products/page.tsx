@@ -50,14 +50,6 @@ export default function Products() {
         <h1 className="text-3xl font-bold tracking-tight">Produtos</h1>
 
         <Dialog>
-          <DialogTrigger asChild>
-            <Button variant={"outline"}>
-              <p className="hidden sm:flex">Adicionar</p>
-
-              <Plus className="sm:hidden" />
-            </Button>
-          </DialogTrigger>
-
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Adicionar produto</DialogTitle>

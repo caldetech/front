@@ -2,6 +2,7 @@
 
 import { createOrderAction } from "@/actions/create-order";
 import CustomTable from "@/components/CustomTable";
+import ErrorNotification from "@/components/ErrorNotification";
 import SuccessNotification from "@/components/SuccessNotification";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +33,7 @@ import { useStore } from "@/stores/use-mutate";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
+import { set } from "zod";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -52,8 +54,7 @@ export default function Orders() {
     null
   );
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
-  const [refreshFlag, setRefreshFlag] = useState(false);
-
+  const [showErrorNotification, setShowErrorNotification] = useState(false);
   const slug = useSlug();
   const [currentPage, setCurrentPage] = useState(1);
   const { data, total, isLoading, error, mutate } = useOrders(
@@ -61,7 +62,8 @@ export default function Orders() {
     ITEMS_PER_PAGE,
     slug
   );
-
+  const [orderType, setOrderType] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
   const { setMutate } = useStore();
 
   useEffect(() => {
@@ -194,6 +196,8 @@ export default function Orders() {
     setFilteredCustomers([]);
     setSelectedClient(false);
     setCustomer(null);
+    setOrderType("");
+    setPaymentMethod("");
   };
 
   const handleSubmit = async (formData: FormData) => {
@@ -214,7 +218,19 @@ export default function Orders() {
     if (order.success) {
       resetForm();
       setShowSuccessNotification(true);
+      await mutate();
+    } else {
+      setShowErrorNotification(true);
     }
+
+    formData.delete("blingProducts");
+    formData.delete("members");
+    formData.delete("commissionPercent");
+    formData.delete("customer");
+    formData.delete("memberCommissions");
+    formData.delete("paymentAmount");
+    formData.delete("type");
+    formData.delete("paymentMethod");
   };
 
   if (isLoading) {
@@ -235,6 +251,8 @@ export default function Orders() {
           onOpenChange={async (isOpen) => {
             if (!isOpen) {
               resetForm();
+              setShowSuccessNotification(false);
+              setShowErrorNotification(false);
             }
           }}
         >
@@ -309,7 +327,11 @@ export default function Orders() {
               {/* Tipo de ordem */}
               <div className="flex flex-col gap-1">
                 <Label htmlFor="type">Tipo</Label>
-                <Select name="type">
+                <Select
+                  name="type"
+                  value={orderType}
+                  onValueChange={setOrderType}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecione um tipo" />
                   </SelectTrigger>
@@ -394,7 +416,11 @@ export default function Orders() {
               {/* Método de pagamento */}
               <div className="flex flex-col gap-1">
                 <Label htmlFor="paymentMethod">Método de pagamento</Label>
-                <Select name="paymentMethod">
+                <Select
+                  name="paymentMethod"
+                  value={paymentMethod}
+                  onValueChange={setPaymentMethod}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
@@ -413,6 +439,7 @@ export default function Orders() {
                 <Label htmlFor="total-commission-percent">
                   Valor Total da Comissão (%)
                 </Label>
+
                 <Input
                   id="total-commission-percent"
                   type="number"
@@ -487,6 +514,10 @@ export default function Orders() {
                   <SuccessNotification message="Ordem de serviço criada com sucesso!" />
                 )}
 
+                {showErrorNotification && (
+                  <ErrorNotification message="Erro ao criar a ordem de serviço!" />
+                )}
+
                 <Button type="submit">Criar</Button>
               </div>
             </form>
@@ -502,6 +533,7 @@ export default function Orders() {
           totalItems={total}
           itemsPerPage={ITEMS_PER_PAGE}
           attachment={true}
+          tableName="orders"
         />
       </div>
     </div>

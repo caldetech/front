@@ -14,7 +14,7 @@ type Response = {
 };
 
 export const useEmployees = (page: number, limit = 5, slug: string) => {
-  const { data, error, isLoading } = useSWR<Response>(
+  const { data, error, isLoading, mutate } = useSWR<Response>(
     `users/all?slug=${slug}&page=${page}&limit=${limit}`,
     fetcher
   );
@@ -25,5 +25,6 @@ export const useEmployees = (page: number, limit = 5, slug: string) => {
     total: data?.page?.total || 0,
     error,
     isLoading,
+    mutate,
   };
 };

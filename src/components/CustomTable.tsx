@@ -8,9 +8,11 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "./ui/pagination";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "./ui/dialog";
+import { Badge } from "./ui/badge"; // ✅ IMPORT DO BADGE
 import FileUploader from "./FileUploader";
+import Image from "next/image";
 
 export type GenericRecord = {
   id: string;
@@ -24,7 +26,78 @@ type CustomTableProps<T extends GenericRecord> = {
   itemsPerPage: number;
   totalItems?: number;
   attachment?: boolean;
+  tableName?: string;
 };
+
+// ✅ Mapeamento de nomes das colunas por tabela
+const columnNameMapping: Record<string, Record<string, string>> = {
+  orders: {
+    type: "Tipo",
+    customer: "Cliente",
+    payment: "Pagamento",
+    status: "Status",
+  },
+};
+
+// ✅ Mapeamento de valores por tabela e coluna
+const valueMapping: Record<
+  string,
+  Record<string, Record<string, React.ReactNode>>
+> = {
+  orders: {
+    status: {
+      OPEN: (
+        <Badge color="green" variant="secondary">
+          Aberto
+        </Badge>
+      ),
+      CLOSED: <Badge variant="secondary">Fechado</Badge>,
+      CANCELLED: <Badge variant="secondary">Cancelado</Badge>,
+    },
+    type: {
+      SALE: (
+        <Badge variant="secondary" color="orange">
+          Venda
+        </Badge>
+      ),
+      BUDGET: (
+        <Badge variant="secondary" color="cyan">
+          Orçamento
+        </Badge>
+      ),
+      WARRANTY: <Badge variant="secondary">Garantia</Badge>,
+    },
+    payment: {
+      PENDING: (
+        <Badge variant="secondary" color="yellow">
+          Pendente
+        </Badge>
+      ),
+      RECEIVED: <Badge variant="secondary">Recebido</Badge>,
+      CANCELLED: <Badge variant="secondary">Cancelado</Badge>,
+    },
+  },
+};
+
+function getColumnLabel(table: string | undefined, column: string): string {
+  return (
+    columnNameMapping[table ?? ""]?.[column] ??
+    column.charAt(0).toUpperCase() + column.slice(1)
+  );
+}
+
+function getCellValue(
+  table: string | undefined,
+  column: string,
+  value: unknown
+): React.ReactNode {
+  const mapping = valueMapping[table ?? ""]?.[column];
+  if (mapping && typeof value === "string" && mapping[value]) {
+    return mapping[value];
+  }
+
+  return value as React.ReactNode;
+}
 
 export default function CustomTable<T extends GenericRecord>({
   data,
@@ -33,6 +106,7 @@ export default function CustomTable<T extends GenericRecord>({
   totalItems,
   itemsPerPage,
   attachment = false,
+  tableName,
 }: CustomTableProps<T>) {
   const columnNames = data?.length
     ? Object.keys(data[0]).filter(
@@ -56,16 +130,13 @@ export default function CustomTable<T extends GenericRecord>({
             <thead>
               <tr className="border-b border-[#EFEFEF]">
                 <th className="w-1/3 p-2 text-xs text-left text-muted-foreground select-none">
-                  {columnNames[columnIndex - 1]
-                    ? columnNames[columnIndex - 1][0].toUpperCase() +
-                      columnNames[columnIndex - 1].substring(1)
-                    : ""}
+                  {getColumnLabel(
+                    tableName,
+                    columnNames[columnIndex - 1] ?? ""
+                  )}
                 </th>
                 <th className="w-1/3 p-2 text-xs text-left text-muted-foreground select-none">
-                  {columnNames[columnIndex]
-                    ? columnNames[columnIndex][0].toUpperCase() +
-                      columnNames[columnIndex].substring(1)
-                    : ""}
+                  {getColumnLabel(tableName, columnNames[columnIndex] ?? "")}
                 </th>
                 <th className="w-1/3 p-2">
                   <div className="flex gap-2 justify-end">
@@ -99,18 +170,24 @@ export default function CustomTable<T extends GenericRecord>({
 
             <tbody>
               {data.map((item) => {
+                console.log(item);
+
                 return (
                   <tr className="border-b border-[#EFEFEF]" key={item.id}>
                     <td className="p-2 text-xs text-left text-muted-foreground select-none">
-                      {!item[columnNames[columnIndex - 1]]
-                        ? "Não definido"
-                        : String(item[columnNames[columnIndex - 1]])}
+                      {getCellValue(
+                        tableName,
+                        columnNames[columnIndex - 1],
+                        item[columnNames[columnIndex - 1]]
+                      )}
                     </td>
 
                     <td className="p-2 text-xs text-left text-muted-foreground select-none">
-                      {!item[columnNames[columnIndex]]
-                        ? "Não definido"
-                        : String(item[columnNames[columnIndex]])}
+                      {getCellValue(
+                        tableName,
+                        columnNames[columnIndex],
+                        item[columnNames[columnIndex]]
+                      )}
                     </td>
 
                     <td className="flex justify-end m-2 gap-1">
@@ -124,10 +201,22 @@ export default function CustomTable<T extends GenericRecord>({
                                   <FileCheck className="text-blue-500 size-4" />
                                 </span>
                               </DialogTrigger>
-
                               <DialogContent className="flex flex-col items-center">
-                                <DialogTitle>Anexar ordem</DialogTitle>
-                                <FileUploader orderId={item.id} />
+                                <div className="flex flex-col items-center gap-4">
+                                  <DialogTitle>Anexar ordem</DialogTitle>
+
+                                  <div className="relative w-full h-100">
+                                    {" "}
+                                    {/* Ajuste o tamanho conforme seu layout */}
+                                    <Image
+                                      src={item.orderAttachment[0].url}
+                                      alt="Visualização do anexo"
+                                      fill
+                                      className="object-cover rounded-md"
+                                    />
+                                  </div>
+                                  <FileUploader orderId={item.id} />
+                                </div>
                               </DialogContent>
                             </Dialog>
                           ) : (
@@ -137,15 +226,14 @@ export default function CustomTable<T extends GenericRecord>({
                                   <FileX className="text-gray-500 size-4" />
                                 </span>
                               </DialogTrigger>
-
-                              <DialogContent>
+                              <DialogContent className="flex flex-col items-center">
                                 <DialogTitle>Anexar ordem</DialogTitle>
                                 <FileUploader orderId={item.id} />
                               </DialogContent>
                             </Dialog>
                           )}
                         </>
-                      ) : undefined}
+                      ) : null}
 
                       <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
                         <Eye className="size-4" />

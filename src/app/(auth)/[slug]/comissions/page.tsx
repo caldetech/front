@@ -17,8 +17,6 @@ export default function Comissions() {
     slug
   );
 
-  console.log(data);
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">

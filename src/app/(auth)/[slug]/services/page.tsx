@@ -2,6 +2,8 @@
 
 import { createServiceAction } from "@/actions/create-service";
 import CustomTable from "@/components/CustomTable";
+import ErrorNotification from "@/components/ErrorNotification";
+import SuccessNotification from "@/components/SuccessNotification";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,11 +26,13 @@ const ITEMS_PER_PAGE = 5;
 export default function Services() {
   const slug = useSlug();
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, total, isLoading, error } = useServices(
+  const { data, total, isLoading, error, mutate } = useServices(
     currentPage,
     ITEMS_PER_PAGE,
     slug
   );
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [showErrorNotification, setShowErrorNotification] = useState(false);
 
   if (isLoading) {
     return (
@@ -41,7 +45,19 @@ export default function Services() {
   if (error) return <p>Erro ao carregar produtos</p>;
 
   async function handleSubmit(formData: FormData) {
-    await createServiceAction({ slug, formData });
+    const service = await createServiceAction({ slug, formData });
+
+    if (service.success) {
+      setShowSuccessNotification(true);
+      await mutate();
+    } else {
+      setShowErrorNotification(true);
+    }
+  }
+
+  function handleNotifications() {
+    setShowSuccessNotification(false);
+    setShowErrorNotification(false);
   }
 
   return (
@@ -49,7 +65,7 @@ export default function Services() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Serviços</h1>
 
-        <Dialog>
+        <Dialog onOpenChange={handleNotifications}>
           <DialogTrigger asChild>
             <Button variant={"outline"}>
               <p className="hidden sm:flex">Adicionar</p>
@@ -99,7 +115,17 @@ export default function Services() {
                 />
               </div>
 
-              <Button type="submit">Adicionar</Button>
+              <div className="flex flex-col gap-4">
+                {showSuccessNotification && (
+                  <SuccessNotification message="Serviço criado com sucesso!" />
+                )}
+
+                {showErrorNotification && (
+                  <ErrorNotification message="Erro ao criar serviço!" />
+                )}
+
+                <Button type="submit">Adicionar</Button>
+              </div>
             </form>
           </DialogContent>
         </Dialog>
