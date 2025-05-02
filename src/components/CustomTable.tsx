@@ -170,8 +170,6 @@ export default function CustomTable<T extends GenericRecord>({
 
             <tbody>
               {data.map((item) => {
-                console.log(item);
-
                 return (
                   <tr className="border-b border-[#EFEFEF]" key={item.id}>
                     <td className="p-2 text-xs text-left text-muted-foreground select-none">
