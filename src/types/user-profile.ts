@@ -1,8 +1,10 @@
 export type UserProfileProps = {
   id: string;
-  name: string | null;
+  name: string;
   email: string;
-  avatarUrl: string | null;
+  avatarUrl: string;
   iat: number;
   exp: number;
+  membership: string;
+  role: string;
 };

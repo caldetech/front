@@ -8,11 +8,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getProfile } from "@/http/get-profile";
+import { User } from "@/utils/casl/user";
 import { LogOut } from "lucide-react";
 
-export default async function UserMenu({ slug }: { slug: string }) {
-  const user = await getProfile();
-
+export default async function UserMenu({
+  slug,
+  user,
+}: {
+  slug: string;
+  user: User;
+}) {
   return (
     <div className="hidden sm:flex ms-4 absolute right-0 z-11 sm:static">
       <DropdownMenu>

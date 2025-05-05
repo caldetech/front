@@ -156,7 +156,7 @@ export const page_routes: PageRoutesType[] = [
         ],
       },
       {
-        title: "Comissions",
+        title: "Commissions",
         href: "/comissoes",
         icon: "WalletMinimal",
         items: [{ title: "", href: "" }],

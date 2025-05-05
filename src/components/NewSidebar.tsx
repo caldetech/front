@@ -22,8 +22,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import NewIcon from "./NewIcon";
 import { Power, Star } from "lucide-react";
+import { User } from "@/utils/casl/user";
+import { Can } from "./Can";
 
-export default function NewSidebar({ slug }: { slug: string }) {
+export default function NewSidebar({
+  slug,
+  user,
+}: {
+  slug: string;
+  user: User;
+}) {
   const pathname = usePathname();
 
   const groupTitles = {
@@ -33,10 +41,9 @@ export default function NewSidebar({ slug }: { slug: string }) {
   const routeTitles = {
     Orders: "Ordens",
     Services: "Serviços",
-    Products: "Produtos",
     Customers: "Clientes",
     Users: "Funcionários",
-    Comissions: "Comissões",
+    Commissions: "Comissões",
     Integrations: "Integrações",
   };
 
@@ -73,56 +80,63 @@ export default function NewSidebar({ slug }: { slug: string }) {
                         Object.keys(routeTitles).includes(item.title)
                       )
                       .map((item, key) => {
+                        const subject = item.title.slice(
+                          0,
+                          item.title.length - 1
+                        );
+
                         return (
-                          <SidebarMenuItem key={key}>
-                            {item.items?.length ? (
-                              <Collapsible className="group/collapsible">
-                                <CollapsibleTrigger asChild>
-                                  <Link href={`/${slug}${item.href}`}>
-                                    <SidebarMenuButton
-                                      tooltip={item.title}
-                                      isActive={
-                                        pathname === `/${slug}${item.href}`
-                                      }
-                                      className="cursor-pointer"
-                                    >
-                                      <NewIcon iconName={item.icon || ""} />
-                                      <span className="hidden sm:flex">
-                                        {
-                                          routeTitles[
-                                            item.title as keyof typeof routeTitles
-                                          ]
+                          <Can I="get" a={subject} key={key}>
+                            <SidebarMenuItem>
+                              {item.items?.length ? (
+                                <Collapsible className="group/collapsible">
+                                  <CollapsibleTrigger asChild>
+                                    <Link href={`/${slug}${item.href}`}>
+                                      <SidebarMenuButton
+                                        tooltip={item.title}
+                                        isActive={
+                                          pathname === `/${slug}${item.href}`
                                         }
-                                      </span>
-                                    </SidebarMenuButton>
-                                  </Link>
-                                </CollapsibleTrigger>
-                              </Collapsible>
-                            ) : (
-                              <SidebarMenuButton
-                                asChild
-                                tooltip={item.title}
-                                isActive={pathname === `/${slug}${item.href}`}
-                              >
-                                <Link
-                                  href={`/${slug}${item.href}`}
-                                  target={item.newTab ? "_blank" : ""}
+                                        className="cursor-pointer"
+                                      >
+                                        <NewIcon iconName={item.icon || ""} />
+                                        <span className="hidden sm:flex">
+                                          {
+                                            routeTitles[
+                                              item.title as keyof typeof routeTitles
+                                            ]
+                                          }
+                                        </span>
+                                      </SidebarMenuButton>
+                                    </Link>
+                                  </CollapsibleTrigger>
+                                </Collapsible>
+                              ) : (
+                                <SidebarMenuButton
+                                  asChild
+                                  tooltip={item.title}
+                                  isActive={pathname === `/${slug}${item.href}`}
                                 >
-                                  <span>{item.title}</span>
-                                </Link>
-                              </SidebarMenuButton>
-                            )}
-                            {item.isComing ? (
-                              <SidebarMenuBadge className="opacity-50">
-                                Coming
-                              </SidebarMenuBadge>
-                            ) : null}
-                            {item.isNew ? (
-                              <SidebarMenuBadge className="text-green-500 dark:text-green-200">
-                                New
-                              </SidebarMenuBadge>
-                            ) : null}
-                          </SidebarMenuItem>
+                                  <Link
+                                    href={`/${slug}${item.href}`}
+                                    target={item.newTab ? "_blank" : ""}
+                                  >
+                                    <span>{item.title}</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              )}
+                              {item.isComing ? (
+                                <SidebarMenuBadge className="opacity-50">
+                                  Coming
+                                </SidebarMenuBadge>
+                              ) : null}
+                              {item.isNew ? (
+                                <SidebarMenuBadge className="text-green-500 dark:text-green-200">
+                                  New
+                                </SidebarMenuBadge>
+                              ) : null}
+                            </SidebarMenuItem>
+                          </Can>
                         );
                       })}
                   </SidebarMenu>
