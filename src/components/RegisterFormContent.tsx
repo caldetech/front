@@ -41,7 +41,10 @@ export default function RegisterFormContent() {
 
   useEffect(() => {
     if (state.success) {
-      router.push("/entrar");
+      console.log("Redirecionando para /entrar...");
+      setTimeout(() => {
+        router.push("/entrar");
+      }, 1000); // Adicione um pequeno delay para depuração
     }
   }, [state]);
 
@@ -113,26 +116,6 @@ export default function RegisterFormContent() {
       </div>
 
       <div className="flex flex-col gap-6">
-        {state.errors?.name && (
-          <ErrorNotification message={state.errors.name[0]} />
-        )}
-
-        {state.errors?.email && (
-          <ErrorNotification message={state.errors.email[0]} />
-        )}
-
-        {state.errors?.password && (
-          <ErrorNotification message={state.errors.password[0]} />
-        )}
-
-        {state.errors?.password_confirmation && (
-          <ErrorNotification message={state.errors.password_confirmation[0]} />
-        )}
-
-        {state.success && (
-          <SuccessNotification message={"Usuário criado com sucesso"} />
-        )}
-
         <Button type="submit" className="w-full">
           Criar conta
         </Button>
