@@ -1,25 +1,27 @@
 import ky from "ky";
-import type { CookiesFn } from "cookies-next";
-import cookiesNext from "cookies-next";
+import { cookies } from "next/headers";
 
 export const api = ky.create({
   prefixUrl: process.env.NEXT_PUBLIC_API_URL,
   hooks: {
     beforeRequest: [
       async (request) => {
-        let cookieStore: CookiesFn | undefined;
-
         if (typeof window === "undefined") {
-          const { cookies: serverCookies } = await import("next/headers");
-          cookieStore = serverCookies;
-        }
+          const cookieStore = await cookies();
+          const token = cookieStore.get("token")?.value;
 
-        const token = await cookiesNext.getCookie("token", {
-          cookies: cookieStore,
-        });
+          if (token) {
+            request.headers.set("Authorization", `Bearer ${token}`);
+          }
+        } else {
+          const token = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("token="))
+            ?.split("=")[1];
 
-        if (token) {
-          request.headers.set("Authorization", `Bearer ${token}`);
+          if (token) {
+            request.headers.set("Authorization", `Bearer ${token}`);
+          }
         }
       },
     ],
