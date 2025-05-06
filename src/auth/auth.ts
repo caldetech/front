@@ -15,9 +15,5 @@ export async function auth() {
     redirect("/entrar");
   }
 
-  try {
-    return await getProfile();
-  } catch {}
-
   redirect("/api/auth/sign-out");
 }

@@ -11,8 +11,8 @@ import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 
 export default function IntegrationsPage() {
-  const [blingConnection, setBlingConnection] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [blingConnection, setBlingConnection] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
   const slug = useSlug();
 
@@ -24,15 +24,13 @@ export default function IntegrationsPage() {
 
   useEffect(() => {
     async function handleBlingAccessToken() {
-      const accessToken = await getValidAccessToken({ slug });
+      const tokens = await getValidAccessToken({ slug });
 
-      if (!accessToken) {
-        setBlingConnection(false);
-        setLoading(false);
-      } else {
+      if (tokens !== undefined && !("success" in tokens)) {
         setBlingConnection(true);
-        setLoading(false);
       }
+
+      setLoading(false);
     }
 
     handleBlingAccessToken();
@@ -70,13 +68,13 @@ export default function IntegrationsPage() {
                 </div>
               </div>
 
-              {!blingConnection ? (
-                <Button variant="outline" size="sm" onClick={handleSubmit}>
-                  Conectar
-                </Button>
-              ) : (
+              {blingConnection ? (
                 <Button variant="destructive" size="sm">
                   Desconectar
+                </Button>
+              ) : (
+                <Button variant="outline" size="sm" onClick={handleSubmit}>
+                  Conectar
                 </Button>
               )}
             </div>

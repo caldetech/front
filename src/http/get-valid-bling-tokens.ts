@@ -1,20 +1,31 @@
 import type { BlingTokensSchema } from "@/schemas/bling-tokens";
 import { api } from "../lib/api-client";
+import { HTTPError } from "ky";
 
-export async function getValidAccessToken({ slug }: { slug: string }) {
+export async function getValidAccessToken({ slug }: { slug: string }): Promise<
+  | BlingTokensSchema
+  | {
+      message: string;
+      success: boolean;
+    }
+  | undefined
+> {
   try {
-    const tokens = await api
+    return await api
       .post("bling/get-valid-access-token", {
         json: {
           slug,
         },
       })
       .json<BlingTokensSchema>();
-
-    const { accessToken } = tokens;
-
-    return accessToken;
   } catch (error) {
-    console.log(error);
+    if (error instanceof HTTPError) {
+      const errorResponse = await error.response.json();
+
+      return {
+        success: false,
+        message: errorResponse.message,
+      };
+    }
   }
 }

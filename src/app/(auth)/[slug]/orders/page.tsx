@@ -379,32 +379,36 @@ export default function Orders() {
 
               {/* Produtos selecionados */}
               <div className="flex flex-col gap-2">
-                {selected.map((p) => (
-                  <div
-                    key={p.id}
-                    className="flex items-center gap-2 justify-between"
-                  >
-                    <span>{p.nome}</span>
+                {selected.map((p) => {
+                  console.log(p);
 
-                    <div className="flex">
-                      <Input
-                        type="number"
-                        min={1}
-                        value={p.quantity}
-                        onChange={(e) =>
-                          updateQuantity(p.id, Number(e.target.value))
-                        }
-                        className="w-20"
-                      />
-                      <Button
-                        variant="ghost"
-                        onClick={() => removeProduct(p.id)}
-                      >
-                        Remover
-                      </Button>
+                  return (
+                    <div
+                      key={p.id}
+                      className="flex items-center gap-2 justify-between"
+                    >
+                      <span>{p.nome}</span>
+
+                      <div className="flex">
+                        <Input
+                          type="number"
+                          min={1}
+                          value={p.quantity}
+                          onChange={(e) =>
+                            updateQuantity(p.id, Number(e.target.value))
+                          }
+                          className="w-20"
+                        />
+                        <Button
+                          variant="ghost"
+                          onClick={() => removeProduct(p.id)}
+                        >
+                          Remover
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Valor do pagamento */}

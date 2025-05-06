@@ -11,13 +11,14 @@ export default async function AuthLayout({
   children: React.ReactNode;
   params: { slug: string };
 }>) {
-  const user = await getProfile(params.slug);
+  const { slug } = await params;
+  const user = await getProfile(slug);
 
   return (
     <AbilityProvider user={user}>
-      <SlugProvider slug={params.slug}>
+      <SlugProvider slug={slug}>
         <SidebarProvider>
-          <MainLayout slug={params.slug} user={user}>
+          <MainLayout slug={slug} user={user}>
             {children}
           </MainLayout>
         </SidebarProvider>
