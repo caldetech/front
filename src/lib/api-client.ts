@@ -4,6 +4,7 @@ import cookiesNext from "cookies-next";
 
 export const api = ky.create({
   prefixUrl: process.env.NEXT_PUBLIC_API_URL,
+  credentials: "include",
   hooks: {
     beforeRequest: [
       async (request) => {
