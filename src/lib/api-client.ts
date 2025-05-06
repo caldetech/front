@@ -1,6 +1,5 @@
 import ky from "ky";
-import type { CookiesFn } from "cookies-next";
-import cookiesNext from "cookies-next";
+import { cookies } from "next/headers"; // Importa a função cookies
 
 export const api = ky.create({
   prefixUrl: process.env.NEXT_PUBLIC_API_URL,
@@ -8,19 +7,14 @@ export const api = ky.create({
   hooks: {
     beforeRequest: [
       async (request) => {
-        let cookieStore: CookiesFn | undefined;
+        // Obtém o armazenamento de cookies no lado do servidor
+        const cookieStore = await cookies();
 
-        if (typeof window === "undefined") {
-          const { cookies: serverCookies } = await import("next/headers");
-          cookieStore = serverCookies;
-        }
-
-        const token = await cookiesNext.getCookie("token", {
-          cookies: cookieStore,
-        });
+        // Tenta obter o cookie "token"
+        const token = cookieStore.get("token");
 
         if (token) {
-          request.headers.set("Authorization", `Bearer ${token}`);
+          request.headers.set("Authorization", `Bearer ${token.value}`);
         }
       },
     ],
