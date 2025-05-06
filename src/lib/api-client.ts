@@ -1,3 +1,5 @@
+"use server";
+
 import ky from "ky";
 import { cookies } from "next/headers"; // Importa a função cookies
 
