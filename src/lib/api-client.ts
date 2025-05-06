@@ -1,3 +1,4 @@
+// lib/api.ts
 import ky from "ky";
 import { cookies } from "next/headers";
 
