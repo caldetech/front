@@ -3,7 +3,7 @@
 import LogInForm from "./login-form";
 import Link from "next/link";
 import Image from "next/image";
-import Background from "../../../../public/images/cover.png";
+import Background from "../../public/images/cover.png";
 import { BeatLoader } from "react-spinners";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
