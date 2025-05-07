@@ -8,13 +8,12 @@ export const api = ky.create({
   hooks: {
     beforeRequest: [
       async (request) => {
-        const storedCookies = getCookie("token");
+        const token = await getCookie("token");
+        console.log(token);
 
-        console.log(storedCookies);
-
-        // if (token) {
-        //   request.headers.set("Authorization", `Bearer ${token.value}`);
-        // }
+        if (token) {
+          request.headers.set("Authorization", `Bearer ${token}`);
+        }
       },
     ],
   },
