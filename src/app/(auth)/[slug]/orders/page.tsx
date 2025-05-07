@@ -26,14 +26,13 @@ import { useOrders } from "@/hooks/use-orders";
 import { searchCustomer } from "@/http/search-customer";
 import { searchEmployee } from "@/http/search-employee";
 import { searchProduct } from "@/http/search-product";
-import type { Customer } from "@/schemas/customer";
-import type { Employee } from "@/schemas/employee";
-import type { Product } from "@/schemas/products";
+import { Customer } from "@/schemas/customer";
+import { Employee } from "@/schemas/employee";
+import { Product } from "@/schemas/products";
 import { useStore } from "@/stores/use-mutate";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
-import { set } from "zod";
 
 const ITEMS_PER_PAGE = 5;
 
