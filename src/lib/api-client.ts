@@ -1,7 +1,6 @@
-"use server";
+import { getCookie } from "cookies-next";
 
 import ky from "ky";
-import { cookies } from "next/headers";
 
 export const api = ky.create({
   prefixUrl: process.env.NEXT_PUBLIC_API_URL,
@@ -9,15 +8,13 @@ export const api = ky.create({
   hooks: {
     beforeRequest: [
       async (request) => {
-        const cookieStore = await cookies();
-        console.log("cookieStore", cookieStore);
+        const storedCookies = getCookie("token");
 
-        const token = cookieStore.get("token");
-        console.log("token", token);
+        console.log(storedCookies);
 
-        if (token) {
-          request.headers.set("Authorization", `Bearer ${token.value}`);
-        }
+        // if (token) {
+        //   request.headers.set("Authorization", `Bearer ${token.value}`);
+        // }
       },
     ],
   },
