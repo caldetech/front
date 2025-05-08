@@ -10,6 +10,7 @@ export async function LogIn({
   const response = await api("auth/log-in", {
     method: "POST",
     body: JSON.stringify({ email, password }),
+    credentials: "include",
   });
 
   return response;
