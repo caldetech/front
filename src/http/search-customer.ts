@@ -1,7 +1,4 @@
-"use server";
-
-import type { Customer } from "@/schemas/customer";
-import { api } from "../lib/api-client";
+import { Customer } from "@/schemas/customer";
 
 export async function searchCustomer({
   slug,
@@ -10,18 +7,32 @@ export async function searchCustomer({
   slug: string;
   query: string;
 }) {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/customers/search`;
+
+  const requestBody = JSON.stringify({
+    slug,
+    query,
+  });
+
   try {
-    const result = await api.post("customers/search", {
-      json: {
-        slug,
-        query,
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
+      credentials: "include", // Envia as credenciais (cookies) com a requisição
+      body: requestBody,
     });
 
-    return result.json<Customer[]>();
-  } catch (error) {
-    console.error(error);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Erro ao buscar clientes");
+    }
 
+    const data = await response.json();
+    return data as Customer[];
+  } catch (error) {
+    console.error("Erro ao buscar clientes:", error);
     return [];
   }
 }

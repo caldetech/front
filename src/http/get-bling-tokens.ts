@@ -1,5 +1,4 @@
 import type { BlingTokensSchema } from "@/schemas/bling-tokens";
-import { api } from "../lib/api-client";
 
 export async function getBlingTokens({
   code,
@@ -8,17 +7,29 @@ export async function getBlingTokens({
   code: string;
   state: string;
 }): Promise<BlingTokensSchema> {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/bling/get-tokens`;
+
+  const requestBody = JSON.stringify({ code, state });
+
   try {
-    const user = await api.post("bling/get-tokens", {
-      json: {
-        code,
-        state,
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
+      credentials: "include", // Envia as credenciais (cookies) com a requisição
+      body: requestBody,
     });
 
-    return user.json();
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Erro ao obter os tokens do Bling");
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao obter os tokens do Bling:", error);
     throw error;
   }
 }

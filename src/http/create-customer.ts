@@ -1,7 +1,6 @@
 "use server";
 
 import type { CustomerTypes } from "@/enums/customer-types";
-import { api } from "../lib/api-client";
 
 interface createCustomerProps {
   slug?: string;
@@ -30,25 +29,38 @@ export async function createCustomer({
   mainNumber?: string;
   contactNumber?: string;
 }) {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/customers/create`;
+
+  const requestBody = JSON.stringify({
+    slug,
+    customerType,
+    name,
+    document,
+    address,
+    mainNumber,
+    contactNumber,
+  });
+
   try {
-    await api.post("customers/create", {
-      json: {
-        slug,
-        customerType,
-        name,
-        document,
-        address,
-        mainNumber,
-        contactNumber,
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
+      credentials: "include", // Certificando-se de enviar as credenciais
+      body: requestBody,
     });
+
+    if (!response.ok) {
+      throw new Error(`Erro ao criar cliente: ${response.statusText}`);
+    }
 
     return {
       success: true,
       message: "Cliente criado com sucesso!",
     };
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao criar cliente:", error);
 
     return {
       success: false,

@@ -1,7 +1,5 @@
 "use server";
 
-import { api } from "../lib/api-client";
-
 export async function createOrder({
   slug,
   type,
@@ -23,27 +21,40 @@ export async function createOrder({
   memberCommissions: { memberId: string; value: number }[];
   customer: { id: string; name: string };
 }) {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/orders/create`;
+
+  const requestBody = JSON.stringify({
+    slug,
+    type,
+    paymentMethod,
+    paymentAmount,
+    blingProducts,
+    members,
+    commissionPercent,
+    memberCommissions,
+    customer,
+  });
+
   try {
-    await api.post("orders/create", {
-      json: {
-        slug,
-        type,
-        paymentMethod,
-        paymentAmount,
-        blingProducts,
-        members,
-        commissionPercent,
-        memberCommissions,
-        customer,
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
+      credentials: "include", // Envia as credenciais (cookies) com a requisição
+      body: requestBody,
     });
+
+    if (!response.ok) {
+      throw new Error(`Erro ao criar ordem: ${response.statusText}`);
+    }
 
     return {
       success: true,
       message: "Ordem criada com sucesso!",
     };
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao criar ordem:", error);
 
     return {
       success: false,
