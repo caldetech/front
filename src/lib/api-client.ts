@@ -4,6 +4,7 @@ export const api = async <T>(
 ): Promise<T> => {
   const url = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`;
 
+  // Cabeçalhos padrão, incluindo o "Authorization" se o token for encontrado
   const defaultHeaders: Record<string, string> = {
     "Content-Type": "application/json",
   };
@@ -14,12 +15,13 @@ export const api = async <T>(
     defaultHeaders["Authorization"] = `Bearer ${token}`;
   }
 
+  // Ajustando as opções, utilizando "GET" como método padrão
   const fetchOptions: RequestInit = {
     ...options,
     method: options.method || "GET", // Define o método HTTP (GET por padrão)
     headers: {
       ...defaultHeaders,
-      ...options.headers, // Mescla cabeçalhos passados
+      ...options.headers, // Mescla os cabeçalhos passados
     },
     credentials: "include", // Envia cookies com a requisição
   };
@@ -31,8 +33,14 @@ export const api = async <T>(
       throw new Error(`Erro na requisição: ${response.statusText}`);
     }
 
-    const data: T = await response.json();
-    return data;
+    // Só tenta fazer .json() se o método for GET ou o corpo da resposta existir
+    if (fetchOptions.method === "GET") {
+      const data: T = await response.json();
+      return data;
+    }
+
+    // Caso o método não seja GET (POST, PUT, etc.), retornamos uma resposta em formato JSON
+    return (await response.json()) as T;
   } catch (error) {
     console.error("Erro ao fazer a requisição:", error);
     throw error;
