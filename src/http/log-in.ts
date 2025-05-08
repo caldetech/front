@@ -23,5 +23,7 @@ export async function LogIn({
       tokens: Record<HttpHeader, string | number | string[] | undefined>;
     }>();
 
+  console.log("response 1", response);
+
   return response;
 }

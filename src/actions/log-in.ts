@@ -33,7 +33,7 @@ export async function LogInAction(data: FormData) {
       password,
     });
 
-    console.log(tokens);
+    console.log("response 2", tokens);
 
     return {
       success: true,
