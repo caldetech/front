@@ -1,6 +1,5 @@
 import type { BlingTokensSchema } from "@/schemas/bling-tokens";
 import { api } from "../lib/api-client";
-import { HTTPError } from "ky";
 
 export async function getValidAccessToken({ slug }: { slug: string }): Promise<
   | BlingTokensSchema
@@ -10,22 +9,34 @@ export async function getValidAccessToken({ slug }: { slug: string }): Promise<
     }
   | undefined
 > {
-  try {
-    return await api
-      .post("bling/get-valid-access-token", {
-        json: {
-          slug,
-        },
-      })
-      .json<BlingTokensSchema>();
-  } catch (error) {
-    if (error instanceof HTTPError) {
-      const errorResponse = await error.response.json();
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/bling/get-valid-access-token`;
 
+  const requestBody = JSON.stringify({
+    slug,
+  });
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Envia as credenciais (cookies) com a requisição
+      body: requestBody,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
       return {
         success: false,
-        message: errorResponse.message,
+        message: errorData.message || "Erro ao obter token de acesso válido",
       };
     }
+
+    const data = await response.json();
+    return data as BlingTokensSchema;
+  } catch (error) {
+    console.error("Erro ao obter o token de acesso válido:", error);
+    return undefined;
   }
 }
