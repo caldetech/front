@@ -7,7 +7,10 @@ export async function LogIn({
 }: {
   email: string;
   password: string;
-}): Promise<{ message: string }> {
+}): Promise<{
+  message: string;
+  tokens: Record<HttpHeader, string | number | string[] | undefined>;
+}> {
   const response = api
     .post("auth/log-in", {
       json: {
@@ -19,8 +22,6 @@ export async function LogIn({
       message: string;
       tokens: Record<HttpHeader, string | number | string[] | undefined>;
     }>();
-
-  console.log(response);
 
   return response;
 }
