@@ -28,12 +28,10 @@ export async function LogInAction(data: FormData) {
   const { email, password } = result.data;
 
   try {
-    const { message, tokens } = await LogIn({
+    const { message } = await LogIn({
       email,
       password,
     });
-
-    console.log("response 2", tokens);
 
     return {
       success: true,
