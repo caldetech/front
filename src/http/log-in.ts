@@ -13,7 +13,6 @@ export async function LogIn({
         email,
         password,
       },
-      credentials: "include",
     })
     .json<{ message: string }>();
 }
