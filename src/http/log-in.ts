@@ -1,4 +1,5 @@
 import { api } from "../lib/api-client";
+import { HttpHeader } from "fastify/types/utils";
 
 export async function LogIn({
   email,
@@ -7,12 +8,19 @@ export async function LogIn({
   email: string;
   password: string;
 }): Promise<{ message: string }> {
-  return await api
+  const response = api
     .post("auth/log-in", {
       json: {
         email,
         password,
       },
     })
-    .json<{ message: string }>();
+    .json<{
+      message: string;
+      tokens: Record<HttpHeader, string | number | string[] | undefined>;
+    }>();
+
+  console.log(response);
+
+  return response;
 }
