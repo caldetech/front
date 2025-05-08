@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 
 export const api = ky.create({
   prefixUrl: process.env.NEXT_PUBLIC_API_URL,
+  credentials: "include",
   hooks: {
     beforeRequest: [
       async (request) => {
