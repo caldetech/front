@@ -1,4 +1,4 @@
-import { api } from "../lib/api-client";
+import { api } from "../lib/ky_api-client";
 
 export async function passwordRecover({ email }: { email: string }) {
   try {

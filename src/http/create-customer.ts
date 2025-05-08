@@ -1,7 +1,7 @@
 "use server";
 
 import type { CustomerTypes } from "@/enums/customer-types";
-import { api } from "../lib/api-client";
+import { api } from "../lib/ky_api-client";
 
 interface createCustomerProps {
   slug?: string;

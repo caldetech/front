@@ -1,6 +1,6 @@
 "use server";
 
-import { api } from "../lib/api-client";
+import { api } from "../lib/ky_api-client";
 
 interface createProductProps {
   slug?: string;

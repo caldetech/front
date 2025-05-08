@@ -1,4 +1,4 @@
-import { api } from "@/lib/api-client";
+import { api } from "@/lib/fetch_api-client";
 
 export async function LogIn({
   email,
