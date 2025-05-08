@@ -1,4 +1,4 @@
-import { api } from "@/lib/fetch_api-client";
+import { api } from "@/lib/api-client";
 
 export async function LogIn({
   email,
@@ -6,12 +6,13 @@ export async function LogIn({
 }: {
   email: string;
   password: string;
-}): Promise<{ message: string }> {
-  const response = await api("auth/log-in", {
-    method: "POST",
-    body: JSON.stringify({ email, password }),
-    credentials: "include",
-  });
-
-  return response;
+}): Promise<{ token: string }> {
+  return await api
+    .post("auth/log-in", {
+      json: {
+        email,
+        password,
+      },
+    })
+    .json<{ token: string }>();
 }

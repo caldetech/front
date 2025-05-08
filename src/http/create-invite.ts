@@ -1,7 +1,7 @@
 "use server";
 
 import type { Role } from "@/schemas/role";
-import { api } from "../lib/ky_api-client";
+import { api } from "../lib/api-client";
 
 interface createInviteProps {
   email: string;

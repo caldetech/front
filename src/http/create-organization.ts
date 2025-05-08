@@ -1,7 +1,7 @@
 "use server";
 
 import type { OrganizationProps } from "@/types/organization";
-import { api } from "../lib/ky_api-client";
+import { api } from "../lib/api-client";
 import type { ErrorProps } from "@/types/error";
 
 export async function createOrganization({

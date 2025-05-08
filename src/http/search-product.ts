@@ -1,7 +1,7 @@
 "use server";
 
 import type { Product, ProductResponse } from "@/schemas/products";
-import { api } from "../lib/ky_api-client";
+import { api } from "../lib/api-client";
 
 export async function searchProduct({
   slug,

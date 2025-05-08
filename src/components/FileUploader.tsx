@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { api } from "@/lib/ky_api-client";
+import { api } from "@/lib/api-client";
 import SuccessNotification from "./SuccessNotification";
 import ErrorNotification from "./ErrorNotification";
 import { useStore } from "@/stores/use-mutate";

@@ -1,5 +1,5 @@
 import type { UserProfileProps } from "@/types/user-profile";
-import { api } from "../lib/ky_api-client";
+import { api } from "../lib/api-client";
 import type { User } from "@/utils/casl/user";
 
 export async function getProfile(slug: string) {
