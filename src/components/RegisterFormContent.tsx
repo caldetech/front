@@ -41,10 +41,9 @@ export default function RegisterFormContent() {
 
   useEffect(() => {
     if (state.success) {
-      console.log("Redirecionando para /entrar...");
       setTimeout(() => {
         router.push("/entrar");
-      }, 1000); // Adicione um pequeno delay para depuração
+      }, 1000);
     }
   }, [state]);
 

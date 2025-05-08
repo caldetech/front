@@ -6,7 +6,7 @@ export async function LogIn({
 }: {
   email: string;
   password: string;
-}): Promise<{ token: string }> {
+}): Promise<{ message: string }> {
   return await api
     .post("auth/log-in", {
       json: {
@@ -14,5 +14,5 @@ export async function LogIn({
         password,
       },
     })
-    .json<{ token: string }>();
+    .json<{ message: string }>();
 }

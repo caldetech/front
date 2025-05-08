@@ -379,8 +379,6 @@ export default function Orders() {
               {/* Produtos selecionados */}
               <div className="flex flex-col gap-2">
                 {selected.map((p) => {
-                  console.log(p);
-
                   return (
                     <div
                       key={p.id}
