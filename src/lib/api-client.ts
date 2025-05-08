@@ -1,32 +1,40 @@
-// Utilizando fetch diretamente
 export const api = async <T>(
-  url: string,
+  endpoint: string,
   options: RequestInit = {}
 ): Promise<T> => {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`;
 
-  const headers: Record<string, string> = {
-    ...(options.headers as Record<string, string>), // Preserva os headers existentes (caso haja algum)
+  const defaultHeaders: Record<string, string> = {
+    "Content-Type": "application/json",
   };
 
-  // Se o token existir, adiciona o Authorization header
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
   if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+    defaultHeaders["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${url}`, {
+  const fetchOptions: RequestInit = {
+    ...options,
     method: options.method || "GET", // Define o método HTTP (GET por padrão)
-    headers,
-    credentials: "include", // Envia os cookies com a requisição
-    body: options.body || undefined, // Adiciona o corpo da requisição (caso exista)
-  });
+    headers: {
+      ...defaultHeaders,
+      ...options.headers, // Mescla cabeçalhos passados
+    },
+    credentials: "include", // Envia cookies com a requisição
+  };
 
-  // Verifica se a resposta foi bem-sucedida
-  if (!response.ok) {
-    throw new Error(`Erro ao fazer a requisição: ${response.statusText}`);
+  try {
+    const response = await fetch(url, fetchOptions);
+
+    if (!response.ok) {
+      throw new Error(`Erro na requisição: ${response.statusText}`);
+    }
+
+    const data: T = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Erro ao fazer a requisição:", error);
+    throw error;
   }
-
-  const data: T = await response.json();
-  return data;
 };

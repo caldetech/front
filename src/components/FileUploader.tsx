@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -70,27 +68,32 @@ export default function FileUploader({ orderId }: { orderId: string }) {
 
     try {
       // 1. Pedir URL assinada ao backend
-      const signRes = await api.post("attachments/sign-upload", {
-        json: {
-          filename: selectedFile.name,
-          mimetype: selectedFile.type,
-        },
-      });
+      const signRes = await api<{ key: string; url: string }>(
+        "attachments/sign-upload",
+        {
+          method: "POST", // Definindo o método HTTP como POST
+          body: JSON.stringify({
+            filename: selectedFile.name,
+            mimetype: selectedFile.type,
+          }),
+        }
+      );
 
-      const { url, key } = await signRes.json<{ key: string; url: string }>();
+      const { url, key } = signRes;
 
-      // 2. Enviar direto ao S3 com a signed URL usando ky
+      // 2. Enviar direto ao S3 com a signed URL usando XMLHttpRequest
       await uploadToS3WithProgress(selectedFile, url);
 
       // 3. Notificar backend que upload foi concluído
-      await api.post("attachments/confirm-upload", {
-        json: {
+      await api("attachments/confirm-upload", {
+        method: "POST",
+        body: JSON.stringify({
           orderId,
           filename: selectedFile.name,
           mimetype: selectedFile.type,
           size: selectedFile.size,
           key,
-        },
+        }),
       });
 
       // Reset
