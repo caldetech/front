@@ -15,8 +15,10 @@ export default function LogInForm() {
 
   const [{ success, message, errors }, handleSubmit, isPending] = useFormState(
     LogInAction,
-    () => {
-      router.push("/");
+    async () => {
+      if (success) {
+        router.push("/");
+      }
     }
   );
 
