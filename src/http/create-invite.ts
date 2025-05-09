@@ -3,19 +3,17 @@
 import type { Role } from "@/schemas/role";
 import { api } from "../lib/api-client";
 
-interface createInviteProps {
-  email: string;
-  role: Role;
-  slug: string;
-  token: string | null;
-}
-
 export async function createInvite({
   email,
   role,
   slug,
   token,
-}: createInviteProps) {
+}: {
+  email: string;
+  role: Role;
+  slug: string;
+  token: string | null;
+}) {
   try {
     await api.post("invite/create", {
       json: {
