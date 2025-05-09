@@ -8,12 +8,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Briefcase, Building2, ChevronRight, Plus, Power } from "lucide-react";
+import { ChevronRight, Plus, Power, Building2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { createOrganizationAction } from "@/actions/create-organization";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
 import { OrganizationProps } from "@/types/organization";
 import Link from "next/link";
@@ -23,10 +23,13 @@ import { isOrganization } from "@/validations/ir-organization";
 import SuccessNotification from "@/components/SuccessNotification";
 import ErrorNotification from "@/components/ErrorNotification";
 import { Badge } from "@/components/ui/badge";
-import useAuthToken from "@/hooks/use-auth-token";
 import { useCookies } from "react-cookie";
+import { BeatLoader } from "react-spinners";
 
 export default function Accounts() {
+  const [cookies] = useCookies(["token"]);
+  const [token, setToken] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
   const [creationErrorMessage, setCreationErrorMessage] = useState<
     string | null
   >(null);
@@ -34,17 +37,15 @@ export default function Accounts() {
     string | null
   >(null);
   const [open, setOpen] = useState(false);
-  const [cookies] = useCookies(["token"]);
-  const [token, setToken] = useAuthToken();
 
   useEffect(() => {
-    const tokenFromCookie = cookies.token;
-    if (tokenFromCookie) {
-      setToken(tokenFromCookie);
+    if (cookies.token) {
+      setToken(cookies.token);
     }
-  }, [cookies.token, setToken]);
+    setLoaded(true);
+  }, [cookies.token]);
 
-  const shouldFetch = !!token;
+  const shouldFetch = loaded && !!token;
 
   const { data, error, isLoading, mutate } = useSWR<OrganizationProps[]>(
     shouldFetch ? ["organizations/all", token] : null,
@@ -55,7 +56,10 @@ export default function Accounts() {
   );
 
   async function handleSubmit(formData: FormData) {
-    const organization = await createOrganizationAction({ formData, token });
+    const organization = await createOrganizationAction({
+      formData,
+      token: token ?? null,
+    });
 
     if (isError(organization)) {
       setSuccessfulCreationMessage(null);
@@ -71,7 +75,6 @@ export default function Accounts() {
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
-
     if (!isOpen) {
       setCreationErrorMessage(null);
       setSuccessfulCreationMessage(null);
@@ -83,6 +86,14 @@ export default function Accounts() {
     window.location.href = "/entrar";
   }
 
+  if (!loaded) {
+    return (
+      <p className="h-screen w-full items-center justify-center">
+        <BeatLoader />
+      </p>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4 p-6 pt-6 h-screen">
       <div className="flex justify-between items-center">
@@ -92,7 +103,6 @@ export default function Accounts() {
           <DialogTrigger asChild>
             <Button variant={"outline"}>
               <p className="hidden sm:flex">Adicionar</p>
-
               <Plus className="sm:hidden" />
             </Button>
           </DialogTrigger>
@@ -105,7 +115,6 @@ export default function Accounts() {
             <form action={handleSubmit} className="flex flex-col gap-4 py-4">
               <div className="flex flex-col gap-1">
                 <Label htmlFor="name">Nome</Label>
-
                 <Input
                   id="name"
                   placeholder="Ex: CALDETECH"
@@ -116,7 +125,6 @@ export default function Accounts() {
 
               <div className="flex flex-col gap-1">
                 <Label htmlFor="slug">Usuário</Label>
-
                 <Input
                   id="slug"
                   placeholder="Ex: caldetech"
@@ -128,11 +136,9 @@ export default function Accounts() {
               {creationErrorMessage && (
                 <ErrorNotification message={creationErrorMessage} />
               )}
-
               {successfulCreationMessage && (
                 <SuccessNotification message={successfulCreationMessage} />
               )}
-
               <Button type="submit">Adicionar</Button>
             </form>
           </DialogContent>
@@ -154,27 +160,19 @@ export default function Accounts() {
                       <Building2 className="h-4 w-4" />
                       <Badge variant={"outline"}>{organization.name}</Badge>
                     </p>
-
                     <p className="flex items-center gap-2">
-                      {/* <Briefcase className="h-4 w-4" /> */}
-
                       <Badge variant={"secondary"}>
-                        {organization.members[0].role == "ADMIN"
-                          ? "Administrador"
-                          : ""}
-                        {organization.members[0].role == "MEMBER"
-                          ? "Membro"
-                          : ""}
-                        {organization.members[0].role == "BILLING"
-                          ? "Financeiro"
-                          : ""}
-                        {organization.members[0].role == "MANAGER"
-                          ? "Gerente"
-                          : ""}
+                        {
+                          {
+                            ADMIN: "Administrador",
+                            MEMBER: "Membro",
+                            BILLING: "Financeiro",
+                            MANAGER: "Gerente",
+                          }[organization.members[0].role]
+                        }
                       </Badge>
                     </p>
                   </div>
-
                   <span className="border border-[#EFEFEF] p-2 rounded-sm m-2 hover:bg-[#F3F4F6] cursor-pointer">
                     <ChevronRight />
                   </span>

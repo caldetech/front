@@ -30,7 +30,9 @@ export default function RegisterFormContent() {
     prevState: FormState,
     formData: FormData
   ): Promise<FormState> => {
-    formData.append("inviteId", inviteId || "");
+    if (inviteId) {
+      formData.append("inviteId", inviteId);
+    }
 
     return await createUserAction(formData);
   };
