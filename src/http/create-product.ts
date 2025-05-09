@@ -2,16 +2,6 @@
 
 import { api } from "../lib/api-client";
 
-interface createProductProps {
-  slug?: string;
-  title: string;
-  description?: string;
-  costPrice: number;
-  salesPrice: number;
-  stock: number;
-  token?: string | null;
-}
-
 export async function createProduct({
   slug = "caldetech",
   title,
@@ -20,7 +10,15 @@ export async function createProduct({
   salesPrice,
   stock,
   token,
-}: createProductProps) {
+}: {
+  slug?: string;
+  title: string;
+  description?: string;
+  costPrice: number;
+  salesPrice: number;
+  stock: number;
+  token: string | null;
+}) {
   try {
     await api.post(`organizations/${slug}/products`, {
       json: {

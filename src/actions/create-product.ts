@@ -3,7 +3,10 @@
 import { createProduct } from "@/http/create-product";
 import { parseBRL } from "@/lib/currency";
 
-export async function createProductAction(formData: FormData) {
+export async function createProductAction(
+  formData: FormData,
+  token: string | null
+) {
   const title = formData.get("title") as string;
   const description = formData.get("description")
     ? (formData.get("description") as string)
@@ -25,5 +28,6 @@ export async function createProductAction(formData: FormData) {
     costPrice,
     salesPrice,
     stock,
+    token,
   });
 }

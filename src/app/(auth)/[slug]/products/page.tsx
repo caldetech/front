@@ -44,7 +44,7 @@ export default function Products() {
   if (error) return <p>Erro ao carregar produtos</p>;
 
   async function handleSubmit(formData: FormData) {
-    await createProductAction(formData);
+    await createProductAction(formData, token);
   }
 
   return (
