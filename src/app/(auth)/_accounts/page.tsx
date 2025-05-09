@@ -39,11 +39,10 @@ export default function Accounts() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // Quando os cookies estão carregados
     if (cookies.token) {
       setToken(cookies.token);
     }
-    setLoaded(true); // Atualiza o estado de carregamento para permitir a renderização
+    setLoaded(true);
   }, [cookies.token]);
 
   const shouldFetch = loaded && !!token;
@@ -90,7 +89,7 @@ export default function Accounts() {
   if (!loaded) {
     return (
       <p className="h-screen w-full items-center justify-center">
-        <BeatLoader /> {/* Exibe o BeatLoader enquanto `loaded` é false */}
+        <BeatLoader />
       </p>
     );
   }
@@ -102,7 +101,7 @@ export default function Accounts() {
 
         <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
-            <Button variant={"outline"} disabled={!loaded}>
+            <Button variant={"outline"}>
               <p className="hidden sm:flex">Adicionar</p>
               <Plus className="sm:hidden" />
             </Button>
@@ -140,9 +139,7 @@ export default function Accounts() {
               {successfulCreationMessage && (
                 <SuccessNotification message={successfulCreationMessage} />
               )}
-              <Button type="submit" disabled={!loaded}>
-                Adicionar
-              </Button>
+              <Button type="submit">Adicionar</Button>
             </form>
           </DialogContent>
         </Dialog>
