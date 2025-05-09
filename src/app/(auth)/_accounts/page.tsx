@@ -17,18 +17,16 @@ import useSWR, { mutate } from "swr";
 import { fetcher } from "@/utils/fetcher";
 import { OrganizationProps } from "@/types/organization";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { isError } from "@/validations/is-error";
 import { isOrganization } from "@/validations/ir-organization";
 import SuccessNotification from "@/components/SuccessNotification";
 import ErrorNotification from "@/components/ErrorNotification";
 import { Badge } from "@/components/ui/badge";
+import useAuthToken from "@/hooks/use-auth-token";
+import { useCookies } from "react-cookie";
 
 export default function Accounts() {
-  const { data, error, isLoading } = useSWR<OrganizationProps[]>(
-    "organizations/all",
-    fetcher
-  );
   const [creationErrorMessage, setCreationErrorMessage] = useState<
     string | null
   >(null);
@@ -36,9 +34,28 @@ export default function Accounts() {
     string | null
   >(null);
   const [open, setOpen] = useState(false);
+  const [cookies] = useCookies(["token"]);
+  const [token, setToken] = useAuthToken();
+
+  useEffect(() => {
+    const tokenFromCookie = cookies.token;
+    if (tokenFromCookie) {
+      setToken(tokenFromCookie);
+    }
+  }, [cookies.token, setToken]);
+
+  const shouldFetch = !!token;
+
+  const { data, error, isLoading, mutate } = useSWR<OrganizationProps[]>(
+    shouldFetch ? ["organizations/all", token] : null,
+    async ([url, token]: [string, string]) => {
+      const response = await fetcher(url, token);
+      return (await response.json()) as OrganizationProps[];
+    }
+  );
 
   async function handleSubmit(formData: FormData) {
-    const organization = await createOrganizationAction(formData);
+    const organization = await createOrganizationAction({ formData, token });
 
     if (isError(organization)) {
       setSuccessfulCreationMessage(null);
@@ -48,7 +65,7 @@ export default function Accounts() {
     if (isOrganization(organization)) {
       setCreationErrorMessage(null);
       setSuccessfulCreationMessage("Organização criada com sucesso");
-      await mutate("organizations/all");
+      await mutate();
     }
   }
 

@@ -1,21 +1,32 @@
 "use server";
 
-import type { OrganizationProps } from "@/types/organization";
+import { OrganizationProps } from "@/types/organization";
 import { api } from "../lib/api-client";
-import type { ErrorProps } from "@/types/error";
+import { ErrorProps } from "@/types/error";
 
 export async function createOrganization({
   name,
   slug,
+  token,
 }: {
   name: string;
   slug: string;
+  token: string | null;
 }): Promise<OrganizationProps | ErrorProps> {
   try {
     const organization = await api.post("organizations/create", {
       json: {
         name,
         slug,
+      },
+      hooks: {
+        beforeRequest: [
+          (request) => {
+            if (token) {
+              request.headers.set("Authorization", `Bearer ${token}`);
+            }
+          },
+        ],
       },
     });
 

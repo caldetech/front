@@ -1,10 +1,14 @@
 "use server";
 
 import { createOrganization } from "@/http/create-organization";
-import type { ErrorProps } from "@/types/error";
-import type { OrganizationProps } from "@/types/organization";
 
-export async function createOrganizationAction(formData: FormData) {
+export async function createOrganizationAction({
+  formData,
+  token,
+}: {
+  formData: FormData;
+  token: string | null;
+}) {
   const name = formData.get("name") as string;
   const slug = formData.get("slug") as string;
 
@@ -19,5 +23,6 @@ export async function createOrganizationAction(formData: FormData) {
   return await createOrganization({
     name,
     slug,
+    token,
   });
 }
