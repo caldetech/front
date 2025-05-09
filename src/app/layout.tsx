@@ -7,6 +7,8 @@ import {
 } from "next/font/google";
 import { Metadata } from "next";
 import "./globals.css";
+import { AuthProvider } from "@/contexts/AuthContext";
+import CookiesProviderWrapper from "@/components/CookieProviderWrapper";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -48,7 +50,9 @@ export default function RootLayout({
       <body
         className={`${inter.className} ${inter.variable} ${roboto.variable} ${montserrat.variable} ${poppins.variable} ${overpass_mono.variable}`}
       >
-        {children}
+        <CookiesProviderWrapper>
+          <AuthProvider>{children}</AuthProvider>
+        </CookiesProviderWrapper>
       </body>
     </html>
   );
