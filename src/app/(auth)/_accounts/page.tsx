@@ -92,10 +92,9 @@ export default function Accounts() {
 
   if (!token) {
     return (
-      <p className="h-screen w-full items-center justify-center">
-        <BeatLoader />{" "}
-        {/* Exibe o BeatLoader enquanto `token` não estiver definido */}
-      </p>
+      <div className="flex items-center justify-center h-screen">
+        <BeatLoader />
+      </div>
     );
   }
 
