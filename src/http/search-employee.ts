@@ -6,9 +6,11 @@ import { api } from "../lib/api-client";
 export async function searchEmployee({
   slug,
   query,
+  token,
 }: {
   slug: string;
   query: string;
+  token: string | null;
 }) {
   try {
     const employees = await api
@@ -16,6 +18,15 @@ export async function searchEmployee({
         json: {
           slug,
           query,
+        },
+        hooks: {
+          beforeRequest: [
+            (request) => {
+              if (token) {
+                request.headers.set("Authorization", `Bearer ${token}`);
+              }
+            },
+          ],
         },
       })
       .json<Employee[]>();

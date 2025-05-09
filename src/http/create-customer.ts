@@ -21,6 +21,7 @@ export async function createCustomer({
   address,
   mainNumber,
   contactNumber,
+  token,
 }: {
   slug: string;
   customerType: CustomerTypes;
@@ -29,6 +30,7 @@ export async function createCustomer({
   address: string;
   mainNumber?: string;
   contactNumber?: string;
+  token: string | null;
 }) {
   try {
     await api.post("customers/create", {
@@ -40,6 +42,15 @@ export async function createCustomer({
         address,
         mainNumber,
         contactNumber,
+      },
+      hooks: {
+        beforeRequest: [
+          (request) => {
+            if (token) {
+              request.headers.set("Authorization", `Bearer ${token}`);
+            }
+          },
+        ],
       },
     });
 

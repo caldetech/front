@@ -9,22 +9,24 @@ import { getBlingAuthorizeUrl } from "@/http/get-bling-authorize-url";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
+import useAuthToken from "@/hooks/use-auth-token";
 
 export default function IntegrationsPage() {
   const [blingConnection, setBlingConnection] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
   const slug = useSlug();
+  const [token] = useAuthToken();
 
   async function handleSubmit() {
-    const blingAuthorize = await getBlingAuthorizeUrl({ slug });
+    const blingAuthorize = await getBlingAuthorizeUrl({ slug, token });
 
     router.push(blingAuthorize.url);
   }
 
   useEffect(() => {
     async function handleBlingAccessToken() {
-      const tokens = await getValidAccessToken({ slug });
+      const tokens = await getValidAccessToken({ slug, token });
 
       if (tokens !== undefined && !("success" in tokens)) {
         setBlingConnection(true);

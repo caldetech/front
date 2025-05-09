@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useSlug } from "@/contexts/SlugContext";
+import useAuthToken from "@/hooks/use-auth-token";
 import { useOrders } from "@/hooks/use-orders";
 import { searchCustomer } from "@/http/search-customer";
 import { searchEmployee } from "@/http/search-employee";
@@ -32,6 +33,7 @@ import { Product } from "@/schemas/products";
 import { useStore } from "@/stores/use-mutate";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { BeatLoader } from "react-spinners";
 
 const ITEMS_PER_PAGE = 5;
@@ -56,14 +58,16 @@ export default function Orders() {
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const slug = useSlug();
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, total, isLoading, error, mutate } = useOrders(
-    currentPage,
-    ITEMS_PER_PAGE,
-    slug
-  );
   const [orderType, setOrderType] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const { setMutate } = useStore();
+  const [token] = useAuthToken();
+  const { data, total, isLoading, error, mutate } = useOrders(
+    currentPage,
+    ITEMS_PER_PAGE,
+    slug,
+    token
+  );
 
   useEffect(() => {
     setMutate(mutate);
@@ -77,7 +81,11 @@ export default function Orders() {
       }
 
       try {
-        const products = await searchProduct({ query: productQuery, slug });
+        const products = await searchProduct({
+          query: productQuery,
+          slug,
+          token,
+        });
 
         if (products) {
           setFilteredProducts(products);
@@ -89,7 +97,7 @@ export default function Orders() {
 
     const delayDebounce = setTimeout(() => {
       fetchProducts();
-    }, 300); // debounce de 300ms
+    }, 300);
 
     return () => clearTimeout(delayDebounce);
   }, [productQuery]);
@@ -102,7 +110,11 @@ export default function Orders() {
       }
 
       try {
-        const customers = await searchCustomer({ query: customerQuery, slug });
+        const customers = await searchCustomer({
+          query: customerQuery,
+          slug,
+          token,
+        });
 
         if (customers) {
           setFilteredCustomers(customers);
@@ -114,7 +126,7 @@ export default function Orders() {
 
     const delayDebounce = setTimeout(() => {
       fetchCustomers();
-    }, 300); // debounce de 300ms
+    }, 300);
 
     return () => clearTimeout(delayDebounce);
   }, [customerQuery]);
@@ -127,7 +139,11 @@ export default function Orders() {
       }
 
       try {
-        const employees = await searchEmployee({ query: memberQuery, slug });
+        const employees = await searchEmployee({
+          query: memberQuery,
+          slug,
+          token,
+        });
 
         if (employees) {
           setFilteredEmployees(employees);
@@ -139,7 +155,7 @@ export default function Orders() {
 
     const delayDebounce = setTimeout(() => {
       fetchEmployees();
-    }, 300); // debounce de 300ms
+    }, 300);
 
     return () => clearTimeout(delayDebounce);
   }, [memberQuery]);
@@ -154,7 +170,6 @@ export default function Orders() {
     });
   };
 
-  // Funções de manipulação de produtos
   const handleAddProduct = (product: Product) => {
     setSelected((prev) => {
       const exists = prev.find((p) => p.id === product.id);
@@ -212,7 +227,7 @@ export default function Orders() {
 
     formData.append("memberCommissions", JSON.stringify(individualCommissions));
 
-    const order = await createOrderAction({ formData, slug });
+    const order = await createOrderAction({ formData, slug, token });
 
     if (order.success) {
       resetForm();

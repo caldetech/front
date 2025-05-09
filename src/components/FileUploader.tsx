@@ -9,6 +9,7 @@ import { api } from "@/lib/api-client";
 import SuccessNotification from "./SuccessNotification";
 import ErrorNotification from "./ErrorNotification";
 import { useStore } from "@/stores/use-mutate";
+import useAuthToken from "@/hooks/use-auth-token";
 
 export default function FileUploader({ orderId }: { orderId: string }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -16,8 +17,8 @@ export default function FileUploader({ orderId }: { orderId: string }) {
   const [progress, setProgress] = useState(0);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-
   const { mutate } = useStore();
+  const [token] = useAuthToken();
 
   function handleMutate() {
     mutate();
@@ -75,6 +76,15 @@ export default function FileUploader({ orderId }: { orderId: string }) {
           filename: selectedFile.name,
           mimetype: selectedFile.type,
         },
+        hooks: {
+          beforeRequest: [
+            (request) => {
+              if (token) {
+                request.headers.set("Authorization", `Bearer ${token}`);
+              }
+            },
+          ],
+        },
       });
 
       const { url, key } = await signRes.json<{ key: string; url: string }>();
@@ -90,6 +100,15 @@ export default function FileUploader({ orderId }: { orderId: string }) {
           mimetype: selectedFile.type,
           size: selectedFile.size,
           key,
+        },
+        hooks: {
+          beforeRequest: [
+            (request) => {
+              if (token) {
+                request.headers.set("Authorization", `Bearer ${token}`);
+              }
+            },
+          ],
         },
       });
 

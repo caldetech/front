@@ -7,15 +7,30 @@ interface createInviteProps {
   email: string;
   role: Role;
   slug: string;
+  token: string | null;
 }
 
-export async function createInvite({ email, role, slug }: createInviteProps) {
+export async function createInvite({
+  email,
+  role,
+  slug,
+  token,
+}: createInviteProps) {
   try {
     await api.post("invite/create", {
       json: {
         email,
         role,
         slug,
+      },
+      hooks: {
+        beforeRequest: [
+          (request) => {
+            if (token) {
+              request.headers.set("Authorization", `Bearer ${token}`);
+            }
+          },
+        ],
       },
     });
 

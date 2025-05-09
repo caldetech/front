@@ -13,11 +13,13 @@ export function useFormState(
 ) {
   const [isPending, startTransition] = useTransition();
 
-  const [formState, setFormState] = useState(initialState ?? {
-    success: false,
-    message: null,
-    errors: null
-  });
+  const [formState, setFormState] = useState(
+    initialState ?? {
+      success: false,
+      message: null,
+      errors: null,
+    }
+  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,12 +31,12 @@ export function useFormState(
       const state = await action(data);
 
       if (state.success === true && onSuccess) {
-        await onSuccess()
+        await onSuccess();
       }
 
       setFormState(state);
     });
   }
 
-  return [formState, handleSubmit, isPending] as const
+  return [formState, handleSubmit, isPending] as const;
 }

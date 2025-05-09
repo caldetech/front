@@ -12,6 +12,7 @@ export async function createOrder({
   commissionPercent,
   memberCommissions,
   customer,
+  token,
 }: {
   slug: string;
   type: string;
@@ -22,6 +23,7 @@ export async function createOrder({
   commissionPercent: number;
   memberCommissions: { memberId: string; value: number }[];
   customer: { id: string; name: string };
+  token: string | null;
 }) {
   try {
     await api.post("orders/create", {
@@ -35,6 +37,15 @@ export async function createOrder({
         commissionPercent,
         memberCommissions,
         customer,
+      },
+      hooks: {
+        beforeRequest: [
+          (request) => {
+            if (token) {
+              request.headers.set("Authorization", `Bearer ${token}`);
+            }
+          },
+        ],
       },
     });
 

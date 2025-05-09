@@ -7,11 +7,13 @@ export async function createService({
   title,
   description,
   price,
+  token,
 }: {
   slug: string;
   title: string;
   description?: string;
   price: number;
+  token: string | null;
 }) {
   try {
     const response = await api.post("services/create", {
@@ -20,6 +22,15 @@ export async function createService({
         title,
         description,
         price,
+      },
+      hooks: {
+        beforeRequest: [
+          (request) => {
+            if (token) {
+              request.headers.set("Authorization", `Bearer ${token}`);
+            }
+          },
+        ],
       },
     });
 

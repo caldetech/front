@@ -5,9 +5,11 @@ import { createOrder } from "@/http/create-order";
 export async function createOrderAction({
   slug,
   formData,
+  token,
 }: {
   slug: string;
   formData: FormData;
+  token: string | null;
 }) {
   const type = formData.get("type") as string;
   const paymentMethod = formData.get("paymentMethod") as string;
@@ -56,6 +58,7 @@ export async function createOrderAction({
     commissionPercent,
     memberCommissions,
     customer,
+    token,
   });
 
   return { success: true };

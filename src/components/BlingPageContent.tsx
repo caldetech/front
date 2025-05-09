@@ -1,5 +1,6 @@
 "use client";
 
+import useAuthToken from "@/hooks/use-auth-token";
 import { getBlingTokens } from "@/http/get-bling-tokens";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -11,14 +12,17 @@ export default function BlingPageContent() {
   const code = params.get("code");
   const state = params.get("state");
   const router = useRouter();
+  const [token] = useAuthToken();
 
   useEffect(() => {
     async function handleBlingTokens() {
       if (code && state) {
-        const tokens = await getBlingTokens({ code, state });
+        const tokens = await getBlingTokens({ code, state, token });
 
         if (tokens) {
-          router.push(`http://gestao.caldetech.com.br/${state}/integracoes`);
+          router.push(
+            `${process.env.NEXT_PUBLIC_FRONT_URL}/${state}/integracoes`
+          );
         }
       }
     }

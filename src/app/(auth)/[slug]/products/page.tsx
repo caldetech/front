@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useSlug } from "@/contexts/SlugContext";
+import useAuthToken from "@/hooks/use-auth-token";
 import { useProducts } from "@/hooks/use-products";
 import { Plus } from "lucide-react";
 import { useState } from "react";
@@ -24,10 +25,12 @@ const ITEMS_PER_PAGE = 5;
 export default function Products() {
   const slug = useSlug();
   const [currentPage, setCurrentPage] = useState(1);
+  const [token] = useAuthToken();
   const { data, total, isLoading, error } = useProducts(
     currentPage,
     ITEMS_PER_PAGE,
-    slug
+    slug,
+    token
   );
 
   if (isLoading) {
