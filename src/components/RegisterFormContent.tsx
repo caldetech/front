@@ -8,6 +8,7 @@ import { createUserAction } from "@/actions/create-user";
 import ErrorNotification from "@/components/ErrorNotification";
 import SuccessNotification from "./SuccessNotification";
 import { useActionState, useEffect } from "react";
+import useAuthToken from "@/hooks/use-auth-token";
 
 interface FormState {
   success: boolean | null;
@@ -33,7 +34,6 @@ export default function RegisterFormContent() {
 
     return await createUserAction(formData);
   };
-
   const [state, formAction, isPending] = useActionState<FormState, FormData>(
     actionWrapper,
     initialState

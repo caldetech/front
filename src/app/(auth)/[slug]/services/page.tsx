@@ -48,7 +48,7 @@ export default function Services() {
   if (error) return <p>Erro ao carregar produtos</p>;
 
   async function handleSubmit(formData: FormData) {
-    const service = await createServiceAction({ slug, formData });
+    const service = await createServiceAction({ slug, formData, token });
 
     if (service.success) {
       setShowSuccessNotification(true);

@@ -6,9 +6,11 @@ import { parseBRL } from "@/lib/currency";
 export async function createServiceAction({
   slug,
   formData,
+  token,
 }: {
   slug: string;
   formData: FormData;
+  token: string | null;
 }) {
   const title = formData.get("title") as string;
   const description = formData.get("description")
@@ -23,5 +25,5 @@ export async function createServiceAction({
     };
   }
 
-  return await createService({ slug, title, description, price });
+  return await createService({ slug, title, description, price, token });
 }
