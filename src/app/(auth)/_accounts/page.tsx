@@ -29,7 +29,6 @@ import { BeatLoader } from "react-spinners";
 export default function Accounts() {
   const [cookies] = useCookies(["token"]);
   const [token, setToken] = useState<string | null>(null);
-  const [loaded, setLoaded] = useState(false);
   const [creationErrorMessage, setCreationErrorMessage] = useState<
     string | null
   >(null);
@@ -38,14 +37,19 @@ export default function Accounts() {
   >(null);
   const [open, setOpen] = useState(false);
 
+  // Lógica para verificar o token periodicamente
   useEffect(() => {
-    if (cookies.token) {
-      setToken(cookies.token);
-    }
-    setLoaded(true);
+    const checkToken = setInterval(() => {
+      if (cookies.token) {
+        setToken(cookies.token);
+        clearInterval(checkToken); // Para a verificação assim que o token for encontrado
+      }
+    }, 500); // Checa a cada 500ms
+
+    return () => clearInterval(checkToken); // Limpa o intervalo quando o componente é desmontado ou a verificação termina
   }, [cookies.token]);
 
-  const shouldFetch = loaded && !!token;
+  const shouldFetch = !!token;
 
   const { data, error, isLoading, mutate } = useSWR<OrganizationProps[]>(
     shouldFetch ? ["organizations/all", token] : null,
@@ -86,10 +90,11 @@ export default function Accounts() {
     window.location.href = "/entrar";
   }
 
-  if (!loaded) {
+  if (!token) {
     return (
       <p className="h-screen w-full items-center justify-center">
-        <BeatLoader />
+        <BeatLoader />{" "}
+        {/* Exibe o BeatLoader enquanto `token` não estiver definido */}
       </p>
     );
   }
