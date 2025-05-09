@@ -27,20 +27,23 @@ import { useEmployees } from "@/hooks/use-employees";
 import { BeatLoader } from "react-spinners";
 import SuccessNotification from "@/components/SuccessNotification";
 import ErrorNotification from "@/components/ErrorNotification";
+import useAuthToken from "@/hooks/use-auth-token";
 
 const ITEMS_PER_PAGE = 5;
 
 export default function Users() {
   const slug = useSlug();
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, total, isLoading, error, mutate } = useEmployees(
-    currentPage,
-    ITEMS_PER_PAGE,
-    slug
-  );
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [role, setRole] = useState("MEMBER");
+  const [token] = useAuthToken();
+  const { data, total, isLoading, error, mutate } = useEmployees(
+    currentPage,
+    ITEMS_PER_PAGE,
+    slug,
+    token
+  );
 
   if (isLoading) {
     return (
@@ -53,7 +56,7 @@ export default function Users() {
   if (error) return <p>Erro ao carregar funcionários</p>;
 
   async function handleSubmit(formData: FormData) {
-    const employee = await createInviteAction({ formData, slug });
+    const employee = await createInviteAction({ formData, slug, token });
 
     if (employee?.success) {
       setShowErrorNotification(false);
