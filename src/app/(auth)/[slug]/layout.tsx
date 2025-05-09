@@ -12,7 +12,7 @@ export default async function AuthLayout({
   children: React.ReactNode;
   params: { slug: string };
 }>) {
-  const { slug } = params;
+  const { slug } = await params;
 
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;

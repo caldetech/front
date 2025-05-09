@@ -12,7 +12,7 @@ export async function createUser({
   email: string;
   tokenId?: string;
   password: string;
-  inviteId?: string;
+  inviteId?: string | undefined;
 }) {
   try {
     const user = await api.post("users/register", {
