@@ -2,6 +2,7 @@
 
 import CustomTable from "@/components/CustomTable";
 import { useSlug } from "@/contexts/SlugContext";
+import useAuthToken from "@/hooks/use-auth-token";
 import { useCommissions } from "@/hooks/use-commissions";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
@@ -11,10 +12,12 @@ const ITEMS_PER_PAGE = 5;
 export default function Comissions() {
   const slug = useSlug();
   const [currentPage, setCurrentPage] = useState(1);
+  const [token] = useAuthToken();
   const { data, total, isLoading, error } = useCommissions(
     currentPage,
     ITEMS_PER_PAGE,
-    slug
+    slug,
+    token
   );
 
   if (isLoading) {

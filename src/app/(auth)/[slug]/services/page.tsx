@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useSlug } from "@/contexts/SlugContext";
+import useAuthToken from "@/hooks/use-auth-token";
 import { useServices } from "@/hooks/use-services";
 import { Plus } from "lucide-react";
 import { useState } from "react";
@@ -26,13 +27,15 @@ const ITEMS_PER_PAGE = 5;
 export default function Services() {
   const slug = useSlug();
   const [currentPage, setCurrentPage] = useState(1);
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [showErrorNotification, setShowErrorNotification] = useState(false);
+  const [token] = useAuthToken();
   const { data, total, isLoading, error, mutate } = useServices(
     currentPage,
     ITEMS_PER_PAGE,
-    slug
+    slug,
+    token
   );
-  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
-  const [showErrorNotification, setShowErrorNotification] = useState(false);
 
   if (isLoading) {
     return (

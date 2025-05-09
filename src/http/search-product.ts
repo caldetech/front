@@ -6,9 +6,11 @@ import { api } from "../lib/api-client";
 export async function searchProduct({
   slug,
   query,
+  token,
 }: {
   slug: string;
   query: string;
+  token: string | null;
 }) {
   try {
     return await api
@@ -16,6 +18,15 @@ export async function searchProduct({
         json: {
           slug,
           query,
+        },
+        hooks: {
+          beforeRequest: [
+            (request) => {
+              if (token) {
+                request.headers.set("Authorization", `Bearer ${token}`);
+              }
+            },
+          ],
         },
       })
       .json<Product[]>();

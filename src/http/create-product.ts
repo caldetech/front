@@ -9,6 +9,7 @@ interface createProductProps {
   costPrice: number;
   salesPrice: number;
   stock: number;
+  token?: string | null;
 }
 
 export async function createProduct({
@@ -18,6 +19,7 @@ export async function createProduct({
   costPrice,
   salesPrice,
   stock,
+  token,
 }: createProductProps) {
   try {
     await api.post(`organizations/${slug}/products`, {
@@ -27,6 +29,15 @@ export async function createProduct({
         costPrice,
         salesPrice,
         stock,
+      },
+      hooks: {
+        beforeRequest: [
+          (request) => {
+            if (token) {
+              request.headers.set("Authorization", `Bearer ${token}`);
+            }
+          },
+        ],
       },
     });
 

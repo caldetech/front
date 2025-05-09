@@ -1,4 +1,3 @@
-import { getProfile } from "@/http/get-profile";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 

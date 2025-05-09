@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { getOrderAttachmentById } from "@/http/get-order-attachment";
 
-// Hook para buscar os anexos de forma eficiente
-export function useOrdersAttachment(ids: string[]) {
+export function useOrdersAttachment(ids: string[], token: string | null) {
   const [attachments, setAttachments] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -10,22 +9,21 @@ export function useOrdersAttachment(ids: string[]) {
   useEffect(() => {
     async function fetchAttachments() {
       setLoading(true);
-      setError(null); // Reseta o erro ao iniciar nova busca
+      setError(null);
 
       try {
         const attachmentResults: Record<string, boolean> = {};
 
-        // Faz as requisições paralelamente
         await Promise.all(
           ids.map(async (id) => {
-            const result = await getOrderAttachmentById(id);
-            attachmentResults[id] = !!result; // true se attachment existe
+            const result = await getOrderAttachmentById(id, token);
+            attachmentResults[id] = !!result;
           })
         );
 
         setAttachments(attachmentResults);
       } catch (err) {
-        setError(err as Error); // Captura o erro
+        setError(err as Error);
       } finally {
         setLoading(false);
       }

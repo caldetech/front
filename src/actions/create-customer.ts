@@ -6,9 +6,11 @@ import { createCustomer } from "@/http/create-customer";
 export async function createCustomerAction({
   slug,
   formData,
+  token,
 }: {
   slug: string;
   formData: FormData;
+  token: string | null;
 }) {
   const customerType = formData.get("customerType") as CustomerTypes;
   const name = formData.get("name") as string;
@@ -38,5 +40,6 @@ export async function createCustomerAction({
     address,
     mainNumber,
     contactNumber,
+    token,
   });
 }

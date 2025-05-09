@@ -3,6 +3,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { SlugProvider } from "@/contexts/SlugContext";
 import { getProfile } from "@/http/get-profile";
 import { AbilityProvider } from "@/providers/CaslAbilityProvider";
+import { cookies } from "next/headers";
 
 export default async function AuthLayout({
   children,
@@ -11,8 +12,12 @@ export default async function AuthLayout({
   children: React.ReactNode;
   params: { slug: string };
 }>) {
-  const { slug } = await params;
-  const user = await getProfile(slug);
+  const { slug } = params;
+
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  const user = await getProfile({ slug, token });
 
   return (
     <AbilityProvider user={user}>

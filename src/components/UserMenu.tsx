@@ -7,7 +7,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getProfile } from "@/http/get-profile";
 import { User } from "@/utils/casl/user";
 import { LogOut } from "lucide-react";
 

@@ -7,7 +7,15 @@ export async function createUser({
   tokenId,
   password,
   inviteId,
-}: CreateUserProps) {
+  token,
+}: {
+  name: string;
+  email: string;
+  tokenId?: string;
+  password: string;
+  inviteId?: string;
+  token: string | null;
+}) {
   try {
     const user = await api.post("users/register", {
       json: {
@@ -16,6 +24,15 @@ export async function createUser({
         password,
         inviteId,
         tokenId,
+      },
+      hooks: {
+        beforeRequest: [
+          (request) => {
+            if (token) {
+              request.headers.set("Authorization", `Bearer ${token}`);
+            }
+          },
+        ],
       },
     });
 
