@@ -551,6 +551,7 @@ export default function Orders() {
           attachment={true}
           tableName="orders"
           navigation={true}
+          module="orders"
         />
       </div>
     </div>
