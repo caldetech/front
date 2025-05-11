@@ -141,8 +141,9 @@ export default function CustomTable<T extends GenericRecord>({
           key !== "orderId" &&
           key !== "memberId" &&
           key !== "address" &&
-          key != "productOrder" &&
-          key != "assignedMembers"
+          key !== "productOrder" &&
+          key !== "assignedMembers" &&
+          key !== "orderNumber"
       )
     : [];
 
@@ -155,6 +156,74 @@ export default function CustomTable<T extends GenericRecord>({
     const addressNumber = address.split(",")[1].trim();
 
     return `https://www.google.com/maps?q=${addressName},+${addressNumber},+Sertãozinho,+SP`;
+  }
+
+  const keyLabels = {
+    type: "Tipo",
+    customer: "Cliente",
+    address: "Endereço",
+    assignedMembers: "Funcionários",
+    customerType: "Sujeito",
+  };
+
+  const valueLabels = {
+    SALE: "VENDA",
+    BUDGET: "ORÇAMENTO",
+    WARRANTY: "GARANTIA",
+    COMPANY: "EMPRESA",
+    PERSON: "PESSOA",
+  };
+
+  function formatValue(key: unknown, value: unknown) {
+    if (key === "type") {
+      if (value === "VENDA") {
+        return (
+          <Badge color={"orange"} className="text-black">
+            VENDA
+          </Badge>
+        );
+      }
+      if (value === "GARANTIA") {
+        return (
+          <Badge variant={"secondary"} className="text-black">
+            GARANTIA
+          </Badge>
+        );
+      }
+      if (value === "ORÇAMENTO") {
+        return (
+          <Badge color={"cyan"} className="text-black">
+            ORÇAMENTO
+          </Badge>
+        );
+      }
+      if (value === "EMPRESA") {
+        return (
+          <Badge color={"blue"} className="text-black">
+            EMPRESA
+          </Badge>
+        );
+      }
+    }
+
+    if (key === "customerType") {
+      if (value === "PESSOA") {
+        return (
+          <Badge color={"brown"} className="text-black">
+            PESSOA
+          </Badge>
+        );
+      }
+      if (value === "EMPRESA") {
+        return (
+          <Badge color={"blue"} className="text-black">
+            EMPRESA
+          </Badge>
+        );
+      }
+    }
+
+    return String(value);
   }
 
   return (
@@ -206,6 +275,9 @@ export default function CustomTable<T extends GenericRecord>({
             <tbody>
               {data.map((item) => {
                 const address = item.address as string;
+                const orderNumber = item.orderNumber as number;
+
+                console.log(item);
 
                 return (
                   <tr className="border-b border-[#EFEFEF]" key={item.id}>
@@ -287,9 +359,14 @@ export default function CustomTable<T extends GenericRecord>({
 
                         <DialogContent className="w-[95vw] max-w-[640px] rounded-md">
                           <DialogHeader>
-                            <DialogTitle>Pedido: </DialogTitle>
+                            <DialogTitle>
+                              Ordem n°:{" "}
+                              {orderNumber.toString().length === 1
+                                ? `00${orderNumber}`
+                                : `${orderNumber}`}
+                            </DialogTitle>
                             <DialogDescription>
-                              Detalhes do pedido
+                              Detalhes da ordem
                             </DialogDescription>
                           </DialogHeader>
 
@@ -303,21 +380,67 @@ export default function CustomTable<T extends GenericRecord>({
                                     key != "orderAttachment" &&
                                     key != "payment" &&
                                     key != "status" &&
-                                    key != "productOrder"
+                                    key != "productOrder" &&
+                                    key != "orderNumber"
                                 )
-                                .map(([key, value]) => (
-                                  <div
-                                    key={key}
-                                    className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
-                                  >
-                                    <span className="text-muted-foreground text-sm">
-                                      {key}
-                                    </span>
-                                    <span className="text-right">
-                                      {String(value)}
-                                    </span>
-                                  </div>
-                                ))}
+                                .map(([key, value], index) => {
+                                  if (
+                                    key === "assignedMembers" &&
+                                    Array.isArray(value)
+                                  ) {
+                                    return (
+                                      <div
+                                        key={key}
+                                        className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
+                                      >
+                                        <p className="text-muted-foreground text-sm">
+                                          {key in keyLabels
+                                            ? keyLabels[
+                                                key as keyof typeof keyLabels
+                                              ]
+                                            : key}
+                                        </p>
+
+                                        <div className="flex gap-4 justify-end">
+                                          {value.map((element, idx) => (
+                                            <p key={idx} className="text-right">
+                                              <Badge variant={"secondary"}>
+                                                {element.memberName}
+                                              </Badge>
+                                            </p>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    );
+                                  }
+
+                                  return (
+                                    <div
+                                      key={key}
+                                      className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
+                                    >
+                                      <p className="text-muted-foreground text-sm">
+                                        {key in keyLabels
+                                          ? keyLabels[
+                                              key as keyof typeof keyLabels
+                                            ]
+                                          : key}
+                                      </p>
+                                      <p className="text-right">
+                                        {String(value) in valueLabels
+                                          ? formatValue(
+                                              key,
+                                              valueLabels[
+                                                String(
+                                                  value
+                                                ) as keyof typeof valueLabels
+                                              ]
+                                            )
+                                          : String(value)}
+                                      </p>
+                                    </div>
+                                  );
+                                })}
                             </div>
 
                             {/* Tabela de produtos */}
@@ -331,16 +454,34 @@ export default function CustomTable<T extends GenericRecord>({
                                     <th className="text-right p-2">Subtotal</th>
                                   </tr>
                                 </thead>
+
                                 <tbody>
-                                  <tr className="border-t">
-                                    <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
-                                      fwewwwwwewfwefwefwefwe ecwefwe
-                                    </td>
-                                    <td className="text-right p-2">efwe</td>
-                                    <td className="text-right p-2">efwe</td>
-                                    <td className="text-right p-2">fwe</td>
-                                  </tr>
+                                  {Object.entries(item)
+                                    .filter(
+                                      ([key, value]) => key === "productOrder"
+                                    )
+                                    .flatMap(([key, value]) =>
+                                      Array.isArray(value)
+                                        ? value.map((element, idx) => (
+                                            <tr className="border-t" key={idx}>
+                                              <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                                {element.productName}
+                                              </td>
+                                              <td className="text-right p-2">
+                                                {element.quantity}
+                                              </td>
+                                              <td className="text-right p-2">
+                                                R$ 0
+                                              </td>
+                                              <td className="text-right p-2">
+                                                R$ 0
+                                              </td>
+                                            </tr>
+                                          ))
+                                        : []
+                                    )}
                                 </tbody>
+
                                 <tfoot>
                                   <tr className="border-t">
                                     <td colSpan={3} className="p-2">
