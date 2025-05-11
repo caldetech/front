@@ -131,6 +131,7 @@ export default function Products() {
           onPageChange={setCurrentPage}
           totalItems={total}
           itemsPerPage={ITEMS_PER_PAGE}
+          module="products"
         />
       </div>
     </div>
