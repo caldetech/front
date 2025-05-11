@@ -8,6 +8,7 @@ export async function createOrder({
   paymentMethod,
   paymentAmount,
   blingProducts,
+  services,
   members,
   commissionPercent,
   memberCommissions,
@@ -18,7 +19,14 @@ export async function createOrder({
   type: string;
   paymentMethod: string;
   paymentAmount: number;
-  blingProducts: { id: string; title: string; quantity: number }[];
+  blingProducts: {
+    id: string;
+    nome: string;
+    preco: number;
+    precoCusto: number;
+    quantity: number;
+  }[];
+  services: { id: string; title: string; price: number }[];
   members: { id: string; name: string }[];
   commissionPercent: number;
   memberCommissions: { memberId: string; value: number }[];
@@ -33,6 +41,7 @@ export async function createOrder({
         paymentMethod,
         paymentAmount,
         blingProducts,
+        services,
         members,
         commissionPercent,
         memberCommissions,

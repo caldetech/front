@@ -36,6 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
+import { parseBRL } from "@/lib/currency";
 
 export type GenericRecord = {
   id: string;
@@ -61,6 +62,7 @@ const columnNameMapping: Record<string, Record<string, string>> = {
     customer: "Cliente",
     payment: "Pagamento",
     status: "Status",
+    customerType: "Sujeito",
   },
 };
 
@@ -100,6 +102,18 @@ const valueMapping: Record<
       ),
       RECEIVED: <Badge variant="secondary">Recebido</Badge>,
       CANCELLED: <Badge variant="secondary">Cancelado</Badge>,
+    },
+    customerType: {
+      COMPANY: (
+        <Badge color={"blue"} className="text-black">
+          Empresa
+        </Badge>
+      ),
+      PERSON: (
+        <Badge color={"brown"} className="text-black">
+          Pessoal
+        </Badge>
+      ),
     },
   },
 };
@@ -173,7 +187,7 @@ export default function CustomTable<T extends GenericRecord>({
     BUDGET: "ORÇAMENTO",
     WARRANTY: "GARANTIA",
     COMPANY: "EMPRESA",
-    PERSON: "PESSOA",
+    PERSON: "PESSOAL",
   };
 
   function formatValue(key: unknown, value: unknown) {
@@ -206,13 +220,20 @@ export default function CustomTable<T extends GenericRecord>({
           </Badge>
         );
       }
+      if (value === "PESSOAL") {
+        return (
+          <Badge color={"brown"} className="text-black">
+            EMPRESA
+          </Badge>
+        );
+      }
     }
 
     if (key === "customerType") {
-      if (value === "PESSOA") {
+      if (value === "PESSOAL") {
         return (
           <Badge color={"brown"} className="text-black">
-            PESSOA
+            PESSOAL
           </Badge>
         );
       }
@@ -276,6 +297,8 @@ export default function CustomTable<T extends GenericRecord>({
 
             <tbody>
               {data.map((item) => {
+                console.log(item);
+
                 const address = item.address as string;
                 const orderNumber = item.orderNumber as number;
 
@@ -350,7 +373,7 @@ export default function CustomTable<T extends GenericRecord>({
                         </span>
                       )}
 
-                      {module === "order" && (
+                      {module === "orders" && (
                         <Dialog>
                           <DialogTrigger asChild>
                             <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
@@ -480,10 +503,52 @@ export default function CustomTable<T extends GenericRecord>({
                                                   {element.quantity}
                                                 </td>
                                                 <td className="text-right p-2">
-                                                  R$ 0
+                                                  {element.price}
                                                 </td>
                                                 <td className="text-right p-2">
-                                                  R$ 0
+                                                  {parseFloat(
+                                                    (
+                                                      element.price *
+                                                      element.quantity
+                                                    ).toString()
+                                                  )}
+                                                </td>
+                                              </tr>
+                                            ))
+                                          : []
+                                      )}
+                                  </tbody>
+
+                                  <thead>
+                                    <tr>
+                                      <th className="text-left p-2">Serviço</th>
+                                      <th className="text-right p-2"></th>
+                                      <th className="text-right p-2"></th>
+                                      <th className="text-right p-2">
+                                        Subtotal
+                                      </th>
+                                    </tr>
+                                  </thead>
+
+                                  <tbody>
+                                    {Object.entries(item)
+                                      .filter(
+                                        ([key, value]) => key === "productOrder"
+                                      )
+                                      .flatMap(([key, value]) =>
+                                        Array.isArray(value)
+                                          ? value.map((element, idx) => (
+                                              <tr
+                                                className="border-t"
+                                                key={idx}
+                                              >
+                                                <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                                  {element.productName}
+                                                </td>
+                                                <td className="text-right p-2"></td>
+                                                <td className="text-right p-2"></td>
+                                                <td className="text-right p-2">
+                                                  {element.price}
                                                 </td>
                                               </tr>
                                             ))
@@ -494,7 +559,7 @@ export default function CustomTable<T extends GenericRecord>({
                                   <tfoot>
                                     <tr className="border-t">
                                       <td colSpan={3} className="p-2">
-                                        Total do pedido
+                                        Total
                                       </td>
                                       <td className="text-right p-2 font-medium">
                                         wefwefwe

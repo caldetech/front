@@ -27,9 +27,11 @@ import { useOrders } from "@/hooks/use-orders";
 import { searchCustomer } from "@/http/search-customer";
 import { searchEmployee } from "@/http/search-employee";
 import { searchProduct } from "@/http/search-product";
+import { searchService } from "@/http/search-service";
 import { Customer } from "@/schemas/customer";
 import { Employee } from "@/schemas/employee";
 import { Product } from "@/schemas/products";
+import type { Service } from "@/schemas/services";
 import { useStore } from "@/stores/use-mutate";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -68,10 +70,42 @@ export default function Orders() {
     slug,
     token
   );
+  const [serviceQuery, setServiceQuery] = useState("");
+  const [filteredServices, setFilteredServices] = useState<Service[]>([]);
+  const [selectedServices, setSelectedServices] = useState<Service[]>([]);
 
   useEffect(() => {
     setMutate(mutate);
   }, []);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      if (serviceQuery.length < 3) {
+        setFilteredServices([]);
+        return;
+      }
+
+      try {
+        const services = await searchService({
+          query: serviceQuery,
+          slug,
+          token,
+        });
+
+        if (services) {
+          setFilteredServices(services);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar serviços:", error);
+      }
+    };
+
+    const delayDebounce = setTimeout(() => {
+      fetchServices();
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [serviceQuery]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -212,6 +246,9 @@ export default function Orders() {
     setCustomer(null);
     setOrderType("");
     setPaymentMethod("");
+    setSelectedServices([]);
+    setServiceQuery("");
+    setFilteredServices([]);
   };
 
   const handleSubmit = async (formData: FormData) => {
@@ -219,6 +256,7 @@ export default function Orders() {
     formData.append("members", JSON.stringify(selectedMembers));
     formData.append("commissionPercent", String(totalCommissionPercent));
     formData.append("customer", JSON.stringify(customer));
+    formData.append("services", JSON.stringify(selectedServices));
 
     const individualCommissions = selectedMembers.map((member) => ({
       memberId: member.id,
@@ -245,6 +283,7 @@ export default function Orders() {
     formData.delete("paymentAmount");
     formData.delete("type");
     formData.delete("paymentMethod");
+    formData.delete("services");
   };
 
   if (isLoading) {
@@ -391,17 +430,19 @@ export default function Orders() {
                 )}
               </div>
 
-              {/* Produtos selecionados */}
-              <div className="flex flex-col gap-2">
-                {selected.map((p) => {
-                  return (
+              {/* Lista de produtos adicionados */}
+              {selected.length > 0 && (
+                <div className="space-y-2">
+                  {selected.map((p) => (
                     <div
                       key={p.id}
-                      className="flex items-center gap-2 justify-between"
+                      className="flex items-center justify-between border-b border-gray-200 pb-2"
                     >
-                      <span>{p.nome}</span>
+                      <span className="text-sm font-medium text-gray-800">
+                        {p.nome}
+                      </span>
 
-                      <div className="flex">
+                      <div className="flex items-center gap-2">
                         <Input
                           type="number"
                           min={1}
@@ -409,19 +450,86 @@ export default function Orders() {
                           onChange={(e) =>
                             updateQuantity(p.id, Number(e.target.value))
                           }
-                          className="w-20"
+                          className="w-16 h-8 px-2 py-1 text-sm"
                         />
                         <Button
                           variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-700 h-8 px-2"
                           onClick={() => removeProduct(p.id)}
                         >
                           Remover
                         </Button>
                       </div>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
+              )}
+
+              {/* Pesquisa de serviços */}
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="service-search">Pesquisar serviço</Label>
+                <Input
+                  id="service-search"
+                  placeholder="Digite para buscar..."
+                  value={serviceQuery}
+                  onChange={(e) => setServiceQuery(e.target.value)}
+                />
+                {filteredServices.length > 0 ? (
+                  <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
+                    {filteredServices.map((service) => (
+                      <button
+                        key={service.id}
+                        type="button"
+                        onClick={() => {
+                          const exists = selectedServices.find(
+                            (s) => s.id === service.id
+                          );
+                          if (!exists) {
+                            setSelectedServices((prev) => [...prev, service]);
+                          }
+                          setServiceQuery("");
+                        }}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        {service.title}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  serviceQuery && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Nenhum serviço encontrado.
+                    </p>
+                  )
+                )}
               </div>
+
+              {/* Serviços selecionados */}
+              {selectedServices.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <Label>Serviços selecionados</Label>
+                  {selectedServices.map((s) => (
+                    <div
+                      key={s.id}
+                      className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded"
+                    >
+                      <span>{s.title}</span>
+                      <Button
+                        variant="ghost"
+                        className="text-red-500 hover:text-red-700 h-8 px-2"
+                        onClick={() =>
+                          setSelectedServices((prev) =>
+                            prev.filter((item) => item.id !== s.id)
+                          )
+                        }
+                      >
+                        Remover
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Valor do pagamento */}
               <div className="flex flex-col gap-1">
