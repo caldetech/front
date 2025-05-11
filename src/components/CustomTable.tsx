@@ -1,6 +1,13 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Eye, FileCheck, FileX } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  FileCheck,
+  FileX,
+  Navigation,
+} from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -9,10 +16,26 @@ import {
   PaginationNext,
 } from "./ui/pagination";
 import React, { useState } from "react";
-import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "./ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogHeader,
+  DialogDescription,
+} from "./ui/dialog";
 import { Badge } from "./ui/badge"; // ✅ IMPORT DO BADGE
 import FileUploader from "./FileUploader";
 import Image from "next/image";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
 
 export type GenericRecord = {
   id: string;
@@ -27,6 +50,7 @@ type CustomTableProps<T extends GenericRecord> = {
   totalItems?: number;
   attachment?: boolean;
   tableName?: string;
+  navigation?: boolean;
 };
 
 // ✅ Mapeamento de nomes das colunas por tabela
@@ -107,6 +131,7 @@ export default function CustomTable<T extends GenericRecord>({
   itemsPerPage,
   attachment = false,
   tableName,
+  navigation = false,
 }: CustomTableProps<T>) {
   const columnNames = data?.length
     ? Object.keys(data[0]).filter(
@@ -114,13 +139,23 @@ export default function CustomTable<T extends GenericRecord>({
           key !== "id" &&
           key !== "orderAttachment" &&
           key !== "orderId" &&
-          key !== "memberId"
+          key !== "memberId" &&
+          key !== "address" &&
+          key != "productOrder" &&
+          key != "assignedMembers"
       )
     : [];
 
   const [columnIndex, setColumnIndex] = useState(1);
 
   const totalPages = Math.ceil((totalItems ?? data.length) / itemsPerPage);
+
+  function getUrlNavigation(address: string) {
+    const addressName = address.split(",")[0];
+    const addressNumber = address.split(",")[1].trim();
+
+    return `https://www.google.com/maps?q=${addressName},+${addressNumber},+Sertãozinho,+SP`;
+  }
 
   return (
     <>
@@ -170,6 +205,8 @@ export default function CustomTable<T extends GenericRecord>({
 
             <tbody>
               {data.map((item) => {
+                const address = item.address as string;
+
                 return (
                   <tr className="border-b border-[#EFEFEF]" key={item.id}>
                     <td className="p-2 text-xs text-left text-muted-foreground select-none">
@@ -233,9 +270,92 @@ export default function CustomTable<T extends GenericRecord>({
                         </>
                       ) : null}
 
-                      <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
-                        <Eye className="size-4" />
-                      </span>
+                      {navigation && (
+                        <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                          <a href={getUrlNavigation(address)} target="_blank">
+                            <Navigation className="size-4" />
+                          </a>
+                        </span>
+                      )}
+
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                            <Eye className="size-4" />
+                          </span>
+                        </DialogTrigger>
+
+                        <DialogContent className="w-[95vw] max-w-[640px] rounded-md">
+                          <DialogHeader>
+                            <DialogTitle>Pedido: </DialogTitle>
+                            <DialogDescription>
+                              Detalhes do pedido
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <div className="max-h-[60vh] overflow-y-auto mt-4 space-y-6">
+                            {/* Informações do pedido */}
+                            <div className="space-y-4">
+                              {Object.entries(item)
+                                .filter(
+                                  ([key, value]) =>
+                                    key != "id" &&
+                                    key != "orderAttachment" &&
+                                    key != "payment" &&
+                                    key != "status" &&
+                                    key != "productOrder"
+                                )
+                                .map(([key, value]) => (
+                                  <div
+                                    key={key}
+                                    className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
+                                  >
+                                    <span className="text-muted-foreground text-sm">
+                                      {key}
+                                    </span>
+                                    <span className="text-right">
+                                      {String(value)}
+                                    </span>
+                                  </div>
+                                ))}
+                            </div>
+
+                            {/* Tabela de produtos */}
+                            <div className="overflow-x-auto">
+                              <table className="min-w-full text-sm">
+                                <thead>
+                                  <tr>
+                                    <th className="text-left p-2">Produto</th>
+                                    <th className="text-right p-2">Qtd.</th>
+                                    <th className="text-right p-2">Preço</th>
+                                    <th className="text-right p-2">Subtotal</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr className="border-t">
+                                    <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                      fwewwwwwewfwefwefwefwe ecwefwe
+                                    </td>
+                                    <td className="text-right p-2">efwe</td>
+                                    <td className="text-right p-2">efwe</td>
+                                    <td className="text-right p-2">fwe</td>
+                                  </tr>
+                                </tbody>
+                                <tfoot>
+                                  <tr className="border-t">
+                                    <td colSpan={3} className="p-2">
+                                      Total do pedido
+                                    </td>
+                                    <td className="text-right p-2 font-medium">
+                                      wefwefwe
+                                    </td>
+                                  </tr>
+                                </tfoot>
+                              </table>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </td>
                   </tr>
                 );

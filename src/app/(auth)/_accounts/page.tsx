@@ -8,7 +8,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ChevronRight, Plus, Power, Building2 } from "lucide-react";
+import {
+  ChevronRight,
+  Plus,
+  Power,
+  Building2,
+  Trash2,
+  Trash,
+  X,
+} from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -25,10 +33,10 @@ import ErrorNotification from "@/components/ErrorNotification";
 import { Badge } from "@/components/ui/badge";
 import { useCookies } from "react-cookie";
 import { BeatLoader } from "react-spinners";
+import type { GetServerSidePropsContext } from "next";
 
 export default function Accounts() {
-  const [cookies] = useCookies(["token"]);
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null | undefined>(null);
   const [creationErrorMessage, setCreationErrorMessage] = useState<
     string | null
   >(null);
@@ -36,18 +44,6 @@ export default function Accounts() {
     string | null
   >(null);
   const [open, setOpen] = useState(false);
-
-  // Lógica para verificar o token periodicamente
-  useEffect(() => {
-    const checkToken = setInterval(() => {
-      if (cookies.token) {
-        setToken(cookies.token);
-        clearInterval(checkToken); // Para a verificação assim que o token for encontrado
-      }
-    }, 500); // Checa a cada 500ms
-
-    return () => clearInterval(checkToken); // Limpa o intervalo quando o componente é desmontado ou a verificação termina
-  }, [cookies.token]);
 
   const shouldFetch = !!token;
 
@@ -89,6 +85,35 @@ export default function Accounts() {
     await fetch("/api/auth/sign-out", { method: "GET" });
     window.location.href = "/entrar";
   }
+
+  const [cookies] = useCookies(["token"]);
+
+  let cookiesToken;
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    function fetchDataRecursively() {
+      if (isCancelled) return;
+
+      setToken(cookies.token);
+
+      if (cookies.token) {
+        return;
+      }
+
+      setTimeout(() => {
+        fetchDataRecursively();
+        window.location.reload();
+      }, 3000);
+    }
+
+    fetchDataRecursively();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   if (!token) {
     return (
@@ -177,7 +202,8 @@ export default function Accounts() {
                       </Badge>
                     </p>
                   </div>
-                  <span className="border border-[#EFEFEF] p-2 rounded-sm m-2 hover:bg-[#F3F4F6] cursor-pointer">
+
+                  <span className="border border-[#EFEFEF] p-2 m-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
                     <ChevronRight />
                   </span>
                 </Card>
