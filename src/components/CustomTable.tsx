@@ -51,6 +51,7 @@ type CustomTableProps<T extends GenericRecord> = {
   attachment?: boolean;
   tableName?: string;
   navigation?: boolean;
+  module: string;
 };
 
 // ✅ Mapeamento de nomes das colunas por tabela
@@ -132,6 +133,7 @@ export default function CustomTable<T extends GenericRecord>({
   attachment = false,
   tableName,
   navigation = false,
+  module,
 }: CustomTableProps<T>) {
   const columnNames = data?.length
     ? Object.keys(data[0]).filter(
@@ -277,8 +279,6 @@ export default function CustomTable<T extends GenericRecord>({
                 const address = item.address as string;
                 const orderNumber = item.orderNumber as number;
 
-                console.log(item);
-
                 return (
                   <tr className="border-b border-[#EFEFEF]" key={item.id}>
                     <td className="p-2 text-xs text-left text-muted-foreground select-none">
@@ -350,44 +350,74 @@ export default function CustomTable<T extends GenericRecord>({
                         </span>
                       )}
 
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
-                            <Eye className="size-4" />
-                          </span>
-                        </DialogTrigger>
+                      {module === "order" && (
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                              <Eye className="size-4" />
+                            </span>
+                          </DialogTrigger>
 
-                        <DialogContent className="w-[95vw] max-w-[640px] rounded-md">
-                          <DialogHeader>
-                            <DialogTitle>
-                              Ordem n°:{" "}
-                              {orderNumber.toString().length === 1
-                                ? `00${orderNumber}`
-                                : `${orderNumber}`}
-                            </DialogTitle>
-                            <DialogDescription>
-                              Detalhes da ordem
-                            </DialogDescription>
-                          </DialogHeader>
+                          <DialogContent className="w-[95vw] max-w-[640px] rounded-md">
+                            <DialogHeader>
+                              <DialogTitle>
+                                Ordem n°:{" "}
+                                {orderNumber.toString().length === 1
+                                  ? `00${orderNumber}`
+                                  : `${orderNumber}`}
+                              </DialogTitle>
+                              <DialogDescription>
+                                Detalhes da ordem
+                              </DialogDescription>
+                            </DialogHeader>
 
-                          <div className="max-h-[60vh] overflow-y-auto mt-4 space-y-6">
-                            {/* Informações do pedido */}
-                            <div className="space-y-4">
-                              {Object.entries(item)
-                                .filter(
-                                  ([key, value]) =>
-                                    key != "id" &&
-                                    key != "orderAttachment" &&
-                                    key != "payment" &&
-                                    key != "status" &&
-                                    key != "productOrder" &&
-                                    key != "orderNumber"
-                                )
-                                .map(([key, value], index) => {
-                                  if (
-                                    key === "assignedMembers" &&
-                                    Array.isArray(value)
-                                  ) {
+                            <div className="max-h-[60vh] overflow-y-auto mt-4 space-y-6">
+                              {/* Informações do pedido */}
+                              <div className="space-y-4">
+                                {Object.entries(item)
+                                  .filter(
+                                    ([key, value]) =>
+                                      key != "id" &&
+                                      key != "orderAttachment" &&
+                                      key != "payment" &&
+                                      key != "status" &&
+                                      key != "productOrder" &&
+                                      key != "orderNumber"
+                                  )
+                                  .map(([key, value], index) => {
+                                    if (
+                                      key === "assignedMembers" &&
+                                      Array.isArray(value)
+                                    ) {
+                                      return (
+                                        <div
+                                          key={key}
+                                          className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
+                                        >
+                                          <p className="text-muted-foreground text-sm">
+                                            {key in keyLabels
+                                              ? keyLabels[
+                                                  key as keyof typeof keyLabels
+                                                ]
+                                              : key}
+                                          </p>
+
+                                          <div className="flex gap-4 justify-end">
+                                            {value.map((element, idx) => (
+                                              <p
+                                                key={idx}
+                                                className="text-right"
+                                              >
+                                                <Badge variant={"secondary"}>
+                                                  {element.memberName}
+                                                </Badge>
+                                              </p>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      );
+                                    }
+
                                     return (
                                       <div
                                         key={key}
@@ -400,103 +430,83 @@ export default function CustomTable<T extends GenericRecord>({
                                               ]
                                             : key}
                                         </p>
-
-                                        <div className="flex gap-4 justify-end">
-                                          {value.map((element, idx) => (
-                                            <p key={idx} className="text-right">
-                                              <Badge variant={"secondary"}>
-                                                {element.memberName}
-                                              </Badge>
-                                            </p>
-                                          ))}
-                                        </div>
+                                        <p className="text-right">
+                                          {String(value) in valueLabels
+                                            ? formatValue(
+                                                key,
+                                                valueLabels[
+                                                  String(
+                                                    value
+                                                  ) as keyof typeof valueLabels
+                                                ]
+                                              )
+                                            : String(value)}
+                                        </p>
                                       </div>
                                     );
-                                  }
+                                  })}
+                              </div>
 
-                                  return (
-                                    <div
-                                      key={key}
-                                      className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
-                                    >
-                                      <p className="text-muted-foreground text-sm">
-                                        {key in keyLabels
-                                          ? keyLabels[
-                                              key as keyof typeof keyLabels
-                                            ]
-                                          : key}
-                                      </p>
-                                      <p className="text-right">
-                                        {String(value) in valueLabels
-                                          ? formatValue(
-                                              key,
-                                              valueLabels[
-                                                String(
-                                                  value
-                                                ) as keyof typeof valueLabels
-                                              ]
-                                            )
-                                          : String(value)}
-                                      </p>
-                                    </div>
-                                  );
-                                })}
+                              {/* Tabela de produtos */}
+                              <div className="overflow-x-auto">
+                                <table className="min-w-full text-sm">
+                                  <thead>
+                                    <tr>
+                                      <th className="text-left p-2">Produto</th>
+                                      <th className="text-right p-2">Qtd.</th>
+                                      <th className="text-right p-2">Preço</th>
+                                      <th className="text-right p-2">
+                                        Subtotal
+                                      </th>
+                                    </tr>
+                                  </thead>
+
+                                  <tbody>
+                                    {Object.entries(item)
+                                      .filter(
+                                        ([key, value]) => key === "productOrder"
+                                      )
+                                      .flatMap(([key, value]) =>
+                                        Array.isArray(value)
+                                          ? value.map((element, idx) => (
+                                              <tr
+                                                className="border-t"
+                                                key={idx}
+                                              >
+                                                <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                                  {element.productName}
+                                                </td>
+                                                <td className="text-right p-2">
+                                                  {element.quantity}
+                                                </td>
+                                                <td className="text-right p-2">
+                                                  R$ 0
+                                                </td>
+                                                <td className="text-right p-2">
+                                                  R$ 0
+                                                </td>
+                                              </tr>
+                                            ))
+                                          : []
+                                      )}
+                                  </tbody>
+
+                                  <tfoot>
+                                    <tr className="border-t">
+                                      <td colSpan={3} className="p-2">
+                                        Total do pedido
+                                      </td>
+                                      <td className="text-right p-2 font-medium">
+                                        wefwefwe
+                                      </td>
+                                    </tr>
+                                  </tfoot>
+                                </table>
+                              </div>
                             </div>
-
-                            {/* Tabela de produtos */}
-                            <div className="overflow-x-auto">
-                              <table className="min-w-full text-sm">
-                                <thead>
-                                  <tr>
-                                    <th className="text-left p-2">Produto</th>
-                                    <th className="text-right p-2">Qtd.</th>
-                                    <th className="text-right p-2">Preço</th>
-                                    <th className="text-right p-2">Subtotal</th>
-                                  </tr>
-                                </thead>
-
-                                <tbody>
-                                  {Object.entries(item)
-                                    .filter(
-                                      ([key, value]) => key === "productOrder"
-                                    )
-                                    .flatMap(([key, value]) =>
-                                      Array.isArray(value)
-                                        ? value.map((element, idx) => (
-                                            <tr className="border-t" key={idx}>
-                                              <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
-                                                {element.productName}
-                                              </td>
-                                              <td className="text-right p-2">
-                                                {element.quantity}
-                                              </td>
-                                              <td className="text-right p-2">
-                                                R$ 0
-                                              </td>
-                                              <td className="text-right p-2">
-                                                R$ 0
-                                              </td>
-                                            </tr>
-                                          ))
-                                        : []
-                                    )}
-                                </tbody>
-
-                                <tfoot>
-                                  <tr className="border-t">
-                                    <td colSpan={3} className="p-2">
-                                      Total do pedido
-                                    </td>
-                                    <td className="text-right p-2 font-medium">
-                                      wefwefwe
-                                    </td>
-                                  </tr>
-                                </tfoot>
-                              </table>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                          </DialogContent>
+                        </Dialog>
+                      )}
                     </td>
                   </tr>
                 );
