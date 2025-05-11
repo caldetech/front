@@ -21,8 +21,16 @@ export async function createOrderAction({
 
   const blingProducts = JSON.parse(formData.get("blingProducts") as string) as {
     id: string;
-    title: string;
+    nome: string;
+    preco: number;
+    precoCusto: number;
     quantity: number;
+  }[];
+
+  const services = JSON.parse(formData.get("services") as string) as {
+    id: string;
+    title: string;
+    price: number;
   }[];
 
   const customer = JSON.parse(formData.get("customer") as string) as {
@@ -54,6 +62,7 @@ export async function createOrderAction({
     paymentMethod,
     paymentAmount,
     blingProducts,
+    services,
     members,
     commissionPercent,
     memberCommissions,
