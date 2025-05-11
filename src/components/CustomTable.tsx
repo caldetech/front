@@ -350,7 +350,7 @@ export default function CustomTable<T extends GenericRecord>({
                         </span>
                       )}
 
-                      {module === "order" && (
+                      {module === "orders" && (
                         <Dialog>
                           <DialogTrigger asChild>
                             <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
