@@ -141,6 +141,7 @@ export default function Services() {
           onPageChange={setCurrentPage}
           totalItems={total}
           itemsPerPage={ITEMS_PER_PAGE}
+          module="services"
         />
       </div>
     </div>

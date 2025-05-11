@@ -277,6 +277,7 @@ export default function Customers() {
           onPageChange={setCurrentPage}
           totalItems={total}
           itemsPerPage={ITEMS_PER_PAGE}
+          module="customers"
         />
       </div>
     </div>

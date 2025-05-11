@@ -43,6 +43,7 @@ export default function Comissions() {
           onPageChange={setCurrentPage}
           totalItems={total}
           itemsPerPage={ITEMS_PER_PAGE}
+          module="commissions"
         />
       </div>
     </div>
