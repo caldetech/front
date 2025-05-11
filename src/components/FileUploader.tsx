@@ -112,7 +112,6 @@ export default function FileUploader({ orderId }: { orderId: string }) {
         },
       });
 
-      // Reset
       setSelectedFile(null);
       setProgress(100);
     } catch (err) {

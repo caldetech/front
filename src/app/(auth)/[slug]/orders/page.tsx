@@ -550,6 +550,7 @@ export default function Orders() {
           itemsPerPage={ITEMS_PER_PAGE}
           attachment={true}
           tableName="orders"
+          navigation={true}
         />
       </div>
     </div>
