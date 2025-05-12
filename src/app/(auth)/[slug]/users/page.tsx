@@ -38,6 +38,7 @@ export default function Users() {
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [role, setRole] = useState("MEMBER");
   const [token] = useAuthToken();
+  const fixedToken: string = token!;
   const { data, total, isLoading, error, mutate } = useEmployees(
     currentPage,
     ITEMS_PER_PAGE,
@@ -146,6 +147,8 @@ export default function Users() {
           totalItems={total}
           itemsPerPage={ITEMS_PER_PAGE}
           module="users"
+          slug={slug}
+          token={fixedToken}
         />
       </div>
     </div>

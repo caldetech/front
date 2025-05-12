@@ -13,6 +13,7 @@ export default function Comissions() {
   const slug = useSlug();
   const [currentPage, setCurrentPage] = useState(1);
   const [token] = useAuthToken();
+  const fixedToken: string = token!;
   const { data, total, isLoading, error } = useCommissions(
     currentPage,
     ITEMS_PER_PAGE,
@@ -44,6 +45,8 @@ export default function Comissions() {
           totalItems={total}
           itemsPerPage={ITEMS_PER_PAGE}
           module="commissions"
+          token={fixedToken}
+          slug={slug}
         />
       </div>
     </div>

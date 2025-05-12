@@ -30,6 +30,7 @@ export default function Services() {
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [token] = useAuthToken();
+  const fixedToken: string = token!;
   const { data, total, isLoading, error, mutate } = useServices(
     currentPage,
     ITEMS_PER_PAGE,
@@ -142,6 +143,8 @@ export default function Services() {
           totalItems={total}
           itemsPerPage={ITEMS_PER_PAGE}
           module="services"
+          slug={slug}
+          token={fixedToken}
         />
       </div>
     </div>
