@@ -66,12 +66,13 @@ export default function Orders() {
   const [paymentMethod, setPaymentMethod] = useState("");
   const { setMutate } = useStore();
   const [token] = useAuthToken();
+  const fixedToken: string = token!;
   const user = useUser();
   const { data, total, isLoading, error, mutate } = useOrders(
     currentPage,
     ITEMS_PER_PAGE,
     slug,
-    token,
+    fixedToken,
     user.role,
     user.membership
   );
@@ -95,7 +96,7 @@ export default function Orders() {
         const services = await searchService({
           query: serviceQuery,
           slug,
-          token,
+          token: fixedToken,
         });
 
         if (services) {
@@ -124,7 +125,7 @@ export default function Orders() {
         const products = await searchProduct({
           query: productQuery,
           slug,
-          token,
+          token: fixedToken,
         });
 
         if (products) {
@@ -153,7 +154,7 @@ export default function Orders() {
         const customers = await searchCustomer({
           query: customerQuery,
           slug,
-          token,
+          token: fixedToken,
         });
 
         if (customers) {
@@ -182,7 +183,7 @@ export default function Orders() {
         const employees = await searchEmployee({
           query: memberQuery,
           slug,
-          token,
+          token: fixedToken,
         });
 
         if (employees) {
@@ -272,7 +273,11 @@ export default function Orders() {
 
     formData.append("memberCommissions", JSON.stringify(individualCommissions));
 
-    const order = await createOrderAction({ formData, slug, token });
+    const order = await createOrderAction({
+      formData,
+      slug,
+      token: fixedToken,
+    });
 
     if (order.success) {
       resetForm();
@@ -676,7 +681,8 @@ export default function Orders() {
           tableName="orders"
           navigation={true}
           module="orders"
-          token={token ? token : undefined}
+          token={fixedToken}
+          slug={slug}
         />
       </div>
     </div>

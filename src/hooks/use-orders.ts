@@ -17,7 +17,7 @@ export const useOrders = (
   page: number,
   limit = 5,
   slug: string,
-  token: string | null,
+  token: string,
   role: string,
   memberId: string
 ) => {

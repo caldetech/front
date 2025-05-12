@@ -12,6 +12,7 @@ import {
   Image as ImageIcon,
   ImageOff,
   Navigation,
+  SquarePen,
 } from "lucide-react";
 import {
   Pagination,
@@ -20,7 +21,7 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "./ui/pagination";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -42,11 +43,32 @@ import {
   TableRow,
 } from "./ui/table";
 import { parseBRL } from "@/lib/currency";
-import type { ProductResponse } from "@/schemas/products";
-import type { ServiceResponse } from "@/schemas/services";
+import type { Product, ProductResponse } from "@/schemas/products";
+import type { Service, ServiceResponse } from "@/schemas/services";
 import { useStore } from "@/stores/use-mutate";
 import { setShowOrder } from "@/http/set-show-order";
 import { Can } from "./Can";
+import SuccessNotification from "./SuccessNotification";
+import ErrorNotification from "./ErrorNotification";
+import { Label } from "./ui/label";
+import { Switch } from "./ui/switch";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import type { Customer } from "@/schemas/customer";
+import type { Employee } from "@/schemas/employee";
+import { useSlug } from "@/contexts/SlugContext";
+import { searchService } from "@/http/search-service";
+import { createOrderAction } from "@/actions/create-order";
+import { searchEmployee } from "@/http/search-employee";
+import { searchCustomer } from "@/http/search-customer";
+import { searchProduct } from "@/http/search-product";
 
 export type GenericRecord = {
   id: string;
@@ -63,8 +85,8 @@ type CustomTableProps<T extends GenericRecord> = {
   tableName?: string;
   navigation?: boolean;
   module: string;
-  token?: string;
-  slug?: string;
+  token: string;
+  slug: string;
 };
 
 // ✅ Mapeamento de nomes das colunas por tabela
@@ -163,6 +185,247 @@ export default function CustomTable<T extends GenericRecord>({
   token,
   slug,
 }: CustomTableProps<T>) {
+  const [productQuery, setProductQuery] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>();
+  const [selectedMembers, setSelectedMembers] = useState<
+    { id: string; name: string; percentage?: number }[]
+  >([]);
+  const [memberQuery, setMemberQuery] = useState("");
+  const [totalCommissionPercent, setTotalCommissionPercent] = useState(0);
+  const [selected, setSelected] = useState<Product[]>([]);
+  const [customerQuery, setCustomerQuery] = useState("");
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
+  const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
+  const [selectedClient, setSelectedClient] = useState(false);
+  const [customer, setCustomer] = useState<{ id: string; name: string } | null>(
+    null
+  );
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [showErrorNotification, setShowErrorNotification] = useState(false);
+  const [orderType, setOrderType] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [serviceQuery, setServiceQuery] = useState("");
+  const [filteredServices, setFilteredServices] = useState<Service[]>([]);
+  const [selectedServices, setSelectedServices] = useState<Service[]>([]);
+  const [orderVisibility, setOrderVisibility] = useState<boolean>(true);
+  const [openMainDialog, setOpenMainDialog] = useState<boolean | undefined>();
+  const [openEditDialog, setOpenEditDialog] = useState<boolean | undefined>();
+  const [paymentAmount, setPaymentAmount] = useState<number | undefined>();
+  const [singleCommission, setSingleCommission] = useState<
+    number | undefined
+  >();
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      if (serviceQuery.length < 3) {
+        setFilteredServices([]);
+        return;
+      }
+
+      try {
+        const services = await searchService({
+          query: serviceQuery,
+          slug,
+          token,
+        });
+
+        if (services) {
+          setFilteredServices(services);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar serviços:", error);
+      }
+    };
+
+    const delayDebounce = setTimeout(() => {
+      fetchServices();
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [serviceQuery]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (productQuery.length < 3) {
+        setFilteredProducts([]);
+        return;
+      }
+
+      try {
+        const products = await searchProduct({
+          query: productQuery,
+          slug,
+          token,
+        });
+
+        if (products) {
+          setFilteredProducts(products);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar clientes:", error);
+      }
+    };
+
+    const delayDebounce = setTimeout(() => {
+      fetchProducts();
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [productQuery]);
+
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      if (customerQuery.length < 3) {
+        setFilteredCustomers([]);
+        return;
+      }
+
+      try {
+        const customers = await searchCustomer({
+          query: customerQuery,
+          slug,
+          token,
+        });
+
+        if (customers) {
+          setFilteredCustomers(customers);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar clientes:", error);
+      }
+    };
+
+    const delayDebounce = setTimeout(() => {
+      fetchCustomers();
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [customerQuery]);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      if (memberQuery.length < 3) {
+        setFilteredEmployees([]);
+        return;
+      }
+
+      try {
+        const employees = await searchEmployee({
+          query: memberQuery,
+          slug,
+          token,
+        });
+
+        if (employees) {
+          setFilteredEmployees(employees);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar clientes:", error);
+      }
+    };
+
+    const delayDebounce = setTimeout(() => {
+      fetchEmployees();
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [memberQuery]);
+
+  const handleAddEmployee = (employee: Employee) => {
+    setSelectedMembers((prev) => {
+      const exists = prev.find((m) => m.id === employee.id);
+      if (!exists) {
+        return [...prev, { id: employee.id, name: employee.name }];
+      }
+      return prev;
+    });
+  };
+
+  const handleAddProduct = (product: Product) => {
+    setSelected((prev) => {
+      const exists = prev.find((p) => p.id === product.id);
+      if (exists) {
+        return prev.map((p) =>
+          p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
+        );
+      } else {
+        return [...prev, { ...product, quantity: 1 }];
+      }
+    });
+  };
+
+  const updateQuantity = (productId: number, quantity: number) => {
+    setSelected((prev) =>
+      prev.map((p) => (p.id === productId ? { ...p, quantity } : p))
+    );
+  };
+
+  const removeProduct = (productId: number) => {
+    setSelected((prev) => prev.filter((p) => p.id !== productId));
+  };
+
+  const handleSelectedClient = (customer: { id: string; name: string }) => {
+    setSelectedClient(true);
+    setCustomer(customer);
+    setCustomerQuery(customer.name);
+  };
+
+  const resetForm = () => {
+    setProductQuery("");
+    setFilteredProducts([]);
+    setSelected([]);
+    setMemberQuery("");
+    setSelectedMembers([]);
+    setTotalCommissionPercent(0);
+    setCustomerQuery("");
+    setFilteredCustomers([]);
+    setSelectedClient(false);
+    setCustomer(null);
+    setOrderType("");
+    setPaymentMethod("");
+    setSelectedServices([]);
+    setServiceQuery("");
+    setFilteredServices([]);
+  };
+
+  const handleSubmit = async (formData: FormData) => {
+    formData.append("blingProducts", JSON.stringify(selected));
+    formData.append("members", JSON.stringify(selectedMembers));
+    formData.append("commissionPercent", String(totalCommissionPercent));
+    formData.append("customer", JSON.stringify(customer));
+    formData.append("services", JSON.stringify(selectedServices));
+    formData.append("showOrder", JSON.stringify(orderVisibility));
+
+    const individualCommissions = selectedMembers.map((member) => ({
+      memberId: member.id,
+      value: totalCommissionPercent / selectedMembers.length,
+    }));
+
+    formData.append("memberCommissions", JSON.stringify(individualCommissions));
+
+    const order = await createOrderAction({ formData, slug, token });
+
+    if (order.success) {
+      resetForm();
+      setShowSuccessNotification(true);
+      await mutate();
+    } else {
+      setShowErrorNotification(true);
+    }
+
+    formData.delete("blingProducts");
+    formData.delete("members");
+    formData.delete("commissionPercent");
+    formData.delete("customer");
+    formData.delete("memberCommissions");
+    formData.delete("paymentAmount");
+    formData.delete("type");
+    formData.delete("paymentMethod");
+    formData.delete("services");
+  };
+
+  // FIM DO MODAL DE EDIÇÃO DE ORDEM DE SERVIÇO
+
   const columnNames = data?.length
     ? Object.keys(data[0]).filter(
         (key) =>
@@ -177,7 +440,8 @@ export default function CustomTable<T extends GenericRecord>({
           key !== "serviceOrder" &&
           key !== "createdAt" &&
           key !== "amount" &&
-          key !== "show"
+          key !== "show" &&
+          key !== "method"
       )
     : [];
 
@@ -297,14 +561,14 @@ export default function CustomTable<T extends GenericRecord>({
     showOrder,
   }: {
     orderId: string;
-    token?: string;
+    token: string;
     showOrder: boolean;
   }) {
     if (!token) {
       throw new Error("Há dados ausentes!");
     }
 
-    await setShowOrder({ orderId, token, showOrder: !showOrder });
+    setShowOrder({ orderId, token, showOrder: !showOrder });
 
     mutate();
   }
@@ -364,6 +628,8 @@ export default function CustomTable<T extends GenericRecord>({
                 const orderPrice = item.amount as number;
                 const showOrder = item.show as boolean;
                 const orderId = item.id as string;
+
+                console.log(item);
 
                 return (
                   <tr className="border-b border-[#EFEFEF]" key={item.id}>
@@ -446,35 +712,485 @@ export default function CustomTable<T extends GenericRecord>({
                           </DialogTrigger>
 
                           <DialogContent className="w-[95vw] max-w-[640px] rounded-md">
-                            <Can I="editVisibility" a="Order">
-                              {showOrder ? (
-                                <span
-                                  onClick={() =>
-                                    handleShowOrder({
-                                      orderId,
-                                      token,
-                                      showOrder,
-                                    })
-                                  }
-                                  className="border text-blue-500 border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer absolute top-4 left-4"
+                            <div className="absolute top-4 left-4 flex gap-2">
+                              <Can I="editVisibility" a="Order">
+                                {showOrder ? (
+                                  <span
+                                    onClick={() =>
+                                      handleShowOrder({
+                                        orderId,
+                                        token,
+                                        showOrder,
+                                      })
+                                    }
+                                    className="border text-blue-500 border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer"
+                                  >
+                                    <Eye className="size-4" />
+                                  </span>
+                                ) : (
+                                  <span
+                                    onClick={() =>
+                                      handleShowOrder({
+                                        orderId,
+                                        token,
+                                        showOrder,
+                                      })
+                                    }
+                                    className="border text-red-500 border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer"
+                                  >
+                                    <EyeOff className="size-4" />
+                                  </span>
+                                )}
+                              </Can>
+
+                              {/* MODAL DE EDIÇÃO */}
+                              <Dialog>
+                                <DialogTrigger
+                                  onClick={() => {
+                                    setSelectedClient(true);
+                                    setCustomerQuery(item.customer as string);
+                                    setOrderType(item.type as string);
+
+                                    type Product = {
+                                      blingId: bigint;
+                                      costPrice: number;
+                                      price: number;
+                                      productName: string;
+                                      quantity: number;
+                                    };
+
+                                    const productsTransformed = (
+                                      item.productOrder as Product[]
+                                    ).map((p) => ({
+                                      id: Number(p.blingId),
+                                      nome: p.productName,
+                                      preco: p.price,
+                                      precoCusto: p.costPrice,
+                                      quantity: p.quantity,
+                                      codigo: "",
+                                      tipo: "",
+                                      situacao: "",
+                                      formato: "",
+                                      descricaoCurta: "",
+                                      imagemURL: "",
+                                      estoque: undefined,
+                                    }));
+
+                                    setSelected(productsTransformed);
+
+                                    type Service = {
+                                      id: string;
+                                      title: string;
+                                      description: string;
+                                      price: number;
+                                      organizationId: string;
+                                      createdAt: Date;
+                                      updatedAt: Date;
+                                    };
+
+                                    setSelectedServices(
+                                      item.serviceOrder as Service[]
+                                    );
+
+                                    setPaymentAmount(item.amount as number);
+
+                                    setPaymentMethod(item.method as string);
+
+                                    setSelectedMembers(
+                                      (
+                                        item.assignedMembers as {
+                                          memberId: string;
+                                          memberName: string;
+                                          percentage: number;
+                                        }[]
+                                      ).map((m) => ({
+                                        id: m.memberId,
+                                        name: m.memberName,
+                                        percentage: m.percentage, // incluir o valor da comissão
+                                      }))
+                                    );
+                                  }}
+                                  asChild
                                 >
-                                  <Eye className="size-4" />
-                                </span>
-                              ) : (
-                                <span
-                                  onClick={() =>
-                                    handleShowOrder({
-                                      orderId,
-                                      token,
-                                      showOrder,
-                                    })
-                                  }
-                                  className="border text-red-500 border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer absolute top-4 left-4"
-                                >
-                                  <EyeOff className="size-4" />
-                                </span>
-                              )}
-                            </Can>
+                                  <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                                    <SquarePen className="size-4" />
+                                  </span>
+                                </DialogTrigger>
+
+                                <DialogContent className="max-h-[90vh] overflow-y-auto">
+                                  <DialogHeader>
+                                    <DialogTitle>
+                                      Editar ordem de serviço
+                                    </DialogTitle>
+                                  </DialogHeader>
+
+                                  <form
+                                    className="flex flex-col gap-4"
+                                    action={handleSubmit}
+                                  >
+                                    <div className="flex justify-between">
+                                      <Label htmlFor="type">Publicar</Label>
+
+                                      <Switch
+                                        checked={showOrder}
+                                        onCheckedChange={(checked) =>
+                                          setOrderVisibility(checked)
+                                        }
+                                      />
+                                    </div>
+
+                                    {/* Cliente */}
+                                    <div className="flex flex-col gap-1">
+                                      <Label htmlFor="customerId">
+                                        Cliente
+                                      </Label>
+                                      <Input
+                                        id="customer-search"
+                                        placeholder="Digite para buscar..."
+                                        value={customerQuery}
+                                        onChange={(e) =>
+                                          setCustomerQuery(e.target.value)
+                                        }
+                                        disabled={selectedClient}
+                                      />
+                                    </div>
+
+                                    {/* Tipo de ordem */}
+                                    <div className="flex flex-col gap-1">
+                                      <Label htmlFor="type">Tipo</Label>
+                                      <Select
+                                        name="type"
+                                        value={orderType}
+                                        onValueChange={setOrderType}
+                                      >
+                                        <SelectTrigger className="w-full">
+                                          <SelectValue placeholder="Selecione um tipo" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="SALE">
+                                            Venda
+                                          </SelectItem>
+                                          <SelectItem value="BUDGET">
+                                            Orçamento
+                                          </SelectItem>
+                                          <SelectItem value="WARRANTY">
+                                            Garantia
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+
+                                    {/* Pesquisa de produto */}
+                                    <div className="flex flex-col gap-2">
+                                      <Label htmlFor="product-search">
+                                        Pesquisar produto
+                                      </Label>
+                                      <Input
+                                        id="product-search"
+                                        placeholder="Digite para buscar..."
+                                        value={productQuery}
+                                        onChange={(e) =>
+                                          setProductQuery(e.target.value)
+                                        }
+                                      />
+                                      {filteredProducts ? (
+                                        <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
+                                          {filteredProducts.map((product) => (
+                                            <button
+                                              key={product.id}
+                                              type="button"
+                                              onClick={() => {
+                                                handleAddProduct(product);
+                                                setProductQuery("");
+                                              }}
+                                              className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                                            >
+                                              {product.nome}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      ) : (
+                                        productQuery && (
+                                          <p className="text-sm text-muted-foreground mt-2">
+                                            Nenhum produto encontrado.
+                                          </p>
+                                        )
+                                      )}
+                                    </div>
+
+                                    {/* Lista de produtos adicionados */}
+                                    {selected.length > 0 && (
+                                      <div className="space-y-2">
+                                        {selected.map((p) => (
+                                          <div
+                                            key={p.id}
+                                            className="flex items-center justify-between border-b border-gray-200 pb-2"
+                                          >
+                                            <span className="text-sm font-medium text-gray-800">
+                                              {p.nome}
+                                            </span>
+
+                                            <div className="flex items-center gap-2">
+                                              <Input
+                                                type="number"
+                                                min={1}
+                                                value={p.quantity}
+                                                onChange={(e) =>
+                                                  updateQuantity(
+                                                    p.id,
+                                                    Number(e.target.value)
+                                                  )
+                                                }
+                                                className="w-16 h-8 px-2 py-1 text-sm"
+                                              />
+                                              <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="text-red-500 hover:text-red-700 h-8 px-2"
+                                                onClick={() =>
+                                                  removeProduct(p.id)
+                                                }
+                                              >
+                                                Remover
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {/* Pesquisa de serviços */}
+                                    <div className="flex flex-col gap-2">
+                                      <Label htmlFor="service-search">
+                                        Pesquisar serviço
+                                      </Label>
+                                      <Input
+                                        id="service-search"
+                                        placeholder="Digite para buscar..."
+                                        value={serviceQuery}
+                                        onChange={(e) =>
+                                          setServiceQuery(e.target.value)
+                                        }
+                                      />
+                                      {filteredServices.length > 0 ? (
+                                        <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
+                                          {filteredServices.map((service) => {
+                                            return (
+                                              <button
+                                                key={service.id}
+                                                type="button"
+                                                onClick={() => {
+                                                  const exists =
+                                                    selectedServices.find(
+                                                      (s) => s.id === service.id
+                                                    );
+                                                  if (!exists) {
+                                                    setSelectedServices(
+                                                      (prev) => [
+                                                        ...prev,
+                                                        service,
+                                                      ]
+                                                    );
+                                                  }
+                                                  setServiceQuery("");
+                                                }}
+                                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                                              >
+                                                {service.title}
+                                              </button>
+                                            );
+                                          })}
+                                        </div>
+                                      ) : (
+                                        serviceQuery && (
+                                          <p className="text-sm text-muted-foreground mt-2">
+                                            Nenhum serviço encontrado.
+                                          </p>
+                                        )
+                                      )}
+                                    </div>
+
+                                    {/* Serviços selecionados */}
+                                    {selectedServices.length > 0 && (
+                                      <div className="flex flex-col gap-2">
+                                        <Label>Serviços selecionados</Label>
+                                        {selectedServices.map((s) => (
+                                          <div
+                                            key={s.id}
+                                            className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded"
+                                          >
+                                            <span>{s.title}</span>
+                                            <Button
+                                              variant="ghost"
+                                              className="text-red-500 hover:text-red-700 h-8 px-2"
+                                              onClick={() =>
+                                                setSelectedServices((prev) =>
+                                                  prev.filter(
+                                                    (item) => item.id !== s.id
+                                                  )
+                                                )
+                                              }
+                                            >
+                                              Remover
+                                            </Button>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {/* Valor do pagamento */}
+                                    <div className="flex flex-col gap-1">
+                                      <Label htmlFor="paymentAmount">
+                                        Valor do pagamento
+                                      </Label>
+                                      <Input
+                                        name="paymentAmount"
+                                        value={paymentAmount}
+                                        onChange={(e) =>
+                                          setPaymentAmount(
+                                            parseBRL(e.target.value)
+                                          )
+                                        }
+                                      />
+                                    </div>
+
+                                    {/* Método de pagamento */}
+                                    <div className="flex flex-col gap-1">
+                                      <Label htmlFor="paymentMethod">
+                                        Método de pagamento
+                                      </Label>
+                                      <Select
+                                        name="paymentMethod"
+                                        value={paymentMethod}
+                                        onValueChange={setPaymentMethod}
+                                      >
+                                        <SelectTrigger className="w-full">
+                                          <SelectValue placeholder="Selecione" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="PIX">
+                                            PIX
+                                          </SelectItem>
+                                          <SelectItem value="CARTAO">
+                                            Cartão
+                                          </SelectItem>
+                                          <SelectItem value="BOLETO">
+                                            Boleto
+                                          </SelectItem>
+                                          <SelectItem value="DEPOSITO">
+                                            Depósito
+                                          </SelectItem>
+                                          <SelectItem value="PENDENTE">
+                                            Pendente
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+
+                                    {/* Comissão */}
+                                    <div className="flex flex-col gap-2">
+                                      <Label htmlFor="total-commission-percent">
+                                        Valor Total da Comissão (%)
+                                      </Label>
+
+                                      <Input
+                                        id="total-commission-percent"
+                                        type="number"
+                                        value={totalCommissionPercent}
+                                        onChange={(e) =>
+                                          setTotalCommissionPercent(
+                                            Number(e.target.value)
+                                          )
+                                        }
+                                        placeholder="Digite o valor percentual total"
+                                      />
+                                    </div>
+
+                                    {/* Buscar Funcionário */}
+                                    <div className="flex flex-col gap-2">
+                                      <Label htmlFor="commission-search">
+                                        Funcionário
+                                      </Label>
+                                      <Input
+                                        id="commission-search"
+                                        placeholder="Digite para buscar..."
+                                        value={memberQuery}
+                                        onChange={(e) =>
+                                          setMemberQuery(e.target.value)
+                                        }
+                                      />
+                                      {filteredEmployees.length > 0 ? (
+                                        <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
+                                          {filteredEmployees.map((employee) => (
+                                            <button
+                                              key={employee.id}
+                                              type="button"
+                                              onClick={() => {
+                                                handleAddEmployee(employee);
+                                                setMemberQuery("");
+                                              }}
+                                              className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                                            >
+                                              {employee.name}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      ) : (
+                                        memberQuery && (
+                                          <p className="text-sm text-muted-foreground mt-2">
+                                            Nenhum funcionário encontrado.
+                                          </p>
+                                        )
+                                      )}
+                                    </div>
+
+                                    {selectedMembers.length > 0 && (
+                                      <div className="flex flex-col gap-2 mt-4">
+                                        <Label>Comissões</Label>
+                                        {selectedMembers.map((member) => {
+                                          const hasTotalCommission =
+                                            !!totalCommissionPercent;
+
+                                          // Se tiver um valor total definido, dividir igualmente
+                                          const individualCommission =
+                                            hasTotalCommission
+                                              ? totalCommissionPercent /
+                                                selectedMembers.length
+                                              : (member.percentage ?? 0); // senão, usa a amount do banco
+
+                                          return (
+                                            <div
+                                              key={member.id}
+                                              className="flex gap-2 items-center justify-between"
+                                            >
+                                              <span>{member.name}</span>
+                                              <Input
+                                                type="number"
+                                                value={individualCommission}
+                                                readOnly
+                                                className="w-24"
+                                              />
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
+
+                                    <div className="flex flex-col gap-4">
+                                      {showSuccessNotification && (
+                                        <SuccessNotification message="Ordem de serviço criada com sucesso!" />
+                                      )}
+
+                                      {showErrorNotification && (
+                                        <ErrorNotification message="Erro ao criar a ordem de serviço!" />
+                                      )}
+
+                                      <Button type="submit">Atualizar</Button>
+                                    </div>
+                                  </form>
+                                </DialogContent>
+                              </Dialog>
+                            </div>
 
                             <DialogHeader>
                               <DialogTitle>
