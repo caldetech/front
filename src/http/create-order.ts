@@ -14,6 +14,7 @@ export async function createOrder({
   memberCommissions,
   customer,
   token,
+  showOrder,
 }: {
   slug: string;
   type: string;
@@ -32,6 +33,7 @@ export async function createOrder({
   memberCommissions: { memberId: string; value: number }[];
   customer: { id: string; name: string };
   token: string | null;
+  showOrder: boolean;
 }) {
   try {
     await api.post("orders/create", {
@@ -46,6 +48,7 @@ export async function createOrder({
         commissionPercent,
         memberCommissions,
         customer,
+        showOrder,
       },
       hooks: {
         beforeRequest: [
