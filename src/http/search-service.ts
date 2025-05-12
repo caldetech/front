@@ -10,7 +10,7 @@ export async function searchService({
 }: {
   slug: string;
   query: string;
-  token: string | null;
+  token: string;
 }) {
   try {
     return await api

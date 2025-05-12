@@ -9,7 +9,7 @@ export async function createOrderAction({
 }: {
   slug: string;
   formData: FormData;
-  token: string | null;
+  token: string;
 }) {
   const type = formData.get("type") as string;
   const paymentMethod = formData.get("paymentMethod") as string;
