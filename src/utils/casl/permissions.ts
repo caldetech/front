@@ -19,6 +19,7 @@ export const permissions: Record<Role, PermissionsByRole> = {
       "Commission",
       "Integration",
     ]);
+    can("editVisibility", "Order");
   },
   MEMBER(_, { can }) {
     can("get", ["Order", "Service", "Customer", "Commission"]);
@@ -32,6 +33,7 @@ export const permissions: Record<Role, PermissionsByRole> = {
       "Commission",
       "Integration",
     ]);
+    can("editVisibility", "Order");
   },
   MANAGER(_, { can }) {
     can("get", [
@@ -42,5 +44,6 @@ export const permissions: Record<Role, PermissionsByRole> = {
       "Commission",
       "Integration",
     ]);
+    can("editVisibility", "Order");
   },
 };

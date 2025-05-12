@@ -9,6 +9,7 @@ export const orderSubject = z.tuple([
     z.literal("create"),
     z.literal("update"),
     z.literal("delete"),
+    z.literal("editVisibility"),
   ]),
   z.union([z.literal("Order"), orderSchema]),
 ]);

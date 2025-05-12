@@ -3,9 +3,14 @@
 import {
   ChevronLeft,
   ChevronRight,
+  Expand,
   Eye,
+  EyeOff,
   FileCheck,
   FileX,
+  Fullscreen,
+  Image as ImageIcon,
+  ImageOff,
   Navigation,
 } from "lucide-react";
 import {
@@ -39,6 +44,9 @@ import {
 import { parseBRL } from "@/lib/currency";
 import type { ProductResponse } from "@/schemas/products";
 import type { ServiceResponse } from "@/schemas/services";
+import { useStore } from "@/stores/use-mutate";
+import { setShowOrder } from "@/http/set-show-order";
+import { Can } from "./Can";
 
 export type GenericRecord = {
   id: string;
@@ -55,6 +63,8 @@ type CustomTableProps<T extends GenericRecord> = {
   tableName?: string;
   navigation?: boolean;
   module: string;
+  token?: string;
+  slug?: string;
 };
 
 // ✅ Mapeamento de nomes das colunas por tabela
@@ -150,6 +160,8 @@ export default function CustomTable<T extends GenericRecord>({
   tableName,
   navigation = false,
   module,
+  token,
+  slug,
 }: CustomTableProps<T>) {
   const columnNames = data?.length
     ? Object.keys(data[0]).filter(
@@ -162,7 +174,10 @@ export default function CustomTable<T extends GenericRecord>({
           key !== "productOrder" &&
           key !== "assignedMembers" &&
           key !== "orderNumber" &&
-          key !== "serviceOrder"
+          key !== "serviceOrder" &&
+          key !== "createdAt" &&
+          key !== "amount" &&
+          key !== "show"
       )
     : [];
 
@@ -192,6 +207,8 @@ export default function CustomTable<T extends GenericRecord>({
     COMPANY: "EMPRESA",
     PERSON: "PESSOAL",
   };
+
+  const { mutate } = useStore();
 
   function formatValue(key: unknown, value: unknown) {
     if (key === "type") {
@@ -274,6 +291,24 @@ export default function CustomTable<T extends GenericRecord>({
     return (productTotal + serviceTotal).toFixed(2);
   }
 
+  async function handleShowOrder({
+    orderId,
+    token,
+    showOrder,
+  }: {
+    orderId: string;
+    token?: string;
+    showOrder: boolean;
+  }) {
+    if (!token) {
+      throw new Error("Há dados ausentes!");
+    }
+
+    await setShowOrder({ orderId, token, showOrder: !showOrder });
+
+    mutate();
+  }
+
   return (
     <>
       {data.length > 0 ? (
@@ -327,7 +362,8 @@ export default function CustomTable<T extends GenericRecord>({
                 const address = item?.address as string;
                 const orderNumber = item?.orderNumber as number;
                 const orderPrice = item.amount as number;
-                console.log(orderPrice);
+                const showOrder = item.show as boolean;
+                const orderId = item.id as string;
 
                 return (
                   <tr className="border-b border-[#EFEFEF]" key={item.id}>
@@ -355,9 +391,10 @@ export default function CustomTable<T extends GenericRecord>({
                             <Dialog>
                               <DialogTrigger asChild>
                                 <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
-                                  <FileCheck className="text-blue-500 size-4" />
+                                  <ImageIcon className="text-blue-500 size-4" />
                                 </span>
                               </DialogTrigger>
+
                               <DialogContent className="flex flex-col items-center">
                                 <div className="flex flex-col items-center gap-4">
                                   <DialogTitle>Anexar ordem</DialogTitle>
@@ -380,7 +417,7 @@ export default function CustomTable<T extends GenericRecord>({
                             <Dialog>
                               <DialogTrigger asChild>
                                 <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
-                                  <FileX className="text-gray-500 size-4" />
+                                  <ImageOff className="text-gray-500 size-4" />
                                 </span>
                               </DialogTrigger>
                               <DialogContent className="flex flex-col items-center">
@@ -404,11 +441,41 @@ export default function CustomTable<T extends GenericRecord>({
                         <Dialog>
                           <DialogTrigger asChild>
                             <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
-                              <Eye className="size-4" />
+                              <Expand className="size-4" />
                             </span>
                           </DialogTrigger>
 
                           <DialogContent className="w-[95vw] max-w-[640px] rounded-md">
+                            <Can I="editVisibility" a="Order">
+                              {showOrder ? (
+                                <span
+                                  onClick={() =>
+                                    handleShowOrder({
+                                      orderId,
+                                      token,
+                                      showOrder,
+                                    })
+                                  }
+                                  className="border text-blue-500 border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer absolute top-4 left-4"
+                                >
+                                  <Eye className="size-4" />
+                                </span>
+                              ) : (
+                                <span
+                                  onClick={() =>
+                                    handleShowOrder({
+                                      orderId,
+                                      token,
+                                      showOrder,
+                                    })
+                                  }
+                                  className="border text-red-500 border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer absolute top-4 left-4"
+                                >
+                                  <EyeOff className="size-4" />
+                                </span>
+                              )}
+                            </Can>
+
                             <DialogHeader>
                               <DialogTitle>
                                 Ordem n°:{" "}
@@ -433,7 +500,9 @@ export default function CustomTable<T extends GenericRecord>({
                                       key != "status" &&
                                       key != "productOrder" &&
                                       key != "orderNumber" &&
-                                      key != "serviceOrder"
+                                      key != "serviceOrder" &&
+                                      key != "amount" &&
+                                      key != "show"
                                   )
                                   .map(([key, value], index) => {
                                     if (

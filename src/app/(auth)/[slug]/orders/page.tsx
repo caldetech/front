@@ -21,7 +21,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useSlug } from "@/contexts/SlugContext";
+import { useUser } from "@/contexts/UserContext";
 import useAuthToken from "@/hooks/use-auth-token";
 import { useOrders } from "@/hooks/use-orders";
 import { searchCustomer } from "@/http/search-customer";
@@ -64,15 +66,19 @@ export default function Orders() {
   const [paymentMethod, setPaymentMethod] = useState("");
   const { setMutate } = useStore();
   const [token] = useAuthToken();
+  const user = useUser();
   const { data, total, isLoading, error, mutate } = useOrders(
     currentPage,
     ITEMS_PER_PAGE,
     slug,
-    token
+    token,
+    user.role,
+    user.membership
   );
   const [serviceQuery, setServiceQuery] = useState("");
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
   const [selectedServices, setSelectedServices] = useState<Service[]>([]);
+  const [showOrder, setShowOrder] = useState<boolean>(true);
 
   useEffect(() => {
     setMutate(mutate);
@@ -257,6 +263,7 @@ export default function Orders() {
     formData.append("commissionPercent", String(totalCommissionPercent));
     formData.append("customer", JSON.stringify(customer));
     formData.append("services", JSON.stringify(selectedServices));
+    formData.append("showOrder", JSON.stringify(showOrder));
 
     const individualCommissions = selectedMembers.map((member) => ({
       memberId: member.id,
@@ -321,6 +328,13 @@ export default function Orders() {
               <DialogTitle>Nova ordem de serviço</DialogTitle>
             </DialogHeader>
             <form className="flex flex-col gap-4" action={handleSubmit}>
+              {/* Visibilidade da ordem */}
+              <div className="flex justify-between">
+                <Label htmlFor="type">Publicar</Label>
+
+                <Switch checked={showOrder} onCheckedChange={setShowOrder} />
+              </div>
+
               {/* Cliente */}
               <div className="flex flex-col gap-1">
                 <Label htmlFor="customerId">Cliente</Label>
@@ -662,6 +676,7 @@ export default function Orders() {
           tableName="orders"
           navigation={true}
           module="orders"
+          token={token ? token : undefined}
         />
       </div>
     </div>

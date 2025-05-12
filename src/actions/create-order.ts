@@ -45,6 +45,8 @@ export async function createOrderAction({
 
   const commissionPercent = Number(formData.get("commissionPercent"));
 
+  const showOrder = JSON.parse(formData.get("showOrder") as string);
+
   const memberCommissions = JSON.parse(
     formData.get("memberCommissions") as string
   ) as { memberId: string; value: number }[];
@@ -68,6 +70,7 @@ export async function createOrderAction({
     memberCommissions,
     customer,
     token,
+    showOrder,
   });
 
   return { success: true };
