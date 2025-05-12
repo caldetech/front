@@ -252,6 +252,28 @@ export default function CustomTable<T extends GenericRecord>({
     return String(value);
   }
 
+  function calculateOrderPrice(
+    productOrder: ProductResponse,
+    serviceOrder: ServiceResponse
+  ) {
+    const productTotal = Array.isArray(productOrder)
+      ? productOrder.reduce((total, item) => {
+          const price = Number(item.price) || 0;
+          const quantity = Number(item.quantity) || 0;
+          return total + price * quantity;
+        }, 0)
+      : 0;
+
+    const serviceTotal = Array.isArray(serviceOrder)
+      ? serviceOrder.reduce((total, item) => {
+          const price = Number(item.price) || 0;
+          return total + price;
+        }, 0)
+      : 0;
+
+    return (productTotal + serviceTotal).toFixed(2);
+  }
+
   return (
     <>
       {data.length > 0 ? (
@@ -304,6 +326,8 @@ export default function CustomTable<T extends GenericRecord>({
                 const serviceOrder = item?.serviceOrder as ServiceResponse;
                 const address = item?.address as string;
                 const orderNumber = item?.orderNumber as number;
+                const orderPrice = item.amount as number;
+                console.log(orderPrice);
 
                 return (
                   <tr className="border-b border-[#EFEFEF]" key={item.id}>
@@ -580,11 +604,11 @@ export default function CustomTable<T extends GenericRecord>({
 
                                   <tfoot>
                                     <tr className="border-t">
-                                      <td colSpan={3} className="p-2">
+                                      <td colSpan={3} className="p-2 font-bold">
                                         Total
                                       </td>
-                                      <td className="text-right p-2 font-medium">
-                                        wefwefwe
+                                      <td className="text-right p-2 font-bold">
+                                        {orderPrice}
                                       </td>
                                     </tr>
                                   </tfoot>
