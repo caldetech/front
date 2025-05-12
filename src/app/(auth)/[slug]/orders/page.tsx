@@ -477,24 +477,26 @@ export default function Orders() {
                 />
                 {filteredServices.length > 0 ? (
                   <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
-                    {filteredServices.map((service) => (
-                      <button
-                        key={service.id}
-                        type="button"
-                        onClick={() => {
-                          const exists = selectedServices.find(
-                            (s) => s.id === service.id
-                          );
-                          if (!exists) {
-                            setSelectedServices((prev) => [...prev, service]);
-                          }
-                          setServiceQuery("");
-                        }}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                      >
-                        {service.title}
-                      </button>
-                    ))}
+                    {filteredServices.map((service) => {
+                      return (
+                        <button
+                          key={service.id}
+                          type="button"
+                          onClick={() => {
+                            const exists = selectedServices.find(
+                              (s) => s.id === service.id
+                            );
+                            if (!exists) {
+                              setSelectedServices((prev) => [...prev, service]);
+                            }
+                            setServiceQuery("");
+                          }}
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                        >
+                          {service.title}
+                        </button>
+                      );
+                    })}
                   </div>
                 ) : (
                   serviceQuery && (
