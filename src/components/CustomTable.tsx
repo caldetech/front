@@ -37,6 +37,8 @@ import {
   TableRow,
 } from "./ui/table";
 import { parseBRL } from "@/lib/currency";
+import type { ProductResponse } from "@/schemas/products";
+import type { ServiceResponse } from "@/schemas/services";
 
 export type GenericRecord = {
   id: string;
@@ -62,7 +64,7 @@ const columnNameMapping: Record<string, Record<string, string>> = {
     customer: "Cliente",
     payment: "Pagamento",
     status: "Status",
-    customerType: "Sujeito",
+    customerType: "Categoria",
   },
 };
 
@@ -159,7 +161,8 @@ export default function CustomTable<T extends GenericRecord>({
           key !== "address" &&
           key !== "productOrder" &&
           key !== "assignedMembers" &&
-          key !== "orderNumber"
+          key !== "orderNumber" &&
+          key !== "serviceOrder"
       )
     : [];
 
@@ -179,7 +182,7 @@ export default function CustomTable<T extends GenericRecord>({
     customer: "Cliente",
     address: "Endereço",
     assignedMembers: "Funcionários",
-    customerType: "Sujeito",
+    customerType: "Categoria",
   };
 
   const valueLabels = {
@@ -297,10 +300,10 @@ export default function CustomTable<T extends GenericRecord>({
 
             <tbody>
               {data.map((item) => {
-                console.log(item);
-
-                const address = item.address as string;
-                const orderNumber = item.orderNumber as number;
+                const productOrder = item?.productOrder as ProductResponse;
+                const serviceOrder = item?.serviceOrder as ServiceResponse;
+                const address = item?.address as string;
+                const orderNumber = item?.orderNumber as number;
 
                 return (
                   <tr className="border-b border-[#EFEFEF]" key={item.id}>
@@ -405,7 +408,8 @@ export default function CustomTable<T extends GenericRecord>({
                                       key != "payment" &&
                                       key != "status" &&
                                       key != "productOrder" &&
-                                      key != "orderNumber"
+                                      key != "orderNumber" &&
+                                      key != "serviceOrder"
                                   )
                                   .map(([key, value], index) => {
                                     if (
@@ -473,88 +477,106 @@ export default function CustomTable<T extends GenericRecord>({
                               {/* Tabela de produtos */}
                               <div className="overflow-x-auto">
                                 <table className="min-w-full text-sm">
-                                  <thead>
-                                    <tr>
-                                      <th className="text-left p-2">Produto</th>
-                                      <th className="text-right p-2">Qtd.</th>
-                                      <th className="text-right p-2">Preço</th>
-                                      <th className="text-right p-2">
-                                        Subtotal
-                                      </th>
-                                    </tr>
-                                  </thead>
+                                  {Object.entries(productOrder).length > 0 ? (
+                                    <>
+                                      <thead>
+                                        <tr>
+                                          <th className="text-left p-2">
+                                            Produto
+                                          </th>
+                                          <th className="text-right p-2">
+                                            Qtd.
+                                          </th>
+                                          <th className="text-right p-2">
+                                            Preço
+                                          </th>
+                                          <th className="text-right p-2">
+                                            Subtotal
+                                          </th>
+                                        </tr>
+                                      </thead>
 
-                                  <tbody>
-                                    {Object.entries(item)
-                                      .filter(
-                                        ([key, value]) => key === "productOrder"
-                                      )
-                                      .flatMap(([key, value]) =>
-                                        Array.isArray(value)
-                                          ? value.map((element, idx) => (
-                                              <tr
-                                                className="border-t"
-                                                key={idx}
-                                              >
-                                                <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
-                                                  {element.productName}
-                                                </td>
-                                                <td className="text-right p-2">
-                                                  {element.quantity}
-                                                </td>
-                                                <td className="text-right p-2">
-                                                  {element.price}
-                                                </td>
-                                                <td className="text-right p-2">
-                                                  {parseFloat(
-                                                    (
-                                                      element.price *
-                                                      element.quantity
-                                                    ).toString()
-                                                  )}
-                                                </td>
-                                              </tr>
-                                            ))
-                                          : []
-                                      )}
-                                  </tbody>
+                                      <tbody>
+                                        {Object.entries(item)
+                                          .filter(
+                                            ([key, value]) =>
+                                              key === "productOrder"
+                                          )
+                                          .flatMap(([key, value]) =>
+                                            Array.isArray(value)
+                                              ? value.map((element, idx) => (
+                                                  <tr
+                                                    className="border-t"
+                                                    key={idx}
+                                                  >
+                                                    <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                                      {element.productName}
+                                                    </td>
+                                                    <td className="text-right p-2">
+                                                      {element.quantity}
+                                                    </td>
+                                                    <td className="text-right p-2">
+                                                      {element.price}
+                                                    </td>
+                                                    <td className="text-right p-2">
+                                                      {parseFloat(
+                                                        (
+                                                          element.price *
+                                                          element.quantity
+                                                        ).toString()
+                                                      )}
+                                                    </td>
+                                                  </tr>
+                                                ))
+                                              : []
+                                          )}
+                                      </tbody>
+                                    </>
+                                  ) : undefined}
 
-                                  <thead>
-                                    <tr>
-                                      <th className="text-left p-2">Serviço</th>
-                                      <th className="text-right p-2"></th>
-                                      <th className="text-right p-2"></th>
-                                      <th className="text-right p-2">
-                                        Subtotal
-                                      </th>
-                                    </tr>
-                                  </thead>
+                                  {Object.entries(serviceOrder).length > 0 ? (
+                                    <>
+                                      <thead>
+                                        <tr>
+                                          <th className="text-left p-2">
+                                            Serviço
+                                          </th>
+                                          <th className="text-right p-2"></th>
+                                          <th className="text-right p-2"></th>
+                                          <th className="text-right p-2">
+                                            Subtotal
+                                          </th>
+                                        </tr>
+                                      </thead>
 
-                                  <tbody>
-                                    {Object.entries(item)
-                                      .filter(
-                                        ([key, value]) => key === "productOrder"
-                                      )
-                                      .flatMap(([key, value]) =>
-                                        Array.isArray(value)
-                                          ? value.map((element, idx) => (
-                                              <tr
-                                                className="border-t"
-                                                key={idx}
-                                              >
-                                                <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
-                                                  {element.productName}
-                                                </td>
-                                                <td className="text-right p-2"></td>
-                                                <td className="text-right p-2"></td>
-                                                <td className="text-right p-2">
-                                                  {element.price}
-                                                </td>
-                                              </tr>
-                                            ))
-                                          : []
-                                      )}
-                                  </tbody>
+                                      <tbody>
+                                        {Object.entries(item)
+                                          .filter(
+                                            ([key, value]) =>
+                                              key === "serviceOrder"
+                                          )
+                                          .flatMap(([key, value]) =>
+                                            Array.isArray(value)
+                                              ? value.map((element, idx) => (
+                                                  <tr
+                                                    className="border-t"
+                                                    key={idx}
+                                                  >
+                                                    <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                                      {element.title}
+                                                    </td>
+                                                    <td className="text-right p-2"></td>
+                                                    <td className="text-right p-2"></td>
+                                                    <td className="text-right p-2">
+                                                      {element.price}
+                                                    </td>
+                                                  </tr>
+                                                ))
+                                              : []
+                                          )}
+                                      </tbody>
+                                    </>
+                                  ) : undefined}
 
                                   <tfoot>
                                     <tr className="border-t">
