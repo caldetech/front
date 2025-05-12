@@ -41,6 +41,7 @@ export default function Customers() {
   const [mainNumberValue, setMainNumberValue] = useState("");
   const [contactNumberValue, setContactNumberValue] = useState("");
   const [token] = useAuthToken();
+  const fixedToken: string = token!;
   const { data, total, isLoading, error, mutate } = useCustomers(
     currentPage,
     ITEMS_PER_PAGE,
@@ -278,6 +279,8 @@ export default function Customers() {
           totalItems={total}
           itemsPerPage={ITEMS_PER_PAGE}
           module="customers"
+          slug={slug}
+          token={fixedToken}
         />
       </div>
     </div>
