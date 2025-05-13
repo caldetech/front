@@ -8,7 +8,7 @@ export const userSchema = z.object({
   iat: z.number(),
   exp: z.number(),
   membership: z.string(),
-  role: z.enum(["ADMIN", "MEMBER", "BILLING", "MANAGER"]),
+  role: z.enum(["ADMIN", "MEMBER", "BILLING", "MANAGER", "DEV"]),
 });
 
 export type User = z.infer<typeof userSchema>;

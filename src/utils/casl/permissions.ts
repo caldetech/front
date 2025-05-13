@@ -10,7 +10,7 @@ type PermissionsByRole = (
 ) => void;
 
 export const permissions: Record<Role, PermissionsByRole> = {
-  ADMIN(_, { can }) {
+  DEV(_, { can }) {
     can("get", [
       "Order",
       "Service",
@@ -19,31 +19,21 @@ export const permissions: Record<Role, PermissionsByRole> = {
       "Commission",
       "Integration",
     ]);
+    can("editVisibility", "Order");
+  },
+  ADMIN(_, { can }) {
+    can("get", ["Order", "Service", "Customer", "User", "Integration"]);
     can("editVisibility", "Order");
   },
   MEMBER(_, { can }) {
     can("get", ["Order", "Service", "Customer", "Commission"]);
   },
   BILLING(_, { can }) {
-    can("get", [
-      "Order",
-      "Service",
-      "Customer",
-      "User",
-      "Commission",
-      "Integration",
-    ]);
+    can("get", ["Order", "Service", "Customer", "User", "Integration"]);
     can("editVisibility", "Order");
   },
   MANAGER(_, { can }) {
-    can("get", [
-      "Order",
-      "Service",
-      "Customer",
-      "User",
-      "Commission",
-      "Integration",
-    ]);
+    can("get", ["Order", "Service", "Customer", "User", "Integration"]);
     can("editVisibility", "Order");
   },
 };

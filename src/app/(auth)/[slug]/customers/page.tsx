@@ -101,7 +101,7 @@ export default function Customers() {
           </DialogTrigger>
 
           <DialogContent>
-            <DialogHeader>
+            <DialogHeader className="cursor-pointer">
               <DialogTitle>Adicionar cliente</DialogTitle>
             </DialogHeader>
 
@@ -281,6 +281,7 @@ export default function Customers() {
           module="customers"
           slug={slug}
           token={fixedToken}
+          tableName="customers"
         />
       </div>
     </div>

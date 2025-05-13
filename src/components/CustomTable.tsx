@@ -98,6 +98,22 @@ const columnNameMapping: Record<string, Record<string, string>> = {
     status: "Status",
     customerType: "Categoria",
   },
+  customers: {
+    name: "Nome",
+    customerType: "Categoria",
+    mainNumber: "Número",
+    contactNumber: "Recado",
+  },
+  services: {
+    title: "Título",
+    description: "Descrição",
+    price: "Valor",
+  },
+  employees: {
+    name: "Nome",
+    number: "Número",
+    status: "Status",
+  },
 };
 
 const valueMapping: Record<
@@ -439,7 +455,8 @@ export default function CustomTable<T extends GenericRecord>({
           key !== "amount" &&
           key !== "show" &&
           key !== "method" &&
-          key !== "customerId"
+          key !== "customerId" &&
+          key !== "commissionPercent"
       )
     : [];
 
@@ -1235,7 +1252,8 @@ export default function CustomTable<T extends GenericRecord>({
                                       key != "serviceOrder" &&
                                       key != "amount" &&
                                       key != "show" &&
-                                      key != "customerId"
+                                      key != "customerId" &&
+                                      key != "commissionPercent"
                                   )
                                   .map(([key, value], index) => {
                                     if (

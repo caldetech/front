@@ -137,7 +137,7 @@ export default function Accounts() {
           </DialogTrigger>
 
           <DialogContent>
-            <DialogHeader>
+            <DialogHeader className="cursor-pointer">
               <DialogTitle>Adicionar empresa</DialogTitle>
             </DialogHeader>
 
@@ -193,6 +193,7 @@ export default function Accounts() {
                       <Badge variant={"secondary"}>
                         {
                           {
+                            DEV: "Desenvolvedor",
                             ADMIN: "Administrador",
                             MEMBER: "Membro",
                             BILLING: "Financeiro",
@@ -214,7 +215,7 @@ export default function Accounts() {
       </div>
 
       <Button
-        className="sm:hidden absolute rounded-full w-12 h-12 bottom-4 right-4"
+        className="absolute rounded-full w-12 h-12 bottom-4 right-4"
         onClick={handleLogout}
       >
         <Power />

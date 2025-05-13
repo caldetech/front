@@ -57,8 +57,8 @@ export default function NewSidebar({
       <SidebarHeader className="h-16 items-center justify-center hidden sm:flex">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center justify-items-start select-none px-2">
-            <Star className="me-2 group-data-[collapsible=icon]:me-0" />
-            Caldetech
+            {/* <Star className="me-2 group-data-[collapsible=icon]:me-0" /> */}
+            {slug.toLocaleUpperCase()}™
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -151,9 +151,9 @@ export default function NewSidebar({
       </SidebarContent>
 
       <SidebarFooter className="hidden sm:flex w-full">
-        <Card className="group-data-[collapsible=icon]:hidden">
-          <CardContent>
-            <Button className="w-full" onClick={handleLogout}>
+        <Card className="group-data-[collapsible=icon]:hidden m=0 p-0">
+          <CardContent className="p-0 m-0">
+            <Button className="w-full cursor-pointer" onClick={handleLogout}>
               Sair
             </Button>
           </CardContent>

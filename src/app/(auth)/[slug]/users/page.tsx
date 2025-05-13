@@ -114,6 +114,7 @@ export default function Users() {
 
                   <SelectContent>
                     <SelectGroup>
+                      <SelectItem value="ADMIN">Desenvolvedor</SelectItem>
                       <SelectItem value="ADMIN">Administrador</SelectItem>
                       <SelectItem value="BILLING">Financeiro</SelectItem>
                       <SelectItem value="MANAGER">Gerente</SelectItem>
@@ -149,6 +150,7 @@ export default function Users() {
           module="users"
           slug={slug}
           token={fixedToken}
+          tableName="employees"
         />
       </div>
     </div>

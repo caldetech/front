@@ -55,7 +55,7 @@ export default function Products() {
 
         <Dialog>
           <DialogContent>
-            <DialogHeader>
+            <DialogHeader className="cursor-pointer">
               <DialogTitle>Adicionar produto</DialogTitle>
             </DialogHeader>
 
