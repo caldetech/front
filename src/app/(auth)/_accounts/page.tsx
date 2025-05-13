@@ -215,7 +215,7 @@ export default function Accounts() {
       </div>
 
       <Button
-        className="sm:hidden absolute rounded-full w-12 h-12 bottom-4 right-4"
+        className="absolute rounded-full w-12 h-12 bottom-4 right-4"
         onClick={handleLogout}
       >
         <Power />

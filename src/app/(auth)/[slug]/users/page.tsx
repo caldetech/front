@@ -150,6 +150,7 @@ export default function Users() {
           module="users"
           slug={slug}
           token={fixedToken}
+          tableName="employees"
         />
       </div>
     </div>

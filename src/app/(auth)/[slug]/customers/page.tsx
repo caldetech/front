@@ -281,6 +281,7 @@ export default function Customers() {
           module="customers"
           slug={slug}
           token={fixedToken}
+          tableName="customers"
         />
       </div>
     </div>

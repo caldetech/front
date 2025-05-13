@@ -145,6 +145,7 @@ export default function Services() {
           module="services"
           slug={slug}
           token={fixedToken}
+          tableName="services"
         />
       </div>
     </div>
