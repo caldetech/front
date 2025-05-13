@@ -32,7 +32,7 @@ import { BeatLoader } from "react-spinners";
 const ITEMS_PER_PAGE = 5;
 
 export default function Customers() {
-  const [customerType, setCustomerType] = useState<string>("PERSONAL");
+  const [customerType, setCustomerType] = useState<string>("PERSON");
   const slug = useSlug();
   const [currentPage, setCurrentPage] = useState(1);
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
@@ -83,7 +83,7 @@ export default function Customers() {
   function handleOpenChange() {
     setShowSuccessNotification(false);
     setShowErrorNotification(false);
-    setCustomerType("PERSONAL");
+    setCustomerType("PERSON");
   }
 
   return (
@@ -107,13 +107,13 @@ export default function Customers() {
 
             <form action={handleSubmit} className="flex flex-col gap-4 py-4">
               <RadioGroup
-                defaultValue="PERSONAL"
+                defaultValue="PERSON"
                 className="flex"
                 onValueChange={(value) => setCustomerType(value)}
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="PERSONAL" id="PERSONAL" />
-                  <Label htmlFor="PERSONAL">Física</Label>
+                  <RadioGroupItem value="PERSON" id="PERSON" />
+                  <Label htmlFor="PERSON">Física</Label>
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -128,7 +128,7 @@ export default function Customers() {
                 <Input id="name" name="name" type="text" />
               </div>
 
-              {customerType == "PERSONAL" && (
+              {customerType == "PERSON" && (
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="document">CPF</Label>
 

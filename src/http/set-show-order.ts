@@ -12,12 +12,6 @@ export async function setShowOrder({
   showOrder: boolean;
 }) {
   try {
-    console.log({
-      orderId,
-      token,
-      showOrder,
-    });
-
     return await api
       .post("orders/update-visibility", {
         json: {
