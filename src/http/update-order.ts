@@ -2,7 +2,7 @@
 
 import { api } from "../lib/api-client";
 
-export async function createOrder({
+export async function updateOrder({
   orderId,
   slug,
   type,
@@ -38,7 +38,7 @@ export async function createOrder({
   showOrder: boolean;
 }) {
   try {
-    await api.post("orders/create", {
+    await api.post("orders/update", {
       json: {
         orderId,
         slug,

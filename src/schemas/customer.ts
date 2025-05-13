@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const customerSchema = z.object({
   id: z.string(),
-  customerType: z.enum(["COMPANY", "PERSONAL"]),
+  customerType: z.enum(["COMPANY", "PERSON"]),
   name: z.string(),
   document: z.string().optional(),
   mainNumber: z.string(),

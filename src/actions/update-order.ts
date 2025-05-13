@@ -1,8 +1,8 @@
 "use server";
 
-import { createOrder } from "@/http/create-order";
+import { updateOrder } from "@/http/update-order";
 
-export async function createOrderAction({
+export async function updateOrderAction({
   orderId,
   slug,
   formData,
@@ -53,14 +53,14 @@ export async function createOrderAction({
     formData.get("memberCommissions") as string
   ) as { memberId: string; value: number }[];
 
-  if (!slug || !type || !blingProducts.length) {
+  if (!slug || !type) {
     return {
       success: false,
       message: "Campos obrigatórios ausentes!",
     };
   }
 
-  await createOrder({
+  await updateOrder({
     orderId,
     slug,
     type,

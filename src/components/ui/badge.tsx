@@ -19,7 +19,7 @@ const badgeVariants = cva(
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
       },
       color: {
-        red: "bg-red-200",
+        red: "bg-red-100",
         green: "bg-green-200",
         blue: "bg-blue-200",
         yellow: "bg-yellow-200",
@@ -28,7 +28,6 @@ const badgeVariants = cva(
         orange: "bg-orange-200",
         teal: "bg-teal-200",
         gray: "bg-gray-200",
-        brown: "bg-brown-200",
         indigo: "bg-indigo-200",
         lime: "bg-lime-200",
         cyan: "bg-cyan-200",

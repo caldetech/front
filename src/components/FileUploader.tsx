@@ -20,8 +20,8 @@ export default function FileUploader({ orderId }: { orderId: string }) {
   const { mutate } = useStore();
   const [token] = useAuthToken();
 
-  function handleMutate() {
-    mutate();
+  async function handleMutate() {
+    await mutate();
   }
 
   const uploadToS3WithProgress = (file: File, url: string) => {

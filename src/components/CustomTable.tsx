@@ -69,6 +69,7 @@ import { createOrderAction } from "@/actions/create-order";
 import { searchEmployee } from "@/http/search-employee";
 import { searchCustomer } from "@/http/search-customer";
 import { searchProduct } from "@/http/search-product";
+import { updateOrderAction } from "@/actions/update-order";
 
 export type GenericRecord = {
   id: string;
@@ -89,7 +90,6 @@ type CustomTableProps<T extends GenericRecord> = {
   slug: string;
 };
 
-// ✅ Mapeamento de nomes das colunas por tabela
 const columnNameMapping: Record<string, Record<string, string>> = {
   orders: {
     type: "Tipo",
@@ -100,7 +100,6 @@ const columnNameMapping: Record<string, Record<string, string>> = {
   },
 };
 
-// ✅ Mapeamento de valores por tabela e coluna
 const valueMapping: Record<
   string,
   Record<string, Record<string, React.ReactNode>>
@@ -144,7 +143,7 @@ const valueMapping: Record<
         </Badge>
       ),
       PERSON: (
-        <Badge color={"brown"} className="text-black">
+        <Badge color={"red"} className="text-black">
           Pessoal
         </Badge>
       ),
@@ -207,13 +206,14 @@ export default function CustomTable<T extends GenericRecord>({
   const [serviceQuery, setServiceQuery] = useState("");
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
   const [selectedServices, setSelectedServices] = useState<Service[]>([]);
-  const [orderVisibility, setOrderVisibility] = useState<boolean>(true);
+  const [orderVisibility, setOrderVisibility] = useState<boolean | undefined>();
   const [openMainDialog, setOpenMainDialog] = useState<boolean | undefined>();
   const [openEditDialog, setOpenEditDialog] = useState<boolean | undefined>();
   const [paymentAmount, setPaymentAmount] = useState<number | undefined>();
   const [singleCommission, setSingleCommission] = useState<
     number | undefined
   >();
+  const [orderId, setOrderId] = useState<string | undefined>();
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -403,10 +403,9 @@ export default function CustomTable<T extends GenericRecord>({
 
     formData.append("memberCommissions", JSON.stringify(individualCommissions));
 
-    const order = await createOrderAction({ formData, slug, token });
+    const order = await updateOrderAction({ formData, slug, token, orderId });
 
     if (order.success) {
-      resetForm();
       setShowSuccessNotification(true);
       await mutate();
     } else {
@@ -424,8 +423,6 @@ export default function CustomTable<T extends GenericRecord>({
     formData.delete("services");
   };
 
-  // FIM DO MODAL DE EDIÇÃO DE ORDEM DE SERVIÇO
-
   const columnNames = data?.length
     ? Object.keys(data[0]).filter(
         (key) =>
@@ -441,7 +438,8 @@ export default function CustomTable<T extends GenericRecord>({
           key !== "createdAt" &&
           key !== "amount" &&
           key !== "show" &&
-          key !== "method"
+          key !== "method" &&
+          key !== "customerId"
       )
     : [];
 
@@ -462,6 +460,7 @@ export default function CustomTable<T extends GenericRecord>({
     address: "Endereço",
     assignedMembers: "Funcionários",
     customerType: "Categoria",
+    method: "Pagamento",
   };
 
   const valueLabels = {
@@ -470,6 +469,12 @@ export default function CustomTable<T extends GenericRecord>({
     WARRANTY: "GARANTIA",
     COMPANY: "EMPRESA",
     PERSON: "PESSOAL",
+    PIX: "PIX",
+    CARTAO: "Cartão",
+    BOLETO: "Boleto",
+    DINHEIRO: "Dinheiro",
+    DEPOSITO: "Depósito",
+    PENDENTE: "Pendente",
   };
 
   const { mutate } = useStore();
@@ -506,8 +511,8 @@ export default function CustomTable<T extends GenericRecord>({
       }
       if (value === "PESSOAL") {
         return (
-          <Badge color={"brown"} className="text-black">
-            EMPRESA
+          <Badge color={"red"} className="text-black">
+            PESSOAL
           </Badge>
         );
       }
@@ -516,7 +521,7 @@ export default function CustomTable<T extends GenericRecord>({
     if (key === "customerType") {
       if (value === "PESSOAL") {
         return (
-          <Badge color={"brown"} className="text-black">
+          <Badge color={"red"} className="text-black">
             PESSOAL
           </Badge>
         );
@@ -570,7 +575,7 @@ export default function CustomTable<T extends GenericRecord>({
 
     setShowOrder({ orderId, token, showOrder: !showOrder });
 
-    mutate();
+    await mutate();
   }
 
   return (
@@ -628,8 +633,6 @@ export default function CustomTable<T extends GenericRecord>({
                 const orderPrice = item.amount as number;
                 const showOrder = item.show as boolean;
                 const orderId = item.id as string;
-
-                console.log(item);
 
                 return (
                   <tr className="border-b border-[#EFEFEF]" key={item.id}>
@@ -744,11 +747,20 @@ export default function CustomTable<T extends GenericRecord>({
                               </Can>
 
                               {/* MODAL DE EDIÇÃO */}
-                              <Dialog>
+                              <Dialog
+                                onOpenChange={() => {
+                                  setShowSuccessNotification(false);
+                                  setShowErrorNotification(false);
+                                }}
+                              >
                                 <DialogTrigger
                                   onClick={() => {
                                     setSelectedClient(true);
                                     setCustomerQuery(item.customer as string);
+                                    setCustomer({
+                                      id: item.customerId as string,
+                                      name: item.customer as string,
+                                    });
                                     setOrderType(item.type as string);
 
                                     type Product = {
@@ -809,6 +821,10 @@ export default function CustomTable<T extends GenericRecord>({
                                         percentage: m.percentage, // incluir o valor da comissão
                                       }))
                                     );
+
+                                    setOrderVisibility(item.show as boolean);
+
+                                    setOrderId(item.id as string);
                                   }}
                                   asChild
                                 >
@@ -828,7 +844,7 @@ export default function CustomTable<T extends GenericRecord>({
                                     className="flex flex-col gap-4"
                                     action={handleSubmit}
                                   >
-                                    <div className="flex justify-between">
+                                    {/* <div className="flex justify-between">
                                       <Label htmlFor="type">Publicar</Label>
 
                                       <Switch
@@ -837,7 +853,7 @@ export default function CustomTable<T extends GenericRecord>({
                                           setOrderVisibility(checked)
                                         }
                                       />
-                                    </div>
+                                    </div> */}
 
                                     {/* Cliente */}
                                     <div className="flex flex-col gap-1">
@@ -1178,11 +1194,11 @@ export default function CustomTable<T extends GenericRecord>({
 
                                     <div className="flex flex-col gap-4">
                                       {showSuccessNotification && (
-                                        <SuccessNotification message="Ordem de serviço criada com sucesso!" />
+                                        <SuccessNotification message="Atualização bem sucedida!" />
                                       )}
 
                                       {showErrorNotification && (
-                                        <ErrorNotification message="Erro ao criar a ordem de serviço!" />
+                                        <ErrorNotification message="Erro ao atualizar!" />
                                       )}
 
                                       <Button type="submit">Atualizar</Button>
@@ -1192,7 +1208,7 @@ export default function CustomTable<T extends GenericRecord>({
                               </Dialog>
                             </div>
 
-                            <DialogHeader>
+                            <DialogHeader className="flex items-center">
                               <DialogTitle>
                                 Ordem n°:{" "}
                                 {orderNumber.toString().length === 1
@@ -1218,7 +1234,8 @@ export default function CustomTable<T extends GenericRecord>({
                                       key != "orderNumber" &&
                                       key != "serviceOrder" &&
                                       key != "amount" &&
-                                      key != "show"
+                                      key != "show" &&
+                                      key != "customerId"
                                   )
                                   .map(([key, value], index) => {
                                     if (
@@ -1285,119 +1302,133 @@ export default function CustomTable<T extends GenericRecord>({
 
                               {/* Tabela de produtos */}
                               <div className="overflow-x-auto">
-                                <table className="min-w-full text-sm">
-                                  {Object.entries(productOrder).length > 0 ? (
-                                    <>
-                                      <thead>
-                                        <tr>
-                                          <th className="text-left p-2">
-                                            Produto
-                                          </th>
-                                          <th className="text-right p-2">
-                                            Qtd.
-                                          </th>
-                                          <th className="text-right p-2">
-                                            Preço
-                                          </th>
-                                          <th className="text-right p-2">
-                                            Subtotal
-                                          </th>
-                                        </tr>
-                                      </thead>
+                                {Object.entries(productOrder).length > 0 ||
+                                Object.entries(serviceOrder).length > 0 ? (
+                                  <table className="min-w-full text-sm">
+                                    {Object.entries(productOrder).length >
+                                      0 && (
+                                      <>
+                                        <thead>
+                                          <tr>
+                                            <th className="text-left p-2">
+                                              Produto
+                                            </th>
+                                            <th className="text-right p-2">
+                                              Qtd.
+                                            </th>
+                                            <th className="text-right p-2">
+                                              Preço
+                                            </th>
+                                            <th className="text-right p-2">
+                                              Subtotal
+                                            </th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {Object.entries(item)
+                                            .filter(
+                                              ([key]) => key === "productOrder"
+                                            )
+                                            .flatMap(([_, value]) =>
+                                              Array.isArray(value)
+                                                ? value.map((element, idx) => (
+                                                    <tr
+                                                      className="border-t"
+                                                      key={`product-${idx}`}
+                                                    >
+                                                      <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                                        {element.productName}
+                                                      </td>
+                                                      <td className="text-right p-2">
+                                                        {element.quantity}
+                                                      </td>
+                                                      <td className="text-right p-2">
+                                                        {element.price}
+                                                      </td>
+                                                      <td className="text-right p-2">
+                                                        {parseFloat(
+                                                          (
+                                                            element.price *
+                                                            element.quantity
+                                                          ).toString()
+                                                        )}
+                                                      </td>
+                                                    </tr>
+                                                  ))
+                                                : []
+                                            )}
+                                        </tbody>
+                                      </>
+                                    )}
 
-                                      <tbody>
-                                        {Object.entries(item)
-                                          .filter(
-                                            ([key, value]) =>
-                                              key === "productOrder"
-                                          )
-                                          .flatMap(([key, value]) =>
-                                            Array.isArray(value)
-                                              ? value.map((element, idx) => (
-                                                  <tr
-                                                    className="border-t"
-                                                    key={idx}
-                                                  >
-                                                    <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
-                                                      {element.productName}
-                                                    </td>
-                                                    <td className="text-right p-2">
-                                                      {element.quantity}
-                                                    </td>
-                                                    <td className="text-right p-2">
-                                                      {element.price}
-                                                    </td>
-                                                    <td className="text-right p-2">
-                                                      {parseFloat(
-                                                        (
-                                                          element.price *
-                                                          element.quantity
-                                                        ).toString()
-                                                      )}
-                                                    </td>
-                                                  </tr>
-                                                ))
-                                              : []
-                                          )}
-                                      </tbody>
-                                    </>
-                                  ) : undefined}
+                                    {Object.entries(serviceOrder).length >
+                                      0 && (
+                                      <>
+                                        <thead>
+                                          <tr>
+                                            <th className="text-left p-2">
+                                              Serviço
+                                            </th>
+                                            <th className="text-right p-2"></th>
+                                            <th className="text-right p-2"></th>
+                                            <th className="text-right p-2">
+                                              Subtotal
+                                            </th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {Object.entries(item)
+                                            .filter(
+                                              ([key]) => key === "serviceOrder"
+                                            )
+                                            .flatMap(([_, value]) =>
+                                              Array.isArray(value)
+                                                ? value.map((element, idx) => (
+                                                    <tr
+                                                      className="border-t"
+                                                      key={`service-${idx}`}
+                                                    >
+                                                      <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                                        {element.title}
+                                                      </td>
+                                                      <td className="text-right p-2"></td>
+                                                      <td className="text-right p-2"></td>
+                                                      <td className="text-right p-2">
+                                                        {element.price}
+                                                      </td>
+                                                    </tr>
+                                                  ))
+                                                : []
+                                            )}
+                                        </tbody>
+                                      </>
+                                    )}
 
-                                  {Object.entries(serviceOrder).length > 0 ? (
-                                    <>
-                                      <thead>
-                                        <tr>
-                                          <th className="text-left p-2">
-                                            Serviço
-                                          </th>
-                                          <th className="text-right p-2"></th>
-                                          <th className="text-right p-2"></th>
-                                          <th className="text-right p-2">
-                                            Subtotal
-                                          </th>
-                                        </tr>
-                                      </thead>
-
-                                      <tbody>
-                                        {Object.entries(item)
-                                          .filter(
-                                            ([key, value]) =>
-                                              key === "serviceOrder"
-                                          )
-                                          .flatMap(([key, value]) =>
-                                            Array.isArray(value)
-                                              ? value.map((element, idx) => (
-                                                  <tr
-                                                    className="border-t"
-                                                    key={idx}
-                                                  >
-                                                    <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
-                                                      {element.title}
-                                                    </td>
-                                                    <td className="text-right p-2"></td>
-                                                    <td className="text-right p-2"></td>
-                                                    <td className="text-right p-2">
-                                                      {element.price}
-                                                    </td>
-                                                  </tr>
-                                                ))
-                                              : []
-                                          )}
-                                      </tbody>
-                                    </>
-                                  ) : undefined}
-
-                                  <tfoot>
-                                    <tr className="border-t">
-                                      <td colSpan={3} className="p-2 font-bold">
-                                        Total
-                                      </td>
-                                      <td className="text-right p-2 font-bold">
-                                        {orderPrice}
-                                      </td>
-                                    </tr>
-                                  </tfoot>
-                                </table>
+                                    <tfoot>
+                                      <tr className="border-t">
+                                        <td
+                                          colSpan={3}
+                                          className="p-2 font-bold"
+                                        >
+                                          Total
+                                        </td>
+                                        <td className="text-right p-2 font-bold">
+                                          {orderPrice}
+                                        </td>
+                                      </tr>
+                                    </tfoot>
+                                  </table>
+                                ) : (
+                                  <div className="w-full p-6 text-center text-gray-500 bg-gray-50 rounded-lg">
+                                    <p className="text-lg font-semibold">
+                                      Nenhum produto ou serviço adicionado
+                                    </p>
+                                    <p className="text-sm mt-1">
+                                      Adicione itens para visualizar os detalhes
+                                      do pedido.
+                                    </p>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </DialogContent>
