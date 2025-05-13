@@ -71,7 +71,7 @@ export default function Services() {
 
         <Dialog onOpenChange={handleNotifications}>
           <DialogTrigger asChild>
-            <Button variant={"outline"}>
+            <Button variant={"outline"} className="cursor-pointer">
               <p className="hidden sm:flex">Adicionar</p>
 
               <Plus className="sm:hidden" />
@@ -79,7 +79,7 @@ export default function Services() {
           </DialogTrigger>
 
           <DialogContent>
-            <DialogHeader>
+            <DialogHeader className="cursor-pointer">
               <DialogTitle>Adicionar serviço</DialogTitle>
             </DialogHeader>
 

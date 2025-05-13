@@ -101,7 +101,7 @@ export default function Customers() {
           </DialogTrigger>
 
           <DialogContent>
-            <DialogHeader>
+            <DialogHeader className="cursor-pointer">
               <DialogTitle>Adicionar cliente</DialogTitle>
             </DialogHeader>
 

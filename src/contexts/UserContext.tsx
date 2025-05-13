@@ -6,7 +6,7 @@ type User = {
   id: string;
   name: string;
   email: string;
-  role: "ADMIN" | "BILLING" | "MANAGER" | "MEMBER";
+  role: "DEV" | "ADMIN" | "BILLING" | "MANAGER" | "MEMBER";
   membership: string;
   avatarUrl: string | null;
 };

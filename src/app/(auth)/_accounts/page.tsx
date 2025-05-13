@@ -137,7 +137,7 @@ export default function Accounts() {
           </DialogTrigger>
 
           <DialogContent>
-            <DialogHeader>
+            <DialogHeader className="cursor-pointer">
               <DialogTitle>Adicionar empresa</DialogTitle>
             </DialogHeader>
 
@@ -193,6 +193,7 @@ export default function Accounts() {
                       <Badge variant={"secondary"}>
                         {
                           {
+                            DEV: "Desenvolvedor",
                             ADMIN: "Administrador",
                             MEMBER: "Membro",
                             BILLING: "Financeiro",

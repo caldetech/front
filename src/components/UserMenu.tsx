@@ -21,7 +21,7 @@ export default async function UserMenu({
     <div className="hidden sm:flex ms-4 absolute right-0 z-11 sm:static">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Avatar className="size-8 rounded-full">
+          <Avatar className="size-8 rounded-full cursor-pointer">
             {/* <AvatarImage
               src={`/${slug}/images/avatars/1.png`}
               alt="shadcn ui kit"
@@ -33,7 +33,7 @@ export default async function UserMenu({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
-          className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+          className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg absolute right-[-32]"
           align="start"
         >
           <DropdownMenuLabel className="p-0 font-normal">
@@ -84,7 +84,7 @@ export default async function UserMenu({
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer">
             <LogOut className="me-2 size-4" />
             Sair
           </DropdownMenuItem>
