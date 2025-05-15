@@ -2,6 +2,7 @@
 
 import { createOrderAction } from "@/actions/create-order";
 import CustomTable from "@/components/CustomTable";
+import { DateTimePicker } from "@/components/date-time-picker";
 import ErrorNotification from "@/components/ErrorNotification";
 import SuccessNotification from "@/components/SuccessNotification";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { useSlug } from "@/contexts/SlugContext";
 import { useUser } from "@/contexts/UserContext";
 import useAuthToken from "@/hooks/use-auth-token";
@@ -340,6 +342,12 @@ export default function Orders() {
                 <Switch checked={showOrder} onCheckedChange={setShowOrder} />
               </div>
 
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="schedule">Agendamento</Label>
+
+                <DateTimePicker />
+              </div>
+
               {/* Cliente */}
               <div className="flex flex-col gap-1">
                 <Label htmlFor="customerId">Cliente</Label>
@@ -487,6 +495,11 @@ export default function Orders() {
 
               {/* Pesquisa de serviços */}
               <div className="flex flex-col gap-2">
+                <Label htmlFor="note">Observação</Label>
+                <Textarea placeholder="Escreva sua mensagem aqui..." />
+              </div>
+
+              {/* <div className="flex flex-col gap-2">
                 <Label htmlFor="service-search">Pesquisar serviço</Label>
                 <Input
                   id="service-search"
@@ -524,7 +537,7 @@ export default function Orders() {
                     </p>
                   )
                 )}
-              </div>
+              </div> */}
 
               {/* Serviços selecionados */}
               {selectedServices.length > 0 && (

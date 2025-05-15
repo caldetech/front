@@ -26,17 +26,19 @@ export default function IntegrationsPage() {
 
   useEffect(() => {
     async function handleBlingAccessToken() {
-      const tokens = await getValidAccessToken({ slug, token });
+      if (token) {
+        const tokens = await getValidAccessToken({ slug, token });
 
-      if (tokens !== undefined && !("success" in tokens)) {
-        setBlingConnection(true);
+        if (tokens !== undefined && !("success" in tokens)) {
+          setBlingConnection(true);
+        }
+
+        setLoading(false);
       }
-
-      setLoading(false);
     }
 
     handleBlingAccessToken();
-  }, []);
+  }, [token]);
 
   if (loading) {
     return (

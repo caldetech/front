@@ -40,7 +40,6 @@ export default function NewSidebar({
 
   const routeTitles = {
     Orders: "Ordens",
-    Services: "Serviços",
     Customers: "Clientes",
     Users: "Funcionários",
     Commissions: "Comissões",

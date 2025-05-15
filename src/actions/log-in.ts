@@ -56,7 +56,7 @@ export async function LogInAction(data: FormData) {
 
     return {
       success: false,
-      message: "Unexpected error, try again in a few minutes.",
+      message: "Erro inesperado, tente novamente em alguns minutos.",
       errors: null,
     };
   }
