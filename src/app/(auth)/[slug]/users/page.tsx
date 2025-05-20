@@ -28,6 +28,8 @@ import { BeatLoader } from "react-spinners";
 import SuccessNotification from "@/components/SuccessNotification";
 import ErrorNotification from "@/components/ErrorNotification";
 import useAuthToken from "@/hooks/use-auth-token";
+import { useUser } from "@/contexts/UserContext";
+import { useInvites } from "@/hooks/use-invites";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -39,12 +41,22 @@ export default function Users() {
   const [role, setRole] = useState("MEMBER");
   const [token] = useAuthToken();
   const fixedToken: string = token!;
-  const { data, total, isLoading, error, mutate } = useEmployees(
+  // const { data, total, isLoading, error, mutate } = useEmployees(
+  //   currentPage,
+  //   ITEMS_PER_PAGE,
+  //   slug,
+  //   token
+  // );
+  const user = useUser();
+  const { data, total, isLoading, error, mutate } = useInvites(
     currentPage,
     ITEMS_PER_PAGE,
     slug,
-    token
+    fixedToken,
+    user.membership
   );
+  console.log(data);
+  console.log(error);
 
   if (isLoading) {
     return (
@@ -57,7 +69,12 @@ export default function Users() {
   if (error) return <p>Erro ao carregar funcionários</p>;
 
   async function handleSubmit(formData: FormData) {
-    const employee = await createInviteAction({ formData, slug, token });
+    const employee = await createInviteAction({
+      formData,
+      slug,
+      token,
+      memberId: user.membership,
+    });
 
     if (employee?.success) {
       setShowErrorNotification(false);
@@ -114,7 +131,7 @@ export default function Users() {
 
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="ADMIN">Desenvolvedor</SelectItem>
+                      <SelectItem value="DEV">Desenvolvedor</SelectItem>
                       <SelectItem value="ADMIN">Administrador</SelectItem>
                       <SelectItem value="BILLING">Financeiro</SelectItem>
                       <SelectItem value="MANAGER">Gerente</SelectItem>
@@ -150,7 +167,7 @@ export default function Users() {
           module="users"
           slug={slug}
           token={fixedToken}
-          tableName="employees"
+          tableName="invites"
         />
       </div>
     </div>
