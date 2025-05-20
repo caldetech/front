@@ -64,8 +64,8 @@ export default function Orders() {
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const slug = useSlug();
   const [currentPage, setCurrentPage] = useState(1);
-  const [orderType, setOrderType] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
+  const [orderType, setOrderType] = useState("SALE");
+  const [paymentMethod, setPaymentMethod] = useState("PENDENTE");
   const { setMutate } = useStore();
   const [token] = useAuthToken();
   const fixedToken: string = token!;
@@ -84,7 +84,8 @@ export default function Orders() {
   const [showOrder, setShowOrder] = useState<boolean>(true);
   const [service, setService] = useState<string | undefined>();
   const [note, setNote] = useState<string | undefined>();
-  const [date, setDate] = useState<Date | undefined>();
+  const [date, setDate] = useState<Date>(new Date());
+  const [paymentAmount, setPaymentAmount] = useState<number>(0);
 
   useEffect(() => {
     setMutate(mutate);
@@ -260,12 +261,12 @@ export default function Orders() {
     setFilteredCustomers([]);
     setSelectedClient(false);
     setCustomer(null);
-    setOrderType("");
-    setPaymentMethod("");
+    setOrderType("SALE");
+    setPaymentMethod("PENDENTE");
     setSelectedServices([]);
     setServiceQuery("");
     setFilteredServices([]);
-    setDate(undefined);
+    setDate(new Date());
     setService(undefined);
     setNote(undefined);
   };
@@ -420,7 +421,7 @@ export default function Orders() {
                     <SelectValue placeholder="Selecione um tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="SALE">Venda</SelectItem>
+                    <SelectItem value="SALE">Serviço</SelectItem>
                     <SelectItem value="BUDGET">Orçamento</SelectItem>
                     <SelectItem value="WARRANTY">Garantia</SelectItem>
                   </SelectContent>
@@ -582,6 +583,7 @@ export default function Orders() {
                 <Label htmlFor="paymentMethod">Método de pagamento</Label>
                 <Select
                   name="paymentMethod"
+                  defaultValue={paymentMethod}
                   value={paymentMethod}
                   onValueChange={setPaymentMethod}
                 >
@@ -601,7 +603,12 @@ export default function Orders() {
               {/* Valor do pagamento */}
               <div className="flex flex-col gap-1">
                 <Label htmlFor="paymentAmount">Valor</Label>
-                <Input name="paymentAmount" type="text" />
+                <Input
+                  name="paymentAmount"
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(Number(e.target.value))}
+                  type="text"
+                />
               </div>
 
               <div className="flex flex-col gap-4">

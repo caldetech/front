@@ -6,8 +6,8 @@ import { Label } from "@/components/ui/label";
 import { TimePickerInput } from "./time-picker-input";
 
 interface TimePickerDemoProps {
-  date: Date | undefined;
-  setDate: (date: Date | undefined) => void;
+  date: Date;
+  setDate: (date: Date) => void;
 }
 
 export function TimePickerDemo({ date, setDate }: TimePickerDemoProps) {
