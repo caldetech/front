@@ -224,19 +224,19 @@ export default function CustomTable<T extends GenericRecord>({
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [orderType, setOrderType] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("PENDENTE");
   const [serviceQuery, setServiceQuery] = useState("");
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
   const [selectedServices, setSelectedServices] = useState<Service[]>([]);
   const [orderVisibility, setOrderVisibility] = useState<boolean | undefined>();
   const [openMainDialog, setOpenMainDialog] = useState<boolean | undefined>();
   const [openEditDialog, setOpenEditDialog] = useState<boolean | undefined>();
-  const [paymentAmount, setPaymentAmount] = useState<number | undefined>();
+  const [paymentAmount, setPaymentAmount] = useState<number | undefined>(0);
   const [singleCommission, setSingleCommission] = useState<
     number | undefined
   >();
   const [orderId, setOrderId] = useState<string | undefined>();
-  const [date, setDate] = useState<Date | undefined>();
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const [service, setService] = useState<string | undefined>();
   const [note, setNote] = useState<string | undefined>();
 
@@ -411,7 +411,7 @@ export default function CustomTable<T extends GenericRecord>({
     setSelectedClient(false);
     setCustomer(null);
     setOrderType("");
-    setPaymentMethod("");
+    setPaymentMethod("PENDENTE");
     setSelectedServices([]);
     setServiceQuery("");
     setFilteredServices([]);
