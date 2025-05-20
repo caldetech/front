@@ -7,10 +7,12 @@ export async function createInviteAction({
   formData,
   slug,
   token,
+  memberId,
 }: {
   formData: FormData;
   slug: string;
   token: string | null;
+  memberId: string;
 }) {
   const email = formData.get("email") as string;
   const role = formData.get("role") as Role;
@@ -22,5 +24,5 @@ export async function createInviteAction({
     };
   }
 
-  return await createInvite({ email, role, slug, token });
+  return await createInvite({ email, role, slug, token, memberId });
 }

@@ -8,18 +8,21 @@ export async function createInvite({
   role,
   slug,
   token,
+  memberId,
 }: {
   email: string;
   role: Role;
   slug: string;
   token: string | null;
+  memberId: string;
 }) {
   try {
-    await api.post("invite/create", {
+    await api.post("invites/create", {
       json: {
         email,
         role,
         slug,
+        memberId,
       },
       hooks: {
         beforeRequest: [

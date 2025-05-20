@@ -116,6 +116,10 @@ const columnNameMapping: Record<string, Record<string, string>> = {
     number: "Número",
     status: "Status",
   },
+  invites: {
+    email: "E-mail",
+    status: "Status",
+  },
 };
 
 const valueMapping: Record<
