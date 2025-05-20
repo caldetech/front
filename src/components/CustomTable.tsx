@@ -467,7 +467,6 @@ export default function CustomTable<T extends GenericRecord>({
           key !== "show" &&
           key !== "method" &&
           key !== "customerId" &&
-          key !== "commissionPercent" &&
           key !== "scheduling" &&
           key !== "note" &&
           key !== "service"
@@ -492,6 +491,7 @@ export default function CustomTable<T extends GenericRecord>({
     assignedMembers: "Funcionários",
     customerType: "Categoria",
     method: "Pagamento",
+    scheduling: "Data/Hora",
   };
 
   const valueLabels = {
@@ -861,8 +861,6 @@ export default function CustomTable<T extends GenericRecord>({
                                     setOrderId(item.id as string);
                                     setService(item.service as string);
                                     setNote(item.note as string);
-
-                                    console.log(item);
                                   }}
                                   asChild
                                 >
@@ -1205,8 +1203,6 @@ export default function CustomTable<T extends GenericRecord>({
                                         key !== "amount" &&
                                         key !== "show" &&
                                         key !== "customerId" &&
-                                        key !== "commissionPercent" &&
-                                        key !== "scheduling" &&
                                         key !== "note" &&
                                         key !== "service"
                                     )
@@ -1240,6 +1236,38 @@ export default function CustomTable<T extends GenericRecord>({
                                                 </p>
                                               ))}
                                             </div>
+                                          </div>
+                                        );
+                                      }
+
+                                      if (key === "scheduling") {
+                                        return (
+                                          <div
+                                            key={key}
+                                            className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
+                                          >
+                                            <p className="text-muted-foreground text-sm">
+                                              {key in keyLabels
+                                                ? keyLabels[
+                                                    key as keyof typeof keyLabels
+                                                  ]
+                                                : key}
+                                            </p>
+                                            <p className="text-right">
+                                              {typeof value === "string" ||
+                                              typeof value === "number"
+                                                ? new Date(
+                                                    value
+                                                  ).toLocaleString(undefined, {
+                                                    year: "numeric",
+                                                    month: "2-digit",
+                                                    day: "2-digit",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: false, // ou true, se quiser AM/PM
+                                                  })
+                                                : "Invalid date"}
+                                            </p>
                                           </div>
                                         );
                                       }
