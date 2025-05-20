@@ -70,6 +70,8 @@ import { searchEmployee } from "@/http/search-employee";
 import { searchCustomer } from "@/http/search-customer";
 import { searchProduct } from "@/http/search-product";
 import { updateOrderAction } from "@/actions/update-order";
+import { DateTimePicker } from "./date-time-picker";
+import { Textarea } from "./ui/textarea";
 
 export type GenericRecord = {
   id: string;
@@ -230,6 +232,9 @@ export default function CustomTable<T extends GenericRecord>({
     number | undefined
   >();
   const [orderId, setOrderId] = useState<string | undefined>();
+  const [date, setDate] = useState<Date | undefined>();
+  const [service, setService] = useState<string | undefined>();
+  const [note, setNote] = useState<string | undefined>();
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -376,6 +381,10 @@ export default function CustomTable<T extends GenericRecord>({
     );
   };
 
+  const removeEmployee = (employeeId: string) => {
+    setSelectedMembers((prev) => prev.filter((p) => p.id !== employeeId));
+  };
+
   const removeProduct = (productId: number) => {
     setSelected((prev) => prev.filter((p) => p.id !== productId));
   };
@@ -402,22 +411,21 @@ export default function CustomTable<T extends GenericRecord>({
     setSelectedServices([]);
     setServiceQuery("");
     setFilteredServices([]);
+    setDate(undefined);
+    setService(undefined);
+    setNote(undefined);
   };
 
   const handleSubmit = async (formData: FormData) => {
     formData.append("blingProducts", JSON.stringify(selected));
     formData.append("members", JSON.stringify(selectedMembers));
-    formData.append("commissionPercent", String(totalCommissionPercent));
     formData.append("customer", JSON.stringify(customer));
-    formData.append("services", JSON.stringify(selectedServices));
+    formData.append("service", JSON.stringify(service));
     formData.append("showOrder", JSON.stringify(orderVisibility));
-
-    const individualCommissions = selectedMembers.map((member) => ({
-      memberId: member.id,
-      value: totalCommissionPercent / selectedMembers.length,
-    }));
-
-    formData.append("memberCommissions", JSON.stringify(individualCommissions));
+    formData.append("note", JSON.stringify(note));
+    formData.append("orderType", JSON.stringify(orderType));
+    formData.append("paymentMethod", JSON.stringify(paymentMethod));
+    formData.append("date", JSON.stringify(date));
 
     const order = await updateOrderAction({ formData, slug, token, orderId });
 
@@ -430,13 +438,16 @@ export default function CustomTable<T extends GenericRecord>({
 
     formData.delete("blingProducts");
     formData.delete("members");
-    formData.delete("commissionPercent");
     formData.delete("customer");
-    formData.delete("memberCommissions");
     formData.delete("paymentAmount");
     formData.delete("type");
     formData.delete("paymentMethod");
-    formData.delete("services");
+    formData.delete("service");
+    formData.delete("note");
+    formData.delete("showOrder");
+    formData.delete("orderType");
+    formData.delete("paymentMethod");
+    formData.delete("date");
   };
 
   const columnNames = data?.length
@@ -456,7 +467,10 @@ export default function CustomTable<T extends GenericRecord>({
           key !== "show" &&
           key !== "method" &&
           key !== "customerId" &&
-          key !== "commissionPercent"
+          key !== "commissionPercent" &&
+          key !== "scheduling" &&
+          key !== "note" &&
+          key !== "service"
       )
     : [];
 
@@ -689,7 +703,7 @@ export default function CustomTable<T extends GenericRecord>({
                                     {" "}
                                     {/* Ajuste o tamanho conforme seu layout */}
                                     <Image
-                                      src={item.orderAttachment[0].url}
+                                      src={item.orderAttachment[0]?.url}
                                       alt="Visualização do anexo"
                                       fill
                                       className="object-cover rounded-md"
@@ -830,18 +844,25 @@ export default function CustomTable<T extends GenericRecord>({
                                         item.assignedMembers as {
                                           memberId: string;
                                           memberName: string;
-                                          percentage: number;
                                         }[]
                                       ).map((m) => ({
                                         id: m.memberId,
                                         name: m.memberName,
-                                        percentage: m.percentage, // incluir o valor da comissão
                                       }))
                                     );
 
-                                    setOrderVisibility(item.show as boolean);
+                                    const safeDate = new Date(
+                                      item.scheduling as string
+                                    );
 
+                                    setDate(safeDate);
+                                    setPaymentAmount(item.amount as number);
+                                    setOrderVisibility(item.show as boolean);
                                     setOrderId(item.id as string);
+                                    setService(item.service as string);
+                                    setNote(item.note as string);
+
+                                    console.log(item);
                                   }}
                                   asChild
                                 >
@@ -861,16 +882,16 @@ export default function CustomTable<T extends GenericRecord>({
                                     className="flex flex-col gap-4"
                                     action={handleSubmit}
                                   >
-                                    {/* <div className="flex justify-between">
-                                      <Label htmlFor="type">Publicar</Label>
+                                    <div className="flex flex-col gap-1">
+                                      <Label htmlFor="schedule">
+                                        Agendamento
+                                      </Label>
 
-                                      <Switch
-                                        checked={showOrder}
-                                        onCheckedChange={(checked) =>
-                                          setOrderVisibility(checked)
-                                        }
+                                      <DateTimePicker
+                                        date={date}
+                                        setDate={setDate}
                                       />
-                                    </div> */}
+                                    </div>
 
                                     {/* Cliente */}
                                     <div className="flex flex-col gap-1">
@@ -890,7 +911,9 @@ export default function CustomTable<T extends GenericRecord>({
 
                                     {/* Tipo de ordem */}
                                     <div className="flex flex-col gap-1">
-                                      <Label htmlFor="type">Tipo</Label>
+                                      <Label htmlFor="type">
+                                        Tipo de ordem
+                                      </Label>
                                       <Select
                                         name="type"
                                         value={orderType}
@@ -992,157 +1015,38 @@ export default function CustomTable<T extends GenericRecord>({
                                       </div>
                                     )}
 
-                                    {/* Pesquisa de serviços */}
+                                    {/* Serviços */}
                                     <div className="flex flex-col gap-2">
-                                      <Label htmlFor="service-search">
-                                        Pesquisar serviço
+                                      <Label htmlFor="note">
+                                        Nome do serviço
                                       </Label>
                                       <Input
-                                        id="service-search"
-                                        placeholder="Digite para buscar..."
-                                        value={serviceQuery}
-                                        onChange={(e) =>
-                                          setServiceQuery(e.target.value)
-                                        }
-                                      />
-                                      {filteredServices.length > 0 ? (
-                                        <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
-                                          {filteredServices.map((service) => {
-                                            return (
-                                              <button
-                                                key={service.id}
-                                                type="button"
-                                                onClick={() => {
-                                                  const exists =
-                                                    selectedServices.find(
-                                                      (s) => s.id === service.id
-                                                    );
-                                                  if (!exists) {
-                                                    setSelectedServices(
-                                                      (prev) => [
-                                                        ...prev,
-                                                        service,
-                                                      ]
-                                                    );
-                                                  }
-                                                  setServiceQuery("");
-                                                }}
-                                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                                              >
-                                                {service.title}
-                                              </button>
-                                            );
-                                          })}
-                                        </div>
-                                      ) : (
-                                        serviceQuery && (
-                                          <p className="text-sm text-muted-foreground mt-2">
-                                            Nenhum serviço encontrado.
-                                          </p>
-                                        )
-                                      )}
-                                    </div>
-
-                                    {/* Serviços selecionados */}
-                                    {selectedServices.length > 0 && (
-                                      <div className="flex flex-col gap-2">
-                                        <Label>Serviços selecionados</Label>
-                                        {selectedServices.map((s) => (
-                                          <div
-                                            key={s.id}
-                                            className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded"
-                                          >
-                                            <span>{s.title}</span>
-                                            <Button
-                                              variant="ghost"
-                                              className="text-red-500 hover:text-red-700 h-8 px-2"
-                                              onClick={() =>
-                                                setSelectedServices((prev) =>
-                                                  prev.filter(
-                                                    (item) => item.id !== s.id
-                                                  )
-                                                )
-                                              }
-                                            >
-                                              Remover
-                                            </Button>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    )}
-
-                                    {/* Valor do pagamento */}
-                                    <div className="flex flex-col gap-1">
-                                      <Label htmlFor="paymentAmount">
-                                        Valor do pagamento
-                                      </Label>
-                                      <Input
-                                        name="paymentAmount"
-                                        value={paymentAmount}
-                                        onChange={(e) =>
-                                          setPaymentAmount(
-                                            parseBRL(e.target.value)
-                                          )
-                                        }
+                                        type="text"
+                                        value={service}
+                                        onChange={(e) => {
+                                          if (e.target.value)
+                                            setService(e.target.value);
+                                        }}
                                       />
                                     </div>
 
-                                    {/* Método de pagamento */}
-                                    <div className="flex flex-col gap-1">
-                                      <Label htmlFor="paymentMethod">
-                                        Método de pagamento
-                                      </Label>
-                                      <Select
-                                        name="paymentMethod"
-                                        value={paymentMethod}
-                                        onValueChange={setPaymentMethod}
-                                      >
-                                        <SelectTrigger className="w-full">
-                                          <SelectValue placeholder="Selecione" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="PIX">
-                                            PIX
-                                          </SelectItem>
-                                          <SelectItem value="CARTAO">
-                                            Cartão
-                                          </SelectItem>
-                                          <SelectItem value="BOLETO">
-                                            Boleto
-                                          </SelectItem>
-                                          <SelectItem value="DEPOSITO">
-                                            Depósito
-                                          </SelectItem>
-                                          <SelectItem value="PENDENTE">
-                                            Pendente
-                                          </SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-
-                                    {/* Comissão */}
+                                    {/* Observação */}
                                     <div className="flex flex-col gap-2">
-                                      <Label htmlFor="total-commission-percent">
-                                        Valor Total da Comissão (%)
-                                      </Label>
-
-                                      <Input
-                                        id="total-commission-percent"
-                                        type="number"
-                                        value={totalCommissionPercent}
-                                        onChange={(e) =>
-                                          setTotalCommissionPercent(
-                                            Number(e.target.value)
-                                          )
-                                        }
-                                        placeholder="Digite o valor percentual total"
+                                      <Label htmlFor="note">Observação</Label>
+                                      <Textarea
+                                        placeholder="Escreva sua mensagem aqui..."
+                                        value={note}
+                                        onChange={(e) => {
+                                          if (e.target.value)
+                                            setNote(e.target.value);
+                                        }}
                                       />
                                     </div>
 
                                     {/* Buscar Funcionário */}
                                     <div className="flex flex-col gap-2">
                                       <Label htmlFor="commission-search">
-                                        Funcionário
+                                        Funcionário designado
                                       </Label>
                                       <Input
                                         id="commission-search"
@@ -1178,36 +1082,82 @@ export default function CustomTable<T extends GenericRecord>({
                                     </div>
 
                                     {selectedMembers.length > 0 && (
-                                      <div className="flex flex-col gap-2 mt-4">
-                                        <Label>Comissões</Label>
+                                      <div className="flex flex-col gap-2">
+                                        {/* <Label>Comissões</Label> */}
                                         {selectedMembers.map((member) => {
-                                          const hasTotalCommission =
-                                            !!totalCommissionPercent;
-
-                                          // Se tiver um valor total definido, dividir igualmente
-                                          const individualCommission =
-                                            hasTotalCommission
-                                              ? totalCommissionPercent /
-                                                selectedMembers.length
-                                              : (member.percentage ?? 0); // senão, usa a amount do banco
-
                                           return (
                                             <div
                                               key={member.id}
                                               className="flex gap-2 items-center justify-between"
                                             >
                                               <span>{member.name}</span>
-                                              <Input
-                                                type="number"
-                                                value={individualCommission}
-                                                readOnly
-                                                className="w-24"
-                                              />
+                                              <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="text-red-500 hover:text-red-700 h-8 px-2"
+                                                onClick={() =>
+                                                  removeEmployee(member.id)
+                                                }
+                                              >
+                                                Remover
+                                              </Button>
                                             </div>
                                           );
                                         })}
                                       </div>
                                     )}
+
+                                    {/* Método de pagamento */}
+                                    <div className="flex flex-col gap-1">
+                                      <Label htmlFor="paymentMethod">
+                                        Método de pagamento
+                                      </Label>
+                                      <Select
+                                        name="paymentMethod"
+                                        value={paymentMethod}
+                                        onValueChange={setPaymentMethod}
+                                      >
+                                        <SelectTrigger className="w-full">
+                                          <SelectValue placeholder="Selecione" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="PIX">
+                                            PIX
+                                          </SelectItem>
+                                          <SelectItem value="CARTAO">
+                                            Cartão
+                                          </SelectItem>
+                                          <SelectItem value="BOLETO">
+                                            Boleto
+                                          </SelectItem>
+                                          <SelectItem value="DEPOSITO">
+                                            Depósito
+                                          </SelectItem>
+                                          <SelectItem value="PENDENTE">
+                                            Pendente
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+
+                                    {/* Valor do pagamento */}
+                                    <div className="flex flex-col gap-1">
+                                      <Label htmlFor="paymentAmount">
+                                        Valor
+                                      </Label>
+                                      <Input
+                                        name="paymentAmount"
+                                        type="text"
+                                        value={paymentAmount}
+                                        onChange={(e) =>
+                                          setPaymentAmount(
+                                            e.target.value
+                                              ? parseFloat(e.target.value)
+                                              : undefined
+                                          )
+                                        }
+                                      />
+                                    </div>
 
                                     <div className="flex flex-col gap-4">
                                       {showSuccessNotification && (
@@ -1240,90 +1190,99 @@ export default function CustomTable<T extends GenericRecord>({
                             <div className="max-h-[60vh] overflow-y-auto mt-4 space-y-6">
                               {/* Informações do pedido */}
                               <div className="space-y-4">
-                                {Object.entries(item)
-                                  .filter(
-                                    ([key, value]) =>
-                                      key != "id" &&
-                                      key != "orderAttachment" &&
-                                      key != "payment" &&
-                                      key != "status" &&
-                                      key != "productOrder" &&
-                                      key != "orderNumber" &&
-                                      key != "serviceOrder" &&
-                                      key != "amount" &&
-                                      key != "show" &&
-                                      key != "customerId" &&
-                                      key != "commissionPercent"
-                                  )
-                                  .map(([key, value], index) => {
-                                    if (
-                                      key === "assignedMembers" &&
-                                      Array.isArray(value)
-                                    ) {
-                                      return (
-                                        <div
-                                          key={key}
-                                          className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
-                                        >
-                                          <p className="text-muted-foreground text-sm">
-                                            {key in keyLabels
-                                              ? keyLabels[
-                                                  key as keyof typeof keyLabels
-                                                ]
-                                              : key}
-                                          </p>
-
-                                          <div className="flex gap-4 justify-end">
-                                            {value.map((element, idx) => (
-                                              <p
-                                                key={idx}
-                                                className="text-right"
-                                              >
-                                                <Badge variant={"secondary"}>
-                                                  {element.memberName}
-                                                </Badge>
-                                              </p>
-                                            ))}
+                                {item &&
+                                  typeof item === "object" &&
+                                  Object.entries(item)
+                                    .filter(
+                                      ([key]) =>
+                                        key !== "id" &&
+                                        key !== "orderAttachment" &&
+                                        key !== "payment" &&
+                                        key !== "status" &&
+                                        key !== "productOrder" &&
+                                        key !== "orderNumber" &&
+                                        key !== "serviceOrder" &&
+                                        key !== "amount" &&
+                                        key !== "show" &&
+                                        key !== "customerId" &&
+                                        key !== "commissionPercent" &&
+                                        key !== "scheduling" &&
+                                        key !== "note" &&
+                                        key !== "service"
+                                    )
+                                    .map(([key, value], index) => {
+                                      if (
+                                        key === "assignedMembers" &&
+                                        Array.isArray(value) &&
+                                        value.length > 0
+                                      ) {
+                                        return (
+                                          <div
+                                            key={key}
+                                            className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
+                                          >
+                                            <p className="text-muted-foreground text-sm">
+                                              {key in keyLabels
+                                                ? keyLabels[
+                                                    key as keyof typeof keyLabels
+                                                  ]
+                                                : key}
+                                            </p>
+                                            <div className="flex gap-4 justify-end">
+                                              {value.map((element, idx) => (
+                                                <p
+                                                  key={idx}
+                                                  className="text-right"
+                                                >
+                                                  <Badge variant={"secondary"}>
+                                                    {element.memberName}
+                                                  </Badge>
+                                                </p>
+                                              ))}
+                                            </div>
                                           </div>
-                                        </div>
-                                      );
-                                    }
+                                        );
+                                      }
 
-                                    return (
-                                      <div
-                                        key={key}
-                                        className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
-                                      >
-                                        <p className="text-muted-foreground text-sm">
-                                          {key in keyLabels
-                                            ? keyLabels[
-                                                key as keyof typeof keyLabels
-                                              ]
-                                            : key}
-                                        </p>
-                                        <p className="text-right">
-                                          {String(value) in valueLabels
-                                            ? formatValue(
-                                                key,
-                                                valueLabels[
-                                                  String(
-                                                    value
-                                                  ) as keyof typeof valueLabels
-                                                ]
-                                              )
-                                            : String(value)}
-                                        </p>
-                                      </div>
-                                    );
-                                  })}
+                                      if (key !== "assignedMembers") {
+                                        return (
+                                          <div
+                                            key={key}
+                                            className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
+                                          >
+                                            <p className="text-muted-foreground text-sm">
+                                              {key in keyLabels
+                                                ? keyLabels[
+                                                    key as keyof typeof keyLabels
+                                                  ]
+                                                : key}
+                                            </p>
+                                            <p className="text-right">
+                                              {String(value) in valueLabels
+                                                ? formatValue(
+                                                    key,
+                                                    valueLabels[
+                                                      String(
+                                                        value
+                                                      ) as keyof typeof valueLabels
+                                                    ]
+                                                  )
+                                                : String(value)}
+                                            </p>
+                                          </div>
+                                        );
+                                      }
+                                    })}
                               </div>
 
                               {/* Tabela de produtos */}
                               <div className="overflow-x-auto">
-                                {Object.entries(productOrder).length > 0 ||
-                                Object.entries(serviceOrder).length > 0 ? (
+                                {Object.entries(productOrder ?? {}).length >
+                                  0 ||
+                                Object.entries(serviceOrder ?? {}).length >
+                                  0 ? (
                                   <table className="min-w-full text-sm">
-                                    {Object.entries(productOrder).length >
+                                    {Object.entries(productOrder ?? {}).length >
                                       0 && (
                                       <>
                                         <thead>
@@ -1343,43 +1302,50 @@ export default function CustomTable<T extends GenericRecord>({
                                           </tr>
                                         </thead>
                                         <tbody>
-                                          {Object.entries(item)
-                                            .filter(
-                                              ([key]) => key === "productOrder"
-                                            )
-                                            .flatMap(([_, value]) =>
-                                              Array.isArray(value)
-                                                ? value.map((element, idx) => (
-                                                    <tr
-                                                      className="border-t"
-                                                      key={`product-${idx}`}
-                                                    >
-                                                      <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
-                                                        {element.productName}
-                                                      </td>
-                                                      <td className="text-right p-2">
-                                                        {element.quantity}
-                                                      </td>
-                                                      <td className="text-right p-2">
-                                                        {element.price}
-                                                      </td>
-                                                      <td className="text-right p-2">
-                                                        {parseFloat(
-                                                          (
-                                                            element.price *
-                                                            element.quantity
-                                                          ).toString()
-                                                        )}
-                                                      </td>
-                                                    </tr>
-                                                  ))
-                                                : []
-                                            )}
+                                          {item &&
+                                            typeof item === "object" &&
+                                            Object.entries(item)
+                                              .filter(
+                                                ([key]) =>
+                                                  key === "productOrder"
+                                              )
+                                              .flatMap(([_, value]) =>
+                                                Array.isArray(value)
+                                                  ? value.map(
+                                                      (element, idx) => (
+                                                        <tr
+                                                          className="border-t"
+                                                          key={`product-${idx}`}
+                                                        >
+                                                          <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                                            {
+                                                              element.productName
+                                                            }
+                                                          </td>
+                                                          <td className="text-right p-2">
+                                                            {element.quantity}
+                                                          </td>
+                                                          <td className="text-right p-2">
+                                                            {element.price}
+                                                          </td>
+                                                          <td className="text-right p-2">
+                                                            {parseFloat(
+                                                              (
+                                                                element.price *
+                                                                element.quantity
+                                                              ).toString()
+                                                            )}
+                                                          </td>
+                                                        </tr>
+                                                      )
+                                                    )
+                                                  : []
+                                              )}
                                         </tbody>
                                       </>
                                     )}
 
-                                    {Object.entries(serviceOrder).length >
+                                    {Object.entries(serviceOrder ?? {}).length >
                                       0 && (
                                       <>
                                         <thead>
@@ -1395,29 +1361,34 @@ export default function CustomTable<T extends GenericRecord>({
                                           </tr>
                                         </thead>
                                         <tbody>
-                                          {Object.entries(item)
-                                            .filter(
-                                              ([key]) => key === "serviceOrder"
-                                            )
-                                            .flatMap(([_, value]) =>
-                                              Array.isArray(value)
-                                                ? value.map((element, idx) => (
-                                                    <tr
-                                                      className="border-t"
-                                                      key={`service-${idx}`}
-                                                    >
-                                                      <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
-                                                        {element.title}
-                                                      </td>
-                                                      <td className="text-right p-2"></td>
-                                                      <td className="text-right p-2"></td>
-                                                      <td className="text-right p-2">
-                                                        {element.price}
-                                                      </td>
-                                                    </tr>
-                                                  ))
-                                                : []
-                                            )}
+                                          {item &&
+                                            typeof item === "object" &&
+                                            Object.entries(item)
+                                              .filter(
+                                                ([key]) =>
+                                                  key === "serviceOrder"
+                                              )
+                                              .flatMap(([_, value]) =>
+                                                Array.isArray(value)
+                                                  ? value.map(
+                                                      (element, idx) => (
+                                                        <tr
+                                                          className="border-t"
+                                                          key={`service-${idx}`}
+                                                        >
+                                                          <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                                            {element.title}
+                                                          </td>
+                                                          <td className="text-right p-2"></td>
+                                                          <td className="text-right p-2"></td>
+                                                          <td className="text-right p-2">
+                                                            {element.price}
+                                                          </td>
+                                                        </tr>
+                                                      )
+                                                    )
+                                                  : []
+                                              )}
                                         </tbody>
                                       </>
                                     )}

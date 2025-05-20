@@ -82,6 +82,9 @@ export default function Orders() {
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
   const [selectedServices, setSelectedServices] = useState<Service[]>([]);
   const [showOrder, setShowOrder] = useState<boolean>(true);
+  const [service, setService] = useState<string | undefined>();
+  const [note, setNote] = useState<string | undefined>();
+  const [date, setDate] = useState<Date | undefined>();
 
   useEffect(() => {
     setMutate(mutate);
@@ -236,6 +239,10 @@ export default function Orders() {
     setSelected((prev) => prev.filter((p) => p.id !== productId));
   };
 
+  const removeEmployee = (employeeId: string) => {
+    setSelectedMembers((prev) => prev.filter((p) => p.id !== employeeId));
+  };
+
   const handleSelectedClient = (customer: { id: string; name: string }) => {
     setSelectedClient(true);
     setCustomer(customer);
@@ -258,22 +265,19 @@ export default function Orders() {
     setSelectedServices([]);
     setServiceQuery("");
     setFilteredServices([]);
+    setDate(undefined);
+    setService(undefined);
+    setNote(undefined);
   };
 
   const handleSubmit = async (formData: FormData) => {
     formData.append("blingProducts", JSON.stringify(selected));
     formData.append("members", JSON.stringify(selectedMembers));
-    formData.append("commissionPercent", String(totalCommissionPercent));
     formData.append("customer", JSON.stringify(customer));
-    formData.append("services", JSON.stringify(selectedServices));
     formData.append("showOrder", JSON.stringify(showOrder));
-
-    const individualCommissions = selectedMembers.map((member) => ({
-      memberId: member.id,
-      value: totalCommissionPercent / selectedMembers.length,
-    }));
-
-    formData.append("memberCommissions", JSON.stringify(individualCommissions));
+    formData.append("note", JSON.stringify(note));
+    formData.append("service", JSON.stringify(service));
+    formData.append("date", JSON.stringify(date));
 
     const order = await createOrderAction({
       formData,
@@ -291,13 +295,13 @@ export default function Orders() {
 
     formData.delete("blingProducts");
     formData.delete("members");
-    formData.delete("commissionPercent");
     formData.delete("customer");
-    formData.delete("memberCommissions");
     formData.delete("paymentAmount");
     formData.delete("type");
     formData.delete("paymentMethod");
-    formData.delete("services");
+    formData.delete("service");
+    formData.delete("note");
+    formData.delete("date");
   };
 
   if (isLoading) {
@@ -345,7 +349,7 @@ export default function Orders() {
               <div className="flex flex-col gap-1">
                 <Label htmlFor="schedule">Agendamento</Label>
 
-                <DateTimePicker />
+                <DateTimePicker date={date} setDate={setDate} />
               </div>
 
               {/* Cliente */}
@@ -406,7 +410,7 @@ export default function Orders() {
 
               {/* Tipo de ordem */}
               <div className="flex flex-col gap-1">
-                <Label htmlFor="type">Tipo</Label>
+                <Label htmlFor="type">Tipo de ordem</Label>
                 <Select
                   name="type"
                   value={orderType}
@@ -493,125 +497,31 @@ export default function Orders() {
                 </div>
               )}
 
-              {/* Pesquisa de serviços */}
+              {/* Serviços */}
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="note">Nome do serviço</Label>
+                <Input
+                  type="text"
+                  onChange={(e) => {
+                    if (e.target.value) setService(e.target.value);
+                  }}
+                />
+              </div>
+
+              {/* Observação */}
               <div className="flex flex-col gap-2">
                 <Label htmlFor="note">Observação</Label>
-                <Textarea placeholder="Escreva sua mensagem aqui..." />
-              </div>
-
-              {/* <div className="flex flex-col gap-2">
-                <Label htmlFor="service-search">Pesquisar serviço</Label>
-                <Input
-                  id="service-search"
-                  placeholder="Digite para buscar..."
-                  value={serviceQuery}
-                  onChange={(e) => setServiceQuery(e.target.value)}
-                />
-                {filteredServices.length > 0 ? (
-                  <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
-                    {filteredServices.map((service) => {
-                      return (
-                        <button
-                          key={service.id}
-                          type="button"
-                          onClick={() => {
-                            const exists = selectedServices.find(
-                              (s) => s.id === service.id
-                            );
-                            if (!exists) {
-                              setSelectedServices((prev) => [...prev, service]);
-                            }
-                            setServiceQuery("");
-                          }}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                        >
-                          {service.title}
-                        </button>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  serviceQuery && (
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Nenhum serviço encontrado.
-                    </p>
-                  )
-                )}
-              </div> */}
-
-              {/* Serviços selecionados */}
-              {selectedServices.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <Label>Serviços selecionados</Label>
-                  {selectedServices.map((s) => (
-                    <div
-                      key={s.id}
-                      className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded"
-                    >
-                      <span>{s.title}</span>
-                      <Button
-                        variant="ghost"
-                        className="text-red-500 hover:text-red-700 h-8 px-2"
-                        onClick={() =>
-                          setSelectedServices((prev) =>
-                            prev.filter((item) => item.id !== s.id)
-                          )
-                        }
-                      >
-                        Remover
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Valor do pagamento */}
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="paymentAmount">Valor do pagamento</Label>
-                <Input name="paymentAmount" type="text" />
-              </div>
-
-              {/* Método de pagamento */}
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="paymentMethod">Método de pagamento</Label>
-                <Select
-                  name="paymentMethod"
-                  value={paymentMethod}
-                  onValueChange={setPaymentMethod}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="PIX">PIX</SelectItem>
-                    <SelectItem value="CARTAO">Cartão</SelectItem>
-                    <SelectItem value="BOLETO">Boleto</SelectItem>
-                    <SelectItem value="DEPOSITO">Depósito</SelectItem>
-                    <SelectItem value="PENDENTE">Pendente</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Comissão */}
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="total-commission-percent">
-                  Valor Total da Comissão (%)
-                </Label>
-
-                <Input
-                  id="total-commission-percent"
-                  type="number"
-                  value={totalCommissionPercent}
-                  onChange={(e) =>
-                    setTotalCommissionPercent(Number(e.target.value))
-                  }
-                  placeholder="Digite o valor percentual total"
+                <Textarea
+                  placeholder="Escreva sua mensagem aqui..."
+                  onChange={(e) => {
+                    if (e.target.value) setNote(e.target.value);
+                  }}
                 />
               </div>
 
               {/* Buscar Funcionário */}
               <div className="flex flex-col gap-2">
-                <Label htmlFor="commission-search">Funcionário</Label>
+                <Label htmlFor="commission-search">Funcionário designado</Label>
                 <Input
                   id="commission-search"
                   placeholder="Digite para buscar..."
@@ -644,28 +554,55 @@ export default function Orders() {
               </div>
 
               {selectedMembers.length > 0 && (
-                <div className="flex flex-col gap-2 mt-4">
-                  <Label>Comissões</Label>
+                <div className="flex flex-col gap-2">
+                  {/* <Label>Comissões</Label> */}
                   {selectedMembers.map((member) => {
-                    const individualCommission =
-                      totalCommissionPercent / selectedMembers.length;
                     return (
                       <div
                         key={member.id}
                         className="flex gap-2 items-center justify-between"
                       >
                         <span>{member.name}</span>
-                        <Input
-                          type="number"
-                          value={individualCommission}
-                          readOnly
-                          className="w-24"
-                        />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-700 h-8 px-2"
+                          onClick={() => removeEmployee(member.id)}
+                        >
+                          Remover
+                        </Button>
                       </div>
                     );
                   })}
                 </div>
               )}
+
+              {/* Método de pagamento */}
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="paymentMethod">Método de pagamento</Label>
+                <Select
+                  name="paymentMethod"
+                  value={paymentMethod}
+                  onValueChange={setPaymentMethod}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PIX">PIX</SelectItem>
+                    <SelectItem value="CARTAO">Cartão</SelectItem>
+                    <SelectItem value="BOLETO">Boleto</SelectItem>
+                    <SelectItem value="DEPOSITO">Depósito</SelectItem>
+                    <SelectItem value="PENDENTE">Pendente</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Valor do pagamento */}
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="paymentAmount">Valor</Label>
+                <Input name="paymentAmount" type="text" />
+              </div>
 
               <div className="flex flex-col gap-4">
                 {showSuccessNotification && (

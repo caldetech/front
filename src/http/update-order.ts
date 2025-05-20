@@ -5,21 +5,20 @@ import { api } from "../lib/api-client";
 export async function updateOrder({
   orderId,
   slug,
-  type,
   paymentMethod,
   paymentAmount,
   blingProducts,
-  services,
+  service,
   members,
-  commissionPercent,
-  memberCommissions,
+  orderType,
   customer,
   token,
   showOrder,
+  date,
+  note,
 }: {
   orderId?: string;
   slug: string;
-  type: string;
   paymentMethod: string;
   paymentAmount: number;
   blingProducts: {
@@ -29,29 +28,30 @@ export async function updateOrder({
     precoCusto: number;
     quantity: number;
   }[];
-  services: { id: string; title: string; price: number }[];
+  service: string;
+  orderType: string;
   members: { id: string; name: string }[];
-  commissionPercent: number;
-  memberCommissions: { memberId: string; value: number }[];
   customer: { id: string; name: string };
   token: string | null;
   showOrder: boolean;
+  date: string;
+  note: string;
 }) {
   try {
     await api.post("orders/update", {
       json: {
         orderId,
         slug,
-        type,
         paymentMethod,
         paymentAmount,
         blingProducts,
-        services,
+        service,
         members,
-        commissionPercent,
-        memberCommissions,
         customer,
         showOrder,
+        date,
+        orderType,
+        note,
       },
       hooks: {
         beforeRequest: [

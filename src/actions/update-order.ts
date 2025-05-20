@@ -20,7 +20,6 @@ export async function updateOrderAction({
       ? (formData.get("paymentAmount") as string)
       : "0"
   );
-
   const blingProducts = JSON.parse(formData.get("blingProducts") as string) as {
     id: string;
     nome: string;
@@ -28,52 +27,34 @@ export async function updateOrderAction({
     precoCusto: number;
     quantity: number;
   }[];
-
-  const services = JSON.parse(formData.get("services") as string) as {
-    id: string;
-    title: string;
-    price: number;
-  }[];
-
   const customer = JSON.parse(formData.get("customer") as string) as {
     id: string;
     name: string;
   };
-
   const members = JSON.parse(formData.get("members") as string) as {
     id: string;
     name: string;
   }[];
-
-  const commissionPercent = Number(formData.get("commissionPercent"));
-
   const showOrder = JSON.parse(formData.get("showOrder") as string);
-
-  const memberCommissions = JSON.parse(
-    formData.get("memberCommissions") as string
-  ) as { memberId: string; value: number }[];
-
-  if (!slug || !type) {
-    return {
-      success: false,
-      message: "Campos obrigatórios ausentes!",
-    };
-  }
+  const service = JSON.parse(formData.get("service") as string);
+  const orderType = JSON.parse(formData.get("orderType") as string);
+  const date = JSON.parse(formData.get("date") as string);
+  const note = JSON.parse(formData.get("note") as string);
 
   await updateOrder({
     orderId,
     slug,
-    type,
+    orderType,
     paymentMethod,
     paymentAmount,
     blingProducts,
-    services,
+    service,
     members,
-    commissionPercent,
-    memberCommissions,
     customer,
     token,
     showOrder,
+    date,
+    note,
   });
 
   return { success: true };
