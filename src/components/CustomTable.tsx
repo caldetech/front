@@ -485,7 +485,7 @@ export default function CustomTable<T extends GenericRecord>({
     const addressName = address.split(",")[0];
     const addressNumber = address.split(",")[1].trim();
 
-    return `https://www.google.com/maps?q=${addressName},+${addressNumber},+Sertãozinho,+SP`;
+    return `https://www.google.com/maps?q=${address}`;
   }
 
   const keyLabels = {

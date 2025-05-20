@@ -69,14 +69,14 @@ export default function Users() {
   if (error) return <p>Erro ao carregar funcionários</p>;
 
   async function handleSubmit(formData: FormData) {
-    const employee = await createInviteAction({
+    const invite = await createInviteAction({
       formData,
       slug,
       token,
       memberId: user.membership,
     });
 
-    if (employee?.success) {
+    if (invite?.success) {
       setShowErrorNotification(false);
       setShowSuccessNotification(true);
       await mutate();
