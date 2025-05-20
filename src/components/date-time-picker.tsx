@@ -16,8 +16,8 @@ import {
 import { TimePickerDemo } from "./time-picker-demo";
 
 type Props = {
-  date?: Date;
-  setDate?: (date: Date | undefined) => void;
+  date: Date;
+  setDate: (date: Date) => void;
 };
 
 export function DateTimePicker({ date, setDate }: Props) {
@@ -63,7 +63,7 @@ export function DateTimePicker({ date, setDate }: Props) {
           initialFocus
         />
         <div className="p-3 border-t border-border">
-          <TimePickerDemo setDate={setDate || (() => {})} date={date} />
+          <TimePickerDemo setDate={setDate} date={date} />
         </div>
       </PopoverContent>
     </Popover>

@@ -139,7 +139,7 @@ const valueMapping: Record<
     type: {
       SALE: (
         <Badge variant="secondary" color="orange">
-          Venda
+          Serviço
         </Badge>
       ),
       BUDGET: (
@@ -224,19 +224,19 @@ export default function CustomTable<T extends GenericRecord>({
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [orderType, setOrderType] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("PENDENTE");
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [serviceQuery, setServiceQuery] = useState("");
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
   const [selectedServices, setSelectedServices] = useState<Service[]>([]);
   const [orderVisibility, setOrderVisibility] = useState<boolean | undefined>();
   const [openMainDialog, setOpenMainDialog] = useState<boolean | undefined>();
   const [openEditDialog, setOpenEditDialog] = useState<boolean | undefined>();
-  const [paymentAmount, setPaymentAmount] = useState<number | undefined>(0);
+  const [paymentAmount, setPaymentAmount] = useState<number | undefined>();
   const [singleCommission, setSingleCommission] = useState<
     number | undefined
   >();
   const [orderId, setOrderId] = useState<string | undefined>();
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date>(new Date());
   const [service, setService] = useState<string | undefined>();
   const [note, setNote] = useState<string | undefined>();
 
@@ -411,11 +411,11 @@ export default function CustomTable<T extends GenericRecord>({
     setSelectedClient(false);
     setCustomer(null);
     setOrderType("");
-    setPaymentMethod("PENDENTE");
+    setPaymentMethod("");
     setSelectedServices([]);
     setServiceQuery("");
     setFilteredServices([]);
-    setDate(undefined);
+    setDate(new Date());
     setService(undefined);
     setNote(undefined);
   };
@@ -499,7 +499,7 @@ export default function CustomTable<T extends GenericRecord>({
   };
 
   const valueLabels = {
-    SALE: "VENDA",
+    SALE: "SERVIÇO",
     BUDGET: "ORÇAMENTO",
     WARRANTY: "GARANTIA",
     COMPANY: "EMPRESA",
@@ -516,10 +516,10 @@ export default function CustomTable<T extends GenericRecord>({
 
   function formatValue(key: unknown, value: unknown) {
     if (key === "type") {
-      if (value === "VENDA") {
+      if (value === "SERVIÇO") {
         return (
           <Badge color={"orange"} className="text-black">
-            VENDA
+            Serviço
           </Badge>
         );
       }
@@ -926,7 +926,7 @@ export default function CustomTable<T extends GenericRecord>({
                                         </SelectTrigger>
                                         <SelectContent>
                                           <SelectItem value="SALE">
-                                            Venda
+                                            Serviço
                                           </SelectItem>
                                           <SelectItem value="BUDGET">
                                             Orçamento
