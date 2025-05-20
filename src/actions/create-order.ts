@@ -3,12 +3,10 @@
 import { createOrder } from "@/http/create-order";
 
 export async function createOrderAction({
-  orderId,
   slug,
   formData,
   token,
 }: {
-  orderId?: string;
   slug: string;
   formData: FormData;
   token: string;
@@ -29,11 +27,11 @@ export async function createOrderAction({
     quantity: number;
   }[];
 
-  const services = JSON.parse(formData.get("services") as string) as {
-    id: string;
-    title: string;
-    price: number;
-  }[];
+  const service = JSON.parse(formData.get("service") as string);
+
+  const note = JSON.parse(formData.get("note") as string);
+
+  const date = JSON.parse(formData.get("date") as string);
 
   const customer = JSON.parse(formData.get("customer") as string) as {
     id: string;
@@ -44,8 +42,6 @@ export async function createOrderAction({
     id: string;
     name: string;
   }[];
-
-  const commissionPercent = Number(formData.get("commissionPercent"));
 
   const showOrder = JSON.parse(formData.get("showOrder") as string);
 
@@ -61,15 +57,15 @@ export async function createOrderAction({
   }
 
   await createOrder({
-    orderId,
     slug,
     type,
     paymentMethod,
     paymentAmount,
     blingProducts,
-    services,
+    service,
+    note,
+    date,
     members,
-    commissionPercent,
     memberCommissions,
     customer,
     token,

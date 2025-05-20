@@ -16,22 +16,26 @@ export default function BlingPageContent() {
 
   useEffect(() => {
     async function handleBlingTokens() {
-      if (code && state) {
-        const tokens = await getBlingTokens({ code, state, token });
+      if (code && state && token) {
+        try {
+          const tokens = await getBlingTokens({ code, state, token });
 
-        if (tokens) {
-          router.push(
-            `${process.env.NEXT_PUBLIC_FRONT_URL}/${state}/integracoes`
-          );
+          if (tokens) {
+            router.push(
+              `${process.env.NEXT_PUBLIC_FRONT_URL}/${state}/integracoes`
+            );
+          }
+        } catch (error) {
+          console.error("Erro ao obter tokens do Bling:", error);
         }
       }
     }
 
     handleBlingTokens();
-  }, [code]);
+  }, [code, state, token]);
 
   return (
-    <div className="abosolute top-1/2 left-1/2 flex h-screen w-screen items-center justify-center">
+    <div className="absolute top-1/2 left-1/2 flex h-screen w-screen items-center justify-center">
       {loading && (
         <div className="flex flex-col items-center justify-center gap-8">
           <div className="flex flex-col">

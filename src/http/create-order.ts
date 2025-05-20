@@ -3,21 +3,20 @@
 import { api } from "../lib/api-client";
 
 export async function createOrder({
-  orderId,
   slug,
   type,
   paymentMethod,
   paymentAmount,
   blingProducts,
-  services,
+  service,
+  note,
   members,
-  commissionPercent,
   memberCommissions,
   customer,
   token,
   showOrder,
+  date,
 }: {
-  orderId?: string;
   slug: string;
   type: string;
   paymentMethod: string;
@@ -29,29 +28,31 @@ export async function createOrder({
     precoCusto: number;
     quantity: number;
   }[];
-  services: { id: string; title: string; price: number }[];
+  service: string;
+  note: string;
   members: { id: string; name: string }[];
-  commissionPercent: number;
   memberCommissions: { memberId: string; value: number }[];
   customer: { id: string; name: string };
   token: string | null;
   showOrder: boolean;
+  date: string;
 }) {
   try {
     await api.post("orders/create", {
       json: {
-        orderId,
         slug,
         type,
         paymentMethod,
         paymentAmount,
         blingProducts,
-        services,
+        service,
+        note,
         members,
-        commissionPercent,
         memberCommissions,
         customer,
+        token,
         showOrder,
+        date,
       },
       hooks: {
         beforeRequest: [
