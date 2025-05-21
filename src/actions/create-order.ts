@@ -14,40 +14,51 @@ export async function createOrderAction({
   const type = formData.get("type") as string;
   const paymentMethod = formData.get("paymentMethod") as string;
   const paymentAmount = parseFloat(
-    formData.get("paymentAmount")
-      ? (formData.get("paymentAmount") as string)
-      : "0"
+    (formData.get("paymentAmount") as string) || "0"
   );
 
-  const blingProducts = JSON.parse(formData.get("blingProducts") as string) as {
-    id: string;
-    nome: string;
-    preco: number;
-    precoCusto: number;
-    quantity: number;
-  }[];
-
-  const service = JSON.parse(formData.get("service") as string);
-
-  const note = JSON.parse(formData.get("note") as string);
-
-  const date = JSON.parse(formData.get("date") as string);
-
-  const customer = JSON.parse(formData.get("customer") as string) as {
-    id: string;
-    name: string;
+  const parseJSON = <T>(value: FormDataEntryValue | null, fallback: T): T => {
+    if (!value) return fallback;
+    try {
+      return JSON.parse(value as string) as T;
+    } catch (error) {
+      console.error("Erro ao fazer parse do JSON:", error);
+      return fallback;
+    }
   };
 
-  const members = JSON.parse(formData.get("members") as string) as {
-    id: string;
-    name: string;
-  }[];
+  const blingProducts = parseJSON<
+    {
+      id: string;
+      nome: string;
+      preco: number;
+      precoCusto: number;
+      quantity: number;
+    }[]
+  >(formData.get("blingProducts"), []);
 
-  const showOrder = JSON.parse(formData.get("showOrder") as string);
+  const service = parseJSON<string>(formData.get("service"), "");
 
-  const memberCommissions = JSON.parse(
-    formData.get("memberCommissions") as string
-  ) as { memberId: string; value: number }[];
+  const note = parseJSON<string>(formData.get("note"), "");
+
+  const date = parseJSON<string>(formData.get("date"), "");
+
+  const customer = parseJSON<{ id: string; name: string }>(
+    formData.get("customer"),
+    { id: "", name: "" }
+  );
+
+  const members = parseJSON<{ id: string; name: string }[]>(
+    formData.get("members"),
+    []
+  );
+
+  const showOrder = parseJSON<boolean>(formData.get("showOrder"), false);
+
+  const memberCommissions = parseJSON<{ memberId: string; value: number }[]>(
+    formData.get("memberCommissions"),
+    []
+  );
 
   if (!slug || !type) {
     return {
