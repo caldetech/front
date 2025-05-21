@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -10,13 +12,12 @@ import {
 import { User } from "@/utils/casl/user";
 import { LogOut } from "lucide-react";
 
-export default async function UserMenu({
-  slug,
-  user,
-}: {
-  slug: string;
-  user: User;
-}) {
+export default function UserMenu({ slug, user }: { slug: string; user: User }) {
+  async function handleLogout() {
+    await fetch("/api/auth/sign-out", { method: "GET" });
+    window.location.href = "/entrar";
+  }
+
   return (
     <div className="hidden sm:flex ms-4 absolute right-0 z-11 sm:static">
       <DropdownMenu>
@@ -84,7 +85,7 @@ export default async function UserMenu({
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem className="cursor-pointer">
+          <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
             <LogOut className="me-2 size-4" />
             Sair
           </DropdownMenuItem>

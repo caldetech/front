@@ -41,12 +41,6 @@ export default function Users() {
   const [role, setRole] = useState("MEMBER");
   const [token] = useAuthToken();
   const fixedToken: string = token!;
-  // const { data, total, isLoading, error, mutate } = useEmployees(
-  //   currentPage,
-  //   ITEMS_PER_PAGE,
-  //   slug,
-  //   token
-  // );
   const user = useUser();
   const { data, total, isLoading, error, mutate } = useInvites(
     currentPage,
@@ -55,8 +49,6 @@ export default function Users() {
     fixedToken,
     user.membership
   );
-  console.log(data);
-  console.log(error);
 
   if (isLoading) {
     return (
@@ -75,6 +67,8 @@ export default function Users() {
       token,
       memberId: user.membership,
     });
+
+    console.log("invite", invite);
 
     if (invite?.success) {
       setShowErrorNotification(false);

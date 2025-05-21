@@ -1001,6 +1001,7 @@ export default function CustomTable<T extends GenericRecord>({
                                                 }
                                                 className="w-16 h-8 px-2 py-1 text-sm"
                                               />
+
                                               <Button
                                                 variant="ghost"
                                                 size="sm"
@@ -1085,7 +1086,6 @@ export default function CustomTable<T extends GenericRecord>({
 
                                     {selectedMembers.length > 0 && (
                                       <div className="flex flex-col gap-2">
-                                        {/* <Label>Comissões</Label> */}
                                         {selectedMembers.map((member) => {
                                           return (
                                             <div

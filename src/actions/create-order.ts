@@ -29,7 +29,9 @@ export async function createOrderAction({
 
   const service = JSON.parse(formData.get("service") as string);
 
-  const note = JSON.parse(formData.get("note") as string);
+  const note = formData.get("note")
+    ? (formData.get("note") as string)
+    : undefined;
 
   const date = JSON.parse(formData.get("date") as string);
 

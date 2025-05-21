@@ -29,7 +29,7 @@ export async function createOrder({
     quantity: number;
   }[];
   service: string;
-  note: string;
+  note: string | undefined;
   members: { id: string; name: string }[];
   memberCommissions: { memberId: string; value: number }[];
   customer: { id: string; name: string };

@@ -35,7 +35,7 @@ export default function BlingPageContent() {
   }, [code, state, token]);
 
   return (
-    <div className="absolute top-1/2 left-1/2 flex h-screen w-screen items-center justify-center">
+    <div className="absolute top-1/2 left-1/2 flex h-screen w-full items-center justify-center">
       {loading && (
         <div className="flex flex-col items-center justify-center gap-8">
           <div className="flex flex-col">
