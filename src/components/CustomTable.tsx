@@ -988,9 +988,12 @@ export default function CustomTable<T extends GenericRecord>({
                                                 handleAddProduct(product);
                                                 setProductQuery("");
                                               }}
-                                              className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                                              className="w-full flex flex-col text-left px-4 py-2 hover:bg-gray-100 justify-between"
                                             >
                                               {product.nome}
+                                              <p className="text-red-500">
+                                                Preço: R$ {product.preco}
+                                              </p>
                                             </button>
                                           ))}
                                         </div>
@@ -1011,8 +1014,12 @@ export default function CustomTable<T extends GenericRecord>({
                                             key={p.id}
                                             className="flex items-center justify-between border-b border-gray-200 pb-2"
                                           >
-                                            <span className="text-sm font-medium text-gray-800">
-                                              {p.nome}
+                                            <span className="text-sm font-medium text-gray-800 pr-2">
+                                              <p>Produto: {p.nome}</p>
+
+                                              <p className="text-red-500 items-start">
+                                                Preço: R$ {p.preco}
+                                              </p>
                                             </span>
 
                                             <div className="flex items-center gap-2">
