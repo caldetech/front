@@ -29,7 +29,7 @@ export async function createOrderAction({
 
   const service = JSON.parse(formData.get("service") as string);
 
-  const note = JSON.parse(formData.get("date") as string);
+  const note = JSON.parse(formData.get("note") as string);
 
   const date = JSON.parse(formData.get("date") as string);
 
