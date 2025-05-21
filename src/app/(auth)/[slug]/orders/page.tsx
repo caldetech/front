@@ -5,6 +5,7 @@ import CustomTable from "@/components/CustomTable";
 import { DateTimePicker } from "@/components/date-time-picker";
 import ErrorNotification from "@/components/ErrorNotification";
 import SuccessNotification from "@/components/SuccessNotification";
+import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,6 +14,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -28,6 +34,7 @@ import { useSlug } from "@/contexts/SlugContext";
 import { useUser } from "@/contexts/UserContext";
 import useAuthToken from "@/hooks/use-auth-token";
 import { useOrders } from "@/hooks/use-orders";
+import { getValidAccessToken } from "@/http/get-valid-bling-tokens";
 import { searchCustomer } from "@/http/search-customer";
 import { searchEmployee } from "@/http/search-employee";
 import { searchProduct } from "@/http/search-product";
@@ -37,7 +44,8 @@ import { Employee } from "@/schemas/employee";
 import { Product } from "@/schemas/products";
 import type { Service } from "@/schemas/services";
 import { useStore } from "@/stores/use-mutate";
-import { Plus } from "lucide-react";
+import { Info, Lock, Plus, SquareArrowOutUpRight } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { BeatLoader } from "react-spinners";
@@ -86,6 +94,7 @@ export default function Orders() {
   const [note, setNote] = useState<string | undefined>();
   const [date, setDate] = useState<Date>(new Date());
   const [paymentAmount, setPaymentAmount] = useState<number>(0);
+  const [blingConnection, setBlingConnection] = useState<boolean>(false);
 
   useEffect(() => {
     setMutate(mutate);
@@ -305,6 +314,27 @@ export default function Orders() {
     formData.delete("date");
   };
 
+  useEffect(() => {
+    async function handleBlingAccessToken() {
+      if (token) {
+        const tokens = await getValidAccessToken({ slug, token });
+
+        if (tokens !== undefined && !("success" in tokens)) {
+          setBlingConnection(true);
+        }
+      }
+    }
+
+    handleBlingAccessToken();
+  }, [token]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setShowErrorNotification(false);
+      setShowSuccessNotification(false);
+    }, 3000);
+  }, [showSuccessNotification, showErrorNotification]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -430,12 +460,29 @@ export default function Orders() {
 
               {/* Pesquisa de produto */}
               <div className="flex flex-col gap-2">
-                <Label htmlFor="product-search">Pesquisar produto</Label>
+                <div className="flex gap-1">
+                  {!blingConnection && (
+                    <HoverCard>
+                      <HoverCardTrigger className="cursor-pointer" asChild>
+                        <Info className="w-5 h-5 text-blue-600" />
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-80">
+                        <p>
+                          Para pesquisar produtos é necessário fazer a
+                          integração com o Bling.
+                        </p>
+                      </HoverCardContent>
+                    </HoverCard>
+                  )}
+
+                  <Label htmlFor="product-search">Pesquisar produto</Label>
+                </div>
                 <Input
                   id="product-search"
                   placeholder="Digite para buscar..."
                   value={productQuery}
                   onChange={(e) => setProductQuery(e.target.value)}
+                  disabled={!blingConnection}
                 />
                 {filteredProducts ? (
                   <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
@@ -447,9 +494,12 @@ export default function Orders() {
                           handleAddProduct(product);
                           setProductQuery("");
                         }}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                        className="w-full flex flex-col text-left px-4 py-2 hover:bg-gray-100 justify-between"
                       >
                         {product.nome}
+                        <p className="text-red-500">
+                          Preço: R$ {product.preco}
+                        </p>
                       </button>
                     ))}
                   </div>
@@ -470,8 +520,12 @@ export default function Orders() {
                       key={p.id}
                       className="flex items-center justify-between border-b border-gray-200 pb-2"
                     >
-                      <span className="text-sm font-medium text-gray-800">
-                        {p.nome}
+                      <span className="text-sm font-medium text-gray-800 pr-2">
+                        <p>Produto: {p.nome}</p>
+
+                        <p className="text-red-500 items-start">
+                          Preço: R$ {p.preco}
+                        </p>
                       </span>
 
                       <div className="flex items-center gap-2">
@@ -500,12 +554,13 @@ export default function Orders() {
 
               {/* Serviços */}
               <div className="flex flex-col gap-2">
-                <Label htmlFor="note">Nome do serviço</Label>
+                <Label htmlFor="note">Descrição do serviço</Label>
                 <Input
                   type="text"
                   onChange={(e) => {
                     if (e.target.value) setService(e.target.value);
                   }}
+                  required
                 />
               </div>
 
