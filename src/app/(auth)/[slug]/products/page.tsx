@@ -27,7 +27,7 @@ export default function Products() {
   const [currentPage, setCurrentPage] = useState(1);
   const [token] = useAuthToken();
   const fixedToken: string = token!;
-  const { data, total, isLoading, error } = useProducts(
+  const { data, total, isLoading, error, totalPages } = useProducts(
     currentPage,
     ITEMS_PER_PAGE,
     slug,
@@ -135,6 +135,7 @@ export default function Products() {
           module="products"
           slug={slug}
           token={fixedToken}
+          totalPages={totalPages}
         />
       </div>
     </div>

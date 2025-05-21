@@ -31,10 +31,14 @@ export const useServices = (
     }
   );
 
+  // Calcular o total de páginas com base no total de registros e limite por página
+  const totalPages = data ? Math.ceil(data.page.total / limit) : 1;
+
   return {
     currentPage: page,
     data: data?.data || [],
     total: data?.data.length || 0,
+    totalPages,
     error,
     isLoading,
     mutate,
