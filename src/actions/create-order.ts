@@ -29,9 +29,7 @@ export async function createOrderAction({
 
   const service = JSON.parse(formData.get("service") as string);
 
-  const note = formData.get("note")
-    ? (formData.get("note") as string)
-    : undefined;
+  const note = JSON.parse(formData.get("date") as string);
 
   const date = JSON.parse(formData.get("date") as string);
 
@@ -51,7 +49,7 @@ export async function createOrderAction({
     formData.get("memberCommissions") as string
   ) as { memberId: string; value: number }[];
 
-  if (!slug || !type || !blingProducts.length) {
+  if (!slug || !type) {
     return {
       success: false,
       message: "Campos obrigatórios ausentes!",

@@ -42,7 +42,7 @@ export default function Customers() {
   const [contactNumberValue, setContactNumberValue] = useState("");
   const [token] = useAuthToken();
   const fixedToken: string = token!;
-  const { data, total, isLoading, error, mutate } = useCustomers(
+  const { data, total, isLoading, error, mutate, totalPages } = useCustomers(
     currentPage,
     ITEMS_PER_PAGE,
     slug,
@@ -282,6 +282,7 @@ export default function Customers() {
           slug={slug}
           token={fixedToken}
           tableName="customers"
+          totalPages={totalPages}
         />
       </div>
     </div>

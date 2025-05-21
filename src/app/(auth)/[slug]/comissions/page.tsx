@@ -14,7 +14,7 @@ export default function Comissions() {
   const [currentPage, setCurrentPage] = useState(1);
   const [token] = useAuthToken();
   const fixedToken: string = token!;
-  const { data, total, isLoading, error } = useCommissions(
+  const { data, total, isLoading, error, totalPages } = useCommissions(
     currentPage,
     ITEMS_PER_PAGE,
     slug,
@@ -47,6 +47,7 @@ export default function Comissions() {
           module="commissions"
           token={fixedToken}
           slug={slug}
+          totalPages={totalPages}
         />
       </div>
     </div>

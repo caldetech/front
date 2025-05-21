@@ -42,7 +42,7 @@ export default function Users() {
   const [token] = useAuthToken();
   const fixedToken: string = token!;
   const user = useUser();
-  const { data, total, isLoading, error, mutate } = useInvites(
+  const { data, total, isLoading, error, mutate, totalPages } = useInvites(
     currentPage,
     ITEMS_PER_PAGE,
     slug,
@@ -67,8 +67,6 @@ export default function Users() {
       token,
       memberId: user.membership,
     });
-
-    console.log("invite", invite);
 
     if (invite?.success) {
       setShowErrorNotification(false);
@@ -162,6 +160,7 @@ export default function Users() {
           slug={slug}
           token={fixedToken}
           tableName="invites"
+          totalPages={totalPages}
         />
       </div>
     </div>

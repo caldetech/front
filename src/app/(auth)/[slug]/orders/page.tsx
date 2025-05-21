@@ -78,7 +78,7 @@ export default function Orders() {
   const [token] = useAuthToken();
   const fixedToken: string = token!;
   const user = useUser();
-  const { data, total, isLoading, error, mutate } = useOrders(
+  const { data, total, isLoading, error, mutate, totalPages } = useOrders(
     currentPage,
     ITEMS_PER_PAGE,
     slug,
@@ -278,6 +278,7 @@ export default function Orders() {
     setDate(new Date());
     setService(undefined);
     setNote(undefined);
+    setPaymentAmount(0);
   };
 
   const handleSubmit = async (formData: FormData) => {
@@ -695,6 +696,7 @@ export default function Orders() {
           module="orders"
           token={fixedToken}
           slug={slug}
+          totalPages={totalPages}
         />
       </div>
     </div>

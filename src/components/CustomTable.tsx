@@ -83,6 +83,7 @@ type CustomTableProps<T extends GenericRecord> = {
   currentPage: number;
   onPageChange: (page: number) => void;
   itemsPerPage: number;
+  totalPages: number;
   totalItems?: number;
   attachment?: boolean;
   tableName?: string;
@@ -96,9 +97,9 @@ const columnNameMapping: Record<string, Record<string, string>> = {
   orders: {
     type: "Tipo",
     customer: "Cliente",
-    payment: "Pagamento",
     status: "Status",
     customerType: "Categoria",
+    scheduling: "Data/Hora",
   },
   customers: {
     name: "Nome",
@@ -190,6 +191,23 @@ function getCellValue(
     return mapping[value];
   }
 
+  if (column === "scheduling") {
+    return new Date(
+      typeof value === "string" ||
+      typeof value === "number" ||
+      value instanceof Date
+        ? value
+        : new Date()
+    ).toLocaleString(undefined, {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false, // ou true, se quiser AM/PM
+    });
+  }
+
   return value as React.ReactNode;
 }
 
@@ -205,6 +223,7 @@ export default function CustomTable<T extends GenericRecord>({
   module,
   token,
   slug,
+  totalPages,
 }: CustomTableProps<T>) {
   const [productQuery, setProductQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<Product[]>();
@@ -471,15 +490,13 @@ export default function CustomTable<T extends GenericRecord>({
           key !== "show" &&
           key !== "method" &&
           key !== "customerId" &&
-          key !== "scheduling" &&
           key !== "note" &&
-          key !== "service"
+          key !== "service" &&
+          key !== "payment"
       )
     : [];
 
   const [columnIndex, setColumnIndex] = useState(1);
-
-  const totalPages = Math.ceil((totalItems ?? data.length) / itemsPerPage);
 
   function getUrlNavigation(address: string) {
     const addressName = address.split(",")[0];
@@ -671,7 +688,7 @@ export default function CustomTable<T extends GenericRecord>({
 
                 return (
                   <tr className="border-b border-[#EFEFEF]" key={item.id}>
-                    <td className="p-2 text-xs text-left text-muted-foreground select-none">
+                    <td className="p-2 text-xs text-left text-muted-foreground select-none truncate">
                       {getCellValue(
                         tableName,
                         columnNames[columnIndex - 1],
@@ -679,7 +696,7 @@ export default function CustomTable<T extends GenericRecord>({
                       )}
                     </td>
 
-                    <td className="p-2 text-xs text-left text-muted-foreground select-none">
+                    <td className="p-2 text-xs text-left text-muted-foreground select-none truncate">
                       {getCellValue(
                         tableName,
                         columnNames[columnIndex],
@@ -841,7 +858,11 @@ export default function CustomTable<T extends GenericRecord>({
 
                                     setPaymentAmount(item.amount as number);
 
-                                    setPaymentMethod(item.method as string);
+                                    setPaymentMethod(
+                                      item.method
+                                        ? (item.method as string)
+                                        : "PENDENTE"
+                                    );
 
                                     setSelectedMembers(
                                       (
@@ -860,11 +881,17 @@ export default function CustomTable<T extends GenericRecord>({
                                     );
 
                                     setDate(safeDate);
-                                    setPaymentAmount(item.amount as number);
+                                    setPaymentAmount(
+                                      item.amount ? (item.amount as number) : 0
+                                    );
                                     setOrderVisibility(item.show as boolean);
                                     setOrderId(item.id as string);
                                     setService(item.service as string);
-                                    setNote(item.note as string);
+                                    setNote(
+                                      item.note
+                                        ? (item.note as string)
+                                        : undefined
+                                    );
                                   }}
                                   asChild
                                 >
@@ -1208,7 +1235,8 @@ export default function CustomTable<T extends GenericRecord>({
                                         key !== "show" &&
                                         key !== "customerId" &&
                                         key !== "note" &&
-                                        key !== "service"
+                                        key !== "service" &&
+                                        key !== "method"
                                     )
                                     .map(([key, value], index) => {
                                       if (
@@ -1471,7 +1499,9 @@ export default function CustomTable<T extends GenericRecord>({
                     onPageChange(Math.max(1, currentPage - 1));
                   }}
                   className={
-                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
                   }
                 />
               </PaginationItem>
@@ -1493,7 +1523,7 @@ export default function CustomTable<T extends GenericRecord>({
                   className={
                     currentPage === totalPages
                       ? "pointer-events-none opacity-50"
-                      : ""
+                      : "cursor-pointer"
                   }
                 />
               </PaginationItem>

@@ -31,7 +31,7 @@ export default function Services() {
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [token] = useAuthToken();
   const fixedToken: string = token!;
-  const { data, total, isLoading, error, mutate } = useServices(
+  const { data, total, isLoading, error, mutate, totalPages } = useServices(
     currentPage,
     ITEMS_PER_PAGE,
     slug,
@@ -146,6 +146,7 @@ export default function Services() {
           slug={slug}
           token={fixedToken}
           tableName="services"
+          totalPages={totalPages}
         />
       </div>
     </div>
