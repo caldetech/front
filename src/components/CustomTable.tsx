@@ -887,7 +887,6 @@ export default function CustomTable<T extends GenericRecord>({
                                     setOrderVisibility(item.show as boolean);
                                     setOrderId(item.id as string);
                                     setService(item.service as string);
-                                    console.log(item);
                                     setNote(
                                       item.note
                                         ? (item.note as string)
