@@ -1084,7 +1084,6 @@ export default function CustomTable<T extends GenericRecord>({
                                         Funcionário designado
                                       </Label>
                                       <Input
-                                        id="commission-search"
                                         placeholder="Digite para buscar..."
                                         value={memberQuery}
                                         onChange={(e) =>
@@ -1117,7 +1116,7 @@ export default function CustomTable<T extends GenericRecord>({
                                     </div>
 
                                     {selectedMembers.length > 0 && (
-                                      <div className="flex flex-col gap-2">
+                                      <div className="flex flex-col gap-1">
                                         {selectedMembers.map((member) => {
                                           return (
                                             <div
