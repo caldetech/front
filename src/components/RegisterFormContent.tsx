@@ -117,6 +117,14 @@ export default function RegisterFormContent() {
       </div>
 
       <div className="flex flex-col gap-6">
+        {state.success && (
+          <SuccessNotification message={"Usuário criado com sucesso!"} />
+        )}
+
+        {state.errors && (
+          <SuccessNotification message={"Erro ao criar usuário!"} />
+        )}
+
         <Button type="submit" className="w-full">
           Criar conta
         </Button>
