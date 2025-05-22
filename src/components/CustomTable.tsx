@@ -228,7 +228,7 @@ export default function CustomTable<T extends GenericRecord>({
   const [productQuery, setProductQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<Product[]>();
   const [selectedMembers, setSelectedMembers] = useState<
-    { id: string; name: string; percentage?: number }[]
+    { id: string; name: string }[]
   >([]);
   const [memberQuery, setMemberQuery] = useState("");
   const [totalCommissionPercent, setTotalCommissionPercent] = useState(0);
