@@ -618,15 +618,22 @@ export default function CustomTable<T extends GenericRecord>({
     showOrder,
   }: {
     orderId: string;
-    token: string;
+    token: string | null;
     showOrder: boolean;
   }) {
     if (!token) {
       throw new Error("Há dados ausentes!");
     }
 
-    setShowOrder({ orderId, token, showOrder: !showOrder });
+    const newShowOrder = !showOrder;
 
+    await setShowOrder({
+      orderId,
+      token,
+      showOrder: newShowOrder,
+    });
+
+    // Atualiza o cache ou estado local para refletir a mudança visual imediatamente
     await mutate();
   }
 
@@ -769,33 +776,24 @@ export default function CustomTable<T extends GenericRecord>({
                           <DialogContent className="w-[95vw] max-w-[640px] rounded-md">
                             <div className="absolute top-4 left-4 flex gap-2">
                               <Can I="editVisibility" a="Order">
-                                {showOrder ? (
-                                  <span
-                                    onClick={() =>
-                                      handleShowOrder({
-                                        orderId,
-                                        token,
-                                        showOrder,
-                                      })
-                                    }
-                                    className="border text-blue-500 border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer"
-                                  >
+                                <button
+                                  onClick={() =>
+                                    handleShowOrder({
+                                      orderId,
+                                      token,
+                                      showOrder,
+                                    })
+                                  }
+                                  className={`border p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer ${
+                                    showOrder ? "text-blue-500" : "text-red-500"
+                                  } border-[#EFEFEF]`}
+                                >
+                                  {showOrder ? (
                                     <Eye className="size-4" />
-                                  </span>
-                                ) : (
-                                  <span
-                                    onClick={() =>
-                                      handleShowOrder({
-                                        orderId,
-                                        token,
-                                        showOrder,
-                                      })
-                                    }
-                                    className="border text-red-500 border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer"
-                                  >
+                                  ) : (
                                     <EyeOff className="size-4" />
-                                  </span>
-                                )}
+                                  )}
+                                </button>
                               </Can>
 
                               {/* MODAL DE EDIÇÃO */}
