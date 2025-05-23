@@ -50,7 +50,7 @@ import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { BeatLoader } from "react-spinners";
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 3;
 
 export default function Orders() {
   const [productQuery, setProductQuery] = useState("");
