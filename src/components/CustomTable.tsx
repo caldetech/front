@@ -639,906 +639,1858 @@ export default function CustomTable<T extends GenericRecord>({
 
   return (
     <>
-      {data.length > 0 ? (
-        <div className="flex flex-col">
-          <table className="table-fixed border-x border-t border-[#EFEFEF] w-full">
-            <thead>
-              <tr className="border-b border-[#EFEFEF]">
-                <th className="w-1/3 p-2 text-xs text-left text-muted-foreground select-none">
-                  {getColumnLabel(
-                    tableName,
-                    columnNames[columnIndex - 1] ?? ""
-                  )}
-                </th>
-                <th className="w-1/3 p-2 text-xs text-left text-muted-foreground select-none">
-                  {getColumnLabel(tableName, columnNames[columnIndex] ?? "")}
-                </th>
-                <th className="w-1/3 p-2">
-                  <div className="flex gap-2 justify-end">
-                    <span className="flex w-6 h-6 bg-[#F5F7F9] rounded-full items-center justify-center cursor-pointer">
-                      <ChevronLeft
-                        className={`${
-                          columnIndex === 1 ? "opacity-20" : "opacity-100"
-                        } size-4`}
-                        onClick={() => {
-                          if (columnIndex > 1) setColumnIndex(columnIndex - 1);
-                        }}
-                      />
-                    </span>
-                    <span className="flex w-6 h-6 bg-[#F5F7F9] rounded-full items-center justify-center cursor-pointer">
-                      <ChevronRight
-                        className={`${
-                          columnIndex < columnNames.length - 1
-                            ? "opacity-100"
-                            : "opacity-20"
-                        } size-4`}
-                        onClick={() => {
-                          if (columnIndex < columnNames.length - 1)
-                            setColumnIndex(columnIndex + 1);
-                        }}
-                      />
-                    </span>
-                  </div>
-                </th>
-              </tr>
-            </thead>
+      <div className="hidden sm:block">
+        {data.length > 0 ? (
+          <div className="flex flex-col">
+            <table className="table-fixed border-x border-t border-[#EFEFEF] w-full">
+              <thead>
+                <tr className="border-b border-[#EFEFEF]">
+                  <th className="w-1/3 p-2 text-xs text-left text-muted-foreground select-none">
+                    {getColumnLabel(
+                      tableName,
+                      columnNames[columnIndex - 1] ?? ""
+                    )}
+                  </th>
+                  <th className="w-1/3 p-2 text-xs text-left text-muted-foreground select-none">
+                    {getColumnLabel(tableName, columnNames[columnIndex] ?? "")}
+                  </th>
+                  <th className="w-1/3 p-2">
+                    <div className="flex gap-2 justify-end">
+                      <span className="flex w-6 h-6 bg-[#F5F7F9] rounded-full items-center justify-center cursor-pointer">
+                        <ChevronLeft
+                          className={`${
+                            columnIndex === 1 ? "opacity-20" : "opacity-100"
+                          } size-4`}
+                          onClick={() => {
+                            if (columnIndex > 1)
+                              setColumnIndex(columnIndex - 1);
+                          }}
+                        />
+                      </span>
+                      <span className="flex w-6 h-6 bg-[#F5F7F9] rounded-full items-center justify-center cursor-pointer">
+                        <ChevronRight
+                          className={`${
+                            columnIndex < columnNames.length - 1
+                              ? "opacity-100"
+                              : "opacity-20"
+                          } size-4`}
+                          onClick={() => {
+                            if (columnIndex < columnNames.length - 1)
+                              setColumnIndex(columnIndex + 1);
+                          }}
+                        />
+                      </span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
 
-            <tbody>
-              {data.map((item) => {
-                const productOrder = item?.productOrder as ProductResponse;
-                const serviceOrder = item?.serviceOrder as ServiceResponse;
-                const address = item?.address as string;
-                const orderNumber = item?.orderNumber as number;
-                const orderPrice = item.amount as number;
-                const showOrder = item.show as boolean;
-                const orderId = item.id as string;
+              <tbody>
+                {data.map((item) => {
+                  const productOrder = item?.productOrder as ProductResponse;
+                  const serviceOrder = item?.serviceOrder as ServiceResponse;
+                  const address = item?.address as string;
+                  const orderNumber = item?.orderNumber as number;
+                  const orderPrice = item.amount as number;
+                  const showOrder = item.show as boolean;
+                  const orderId = item.id as string;
 
-                return (
-                  <tr className="border-b border-[#EFEFEF]" key={item.id}>
-                    <td className="p-2 text-xs text-left text-muted-foreground select-none truncate">
-                      {getCellValue(
-                        tableName,
-                        columnNames[columnIndex - 1],
-                        item[columnNames[columnIndex - 1]]
-                      )}
-                    </td>
+                  return (
+                    <tr className="border-b border-[#EFEFEF]" key={item.id}>
+                      <td className="p-2 text-xs text-left text-muted-foreground select-none truncate">
+                        {getCellValue(
+                          tableName,
+                          columnNames[columnIndex - 1],
+                          item[columnNames[columnIndex - 1]]
+                        )}
+                      </td>
 
-                    <td className="p-2 text-xs text-left text-muted-foreground select-none truncate">
-                      {getCellValue(
-                        tableName,
-                        columnNames[columnIndex],
-                        item[columnNames[columnIndex]]
-                      )}
-                    </td>
+                      <td className="p-2 text-xs text-left text-muted-foreground select-none truncate">
+                        {getCellValue(
+                          tableName,
+                          columnNames[columnIndex],
+                          item[columnNames[columnIndex]]
+                        )}
+                      </td>
 
-                    <td className="flex justify-end m-2 gap-1">
-                      {attachment ? (
-                        <>
-                          {Array.isArray(item.orderAttachment) &&
-                          item.orderAttachment.length > 0 ? (
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
-                                  <ImageIcon className="text-blue-500 size-4" />
-                                </span>
-                              </DialogTrigger>
-
-                              <DialogContent className="flex flex-col items-center">
-                                <div className="flex flex-col items-center gap-4">
-                                  <DialogTitle>Anexar ordem</DialogTitle>
-
-                                  <div className="relative w-full h-100">
-                                    {" "}
-                                    {/* Ajuste o tamanho conforme seu layout */}
-                                    <Image
-                                      src={item.orderAttachment[0]?.url}
-                                      alt="Visualização do anexo"
-                                      fill
-                                      className="object-cover rounded-md"
-                                    />
-                                  </div>
-                                  <FileUploader orderId={item.id} />
-                                </div>
-                              </DialogContent>
-                            </Dialog>
-                          ) : (
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
-                                  <ImageOff className="text-gray-500 size-4" />
-                                </span>
-                              </DialogTrigger>
-                              <DialogContent className="flex flex-col items-center">
-                                <DialogTitle>Anexar ordem</DialogTitle>
-                                <FileUploader orderId={item.id} />
-                              </DialogContent>
-                            </Dialog>
-                          )}
-                        </>
-                      ) : null}
-
-                      {navigation && (
-                        <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
-                          <a href={getUrlNavigation(address)} target="_blank">
-                            <Navigation className="size-4" />
-                          </a>
-                        </span>
-                      )}
-
-                      {module === "orders" && (
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
-                              <Expand className="size-4" />
-                            </span>
-                          </DialogTrigger>
-
-                          <DialogContent className="w-[95vw] max-w-[640px] rounded-md">
-                            <div className="absolute top-4 left-4 flex gap-2">
-                              <Can I="editVisibility" a="Order">
-                                <button
-                                  onClick={() =>
-                                    handleShowOrder({
-                                      orderId,
-                                      token,
-                                      showOrder,
-                                    })
-                                  }
-                                  className={`border p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer ${
-                                    showOrder ? "text-blue-500" : "text-red-500"
-                                  } border-[#EFEFEF]`}
-                                >
-                                  {showOrder ? (
-                                    <Eye className="size-4" />
-                                  ) : (
-                                    <EyeOff className="size-4" />
-                                  )}
-                                </button>
-                              </Can>
-
-                              {/* MODAL DE EDIÇÃO */}
-                              <Dialog
-                                onOpenChange={() => {
-                                  setShowSuccessNotification(false);
-                                  setShowErrorNotification(false);
-                                }}
-                              >
-                                <DialogTrigger
-                                  onClick={() => {
-                                    setSelectedClient(true);
-                                    setCustomerQuery(item.customer as string);
-                                    setCustomer({
-                                      id: item.customerId as string,
-                                      name: item.customer as string,
-                                    });
-                                    setOrderType(item.type as string);
-
-                                    type Product = {
-                                      blingId: bigint;
-                                      costPrice: number;
-                                      price: number;
-                                      productName: string;
-                                      quantity: number;
-                                    };
-
-                                    const productsTransformed = (
-                                      item.productOrder as Product[]
-                                    ).map((p) => ({
-                                      id: Number(p.blingId),
-                                      nome: p.productName,
-                                      preco: p.price,
-                                      precoCusto: p.costPrice,
-                                      quantity: p.quantity,
-                                      codigo: "",
-                                      tipo: "",
-                                      situacao: "",
-                                      formato: "",
-                                      descricaoCurta: "",
-                                      imagemURL: "",
-                                      estoque: undefined,
-                                    }));
-
-                                    setSelected(productsTransformed);
-
-                                    type Service = {
-                                      id: string;
-                                      title: string;
-                                      description: string;
-                                      price: number;
-                                      organizationId: string;
-                                      createdAt: Date;
-                                      updatedAt: Date;
-                                    };
-
-                                    setSelectedServices(
-                                      item.serviceOrder as Service[]
-                                    );
-
-                                    setPaymentAmount(item.amount as number);
-
-                                    setPaymentMethod(
-                                      item.method
-                                        ? (item.method as string)
-                                        : "PENDENTE"
-                                    );
-
-                                    setSelectedMembers(
-                                      (
-                                        item.assignedMembers as {
-                                          memberId: string;
-                                          memberName: string;
-                                        }[]
-                                      ).map((m) => ({
-                                        id: m.memberId,
-                                        name: m.memberName,
-                                      }))
-                                    );
-
-                                    const safeDate = new Date(
-                                      item.scheduling as string
-                                    );
-
-                                    setDate(safeDate);
-                                    setPaymentAmount(
-                                      item.amount ? (item.amount as number) : 0
-                                    );
-                                    setOrderVisibility(item.show as boolean);
-                                    setOrderId(item.id as string);
-                                    setService(item.service as string);
-                                    setNote(
-                                      item.note
-                                        ? (item.note as string)
-                                        : undefined
-                                    );
-                                  }}
-                                  asChild
-                                >
+                      <td className="flex justify-end m-2 gap-1">
+                        {attachment ? (
+                          <>
+                            {Array.isArray(item.orderAttachment) &&
+                            item.orderAttachment.length > 0 ? (
+                              <Dialog>
+                                <DialogTrigger asChild>
                                   <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
-                                    <SquarePen className="size-4" />
+                                    <ImageIcon className="text-blue-500 size-4" />
                                   </span>
                                 </DialogTrigger>
 
-                                <DialogContent className="max-h-[90vh] overflow-y-auto">
-                                  <DialogHeader>
-                                    <DialogTitle>
-                                      Editar ordem de serviço
-                                    </DialogTitle>
-                                  </DialogHeader>
+                                <DialogContent className="flex flex-col items-center">
+                                  <div className="flex flex-col items-center gap-4">
+                                    <DialogTitle>Anexar ordem</DialogTitle>
 
-                                  <form
-                                    className="flex flex-col gap-4"
-                                    action={handleSubmit}
-                                  >
-                                    <div className="flex flex-col gap-1">
-                                      <Label htmlFor="schedule">
-                                        Agendamento
-                                      </Label>
-
-                                      <DateTimePicker
-                                        date={date}
-                                        setDate={setDate}
+                                    <div className="relative w-full h-100">
+                                      {" "}
+                                      {/* Ajuste o tamanho conforme seu layout */}
+                                      <Image
+                                        src={item.orderAttachment[0]?.url}
+                                        alt="Visualização do anexo"
+                                        fill
+                                        className="object-cover rounded-md"
                                       />
                                     </div>
-
-                                    {/* Cliente */}
-                                    <div className="flex flex-col gap-1">
-                                      <Label htmlFor="customerId">
-                                        Cliente
-                                      </Label>
-                                      <Input
-                                        id="customer-search"
-                                        placeholder="Digite para buscar..."
-                                        value={customerQuery}
-                                        onChange={(e) =>
-                                          setCustomerQuery(e.target.value)
-                                        }
-                                        disabled={selectedClient}
-                                      />
-                                    </div>
-
-                                    {/* Tipo de ordem */}
-                                    <div className="flex flex-col gap-1">
-                                      <Label htmlFor="type">
-                                        Tipo de ordem
-                                      </Label>
-                                      <Select
-                                        name="type"
-                                        value={orderType}
-                                        onValueChange={setOrderType}
-                                      >
-                                        <SelectTrigger className="w-full">
-                                          <SelectValue placeholder="Selecione um tipo" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="SALE">
-                                            Serviço
-                                          </SelectItem>
-                                          <SelectItem value="BUDGET">
-                                            Orçamento
-                                          </SelectItem>
-                                          <SelectItem value="WARRANTY">
-                                            Garantia
-                                          </SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-
-                                    {/* Pesquisa de produto */}
-                                    <div className="flex flex-col gap-2">
-                                      <Label htmlFor="product-search">
-                                        Pesquisar produto
-                                      </Label>
-                                      <Input
-                                        id="product-search"
-                                        placeholder="Digite para buscar..."
-                                        value={productQuery}
-                                        onChange={(e) =>
-                                          setProductQuery(e.target.value)
-                                        }
-                                      />
-                                      {filteredProducts ? (
-                                        <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
-                                          {filteredProducts.map((product) => (
-                                            <button
-                                              key={product.id}
-                                              type="button"
-                                              onClick={() => {
-                                                handleAddProduct(product);
-                                                setProductQuery("");
-                                              }}
-                                              className="w-full flex flex-col text-left px-4 py-2 hover:bg-gray-100 justify-between"
-                                            >
-                                              {product.nome}
-                                              <p className="text-red-500">
-                                                Preço: R$ {product.preco}
-                                              </p>
-                                            </button>
-                                          ))}
-                                        </div>
-                                      ) : (
-                                        productQuery && (
-                                          <p className="text-sm text-muted-foreground mt-2">
-                                            Nenhum produto encontrado.
-                                          </p>
-                                        )
-                                      )}
-                                    </div>
-
-                                    {/* Lista de produtos adicionados */}
-                                    {selected.length > 0 && (
-                                      <div className="space-y-2">
-                                        {selected.map((p) => (
-                                          <div
-                                            key={p.id}
-                                            className="flex items-center justify-between border-b border-gray-200 pb-2"
-                                          >
-                                            <span className="text-sm font-medium text-gray-800 pr-2">
-                                              <p>Produto: {p.nome}</p>
-
-                                              <p className="text-red-500 items-start">
-                                                Preço: R$ {p.preco}
-                                              </p>
-                                            </span>
-
-                                            <div className="flex items-center gap-2">
-                                              <Input
-                                                type="number"
-                                                min={1}
-                                                value={p.quantity}
-                                                onChange={(e) =>
-                                                  updateQuantity(
-                                                    p.id,
-                                                    Number(e.target.value)
-                                                  )
-                                                }
-                                                className="w-16 h-8 px-2 py-1 text-sm"
-                                              />
-
-                                              <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="text-red-500 hover:text-red-700 h-8 px-2"
-                                                onClick={() =>
-                                                  removeProduct(p.id)
-                                                }
-                                              >
-                                                Remover
-                                              </Button>
-                                            </div>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    )}
-
-                                    {/* Serviços */}
-                                    <div className="flex flex-col gap-2">
-                                      <Label htmlFor="note">
-                                        Nome do serviço
-                                      </Label>
-                                      <Input
-                                        type="text"
-                                        value={service}
-                                        onChange={(e) => {
-                                          if (e.target.value)
-                                            setService(e.target.value);
-                                        }}
-                                      />
-                                    </div>
-
-                                    {/* Observação */}
-                                    <div className="flex flex-col gap-2">
-                                      <Label htmlFor="note">Observação</Label>
-                                      <Textarea
-                                        placeholder="Escreva sua mensagem aqui..."
-                                        value={note}
-                                        onChange={(e) => {
-                                          if (e.target.value)
-                                            setNote(e.target.value);
-                                        }}
-                                      />
-                                    </div>
-
-                                    {/* Buscar Funcionário */}
-                                    <div className="flex flex-col gap-2">
-                                      <Label htmlFor="commission-search">
-                                        Funcionário designado
-                                      </Label>
-                                      <Input
-                                        placeholder="Digite para buscar..."
-                                        value={memberQuery}
-                                        onChange={(e) =>
-                                          setMemberQuery(e.target.value)
-                                        }
-                                      />
-                                      {filteredEmployees.length > 0 ? (
-                                        <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
-                                          {filteredEmployees.map((employee) => (
-                                            <button
-                                              key={employee.id}
-                                              type="button"
-                                              onClick={() => {
-                                                handleAddEmployee(employee);
-                                                setMemberQuery("");
-                                              }}
-                                              className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                                            >
-                                              {employee.name}
-                                            </button>
-                                          ))}
-                                        </div>
-                                      ) : (
-                                        memberQuery && (
-                                          <p className="text-sm text-muted-foreground mt-2">
-                                            Nenhum funcionário encontrado.
-                                          </p>
-                                        )
-                                      )}
-                                    </div>
-
-                                    {selectedMembers.length > 0 && (
-                                      <div className="flex flex-col gap-1">
-                                        {selectedMembers.map((member) => {
-                                          return (
-                                            <div
-                                              key={member.id}
-                                              className="flex gap-2 items-center justify-between"
-                                            >
-                                              <span>{member.name}</span>
-                                              <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="text-red-500 hover:text-red-700 h-8 px-2"
-                                                onClick={() =>
-                                                  removeEmployee(member.id)
-                                                }
-                                              >
-                                                Remover
-                                              </Button>
-                                            </div>
-                                          );
-                                        })}
-                                      </div>
-                                    )}
-
-                                    {/* Método de pagamento */}
-                                    <div className="flex flex-col gap-1">
-                                      <Label htmlFor="paymentMethod">
-                                        Método de pagamento
-                                      </Label>
-                                      <Select
-                                        name="paymentMethod"
-                                        value={paymentMethod}
-                                        onValueChange={setPaymentMethod}
-                                      >
-                                        <SelectTrigger className="w-full">
-                                          <SelectValue placeholder="Selecione" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="PIX">
-                                            PIX
-                                          </SelectItem>
-                                          <SelectItem value="CARTAO">
-                                            Cartão
-                                          </SelectItem>
-                                          <SelectItem value="BOLETO">
-                                            Boleto
-                                          </SelectItem>
-                                          <SelectItem value="DEPOSITO">
-                                            Depósito
-                                          </SelectItem>
-                                          <SelectItem value="PENDENTE">
-                                            Pendente
-                                          </SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-
-                                    {/* Valor do pagamento */}
-                                    <div className="flex flex-col gap-1">
-                                      <Label htmlFor="paymentAmount">
-                                        Valor
-                                      </Label>
-                                      <Input
-                                        name="paymentAmount"
-                                        type="text"
-                                        value={paymentAmount}
-                                        onChange={(e) =>
-                                          setPaymentAmount(
-                                            e.target.value
-                                              ? parseFloat(e.target.value)
-                                              : undefined
-                                          )
-                                        }
-                                      />
-                                    </div>
-
-                                    <div className="flex flex-col gap-4">
-                                      {showSuccessNotification && (
-                                        <SuccessNotification message="Atualização bem sucedida!" />
-                                      )}
-
-                                      {showErrorNotification && (
-                                        <ErrorNotification message="Erro ao atualizar!" />
-                                      )}
-
-                                      <Button type="submit">Atualizar</Button>
-                                    </div>
-                                  </form>
+                                    <FileUploader orderId={item.id} />
+                                  </div>
                                 </DialogContent>
                               </Dialog>
-                            </div>
+                            ) : (
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                                    <ImageOff className="text-gray-500 size-4" />
+                                  </span>
+                                </DialogTrigger>
+                                <DialogContent className="flex flex-col items-center">
+                                  <DialogTitle>Anexar ordem</DialogTitle>
+                                  <FileUploader orderId={item.id} />
+                                </DialogContent>
+                              </Dialog>
+                            )}
+                          </>
+                        ) : null}
 
-                            <DialogHeader className="flex items-center">
-                              <DialogTitle>
-                                Ordem n°:{" "}
-                                {orderNumber.toString().length === 1
-                                  ? `00${orderNumber}`
-                                  : `${orderNumber}`}
-                              </DialogTitle>
-                              <DialogDescription>
-                                Detalhes da ordem
-                              </DialogDescription>
-                            </DialogHeader>
+                        {navigation && (
+                          <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                            <a href={getUrlNavigation(address)} target="_blank">
+                              <Navigation className="size-4" />
+                            </a>
+                          </span>
+                        )}
 
-                            <div className="max-h-[60vh] overflow-y-auto mt-4 space-y-6">
-                              {/* Informações do pedido */}
-                              <div className="space-y-4">
-                                {item &&
-                                  typeof item === "object" &&
-                                  Object.entries(item)
-                                    .filter(
-                                      ([key]) =>
-                                        key !== "id" &&
-                                        key !== "orderAttachment" &&
-                                        key !== "payment" &&
-                                        key !== "status" &&
-                                        key !== "productOrder" &&
-                                        key !== "orderNumber" &&
-                                        key !== "serviceOrder" &&
-                                        key !== "amount" &&
-                                        key !== "show" &&
-                                        key !== "customerId" &&
-                                        key !== "note" &&
-                                        key !== "service" &&
-                                        key !== "method"
-                                    )
-                                    .map(([key, value], index) => {
-                                      if (
-                                        key === "assignedMembers" &&
-                                        Array.isArray(value) &&
-                                        value.length > 0
-                                      ) {
-                                        return (
-                                          <div
-                                            key={key}
-                                            className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
-                                          >
-                                            <p className="text-muted-foreground text-sm">
-                                              {key in keyLabels
-                                                ? keyLabels[
-                                                    key as keyof typeof keyLabels
-                                                  ]
-                                                : key}
-                                            </p>
-                                            <div className="flex gap-4 justify-end">
-                                              {value.map((element, idx) => (
-                                                <p
-                                                  key={idx}
-                                                  className="text-right"
-                                                >
-                                                  <Badge variant={"secondary"}>
-                                                    {element.memberName}
-                                                  </Badge>
-                                                </p>
-                                              ))}
-                                            </div>
-                                          </div>
-                                        );
-                                      }
+                        {module === "orders" && (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                                <Expand className="size-4" />
+                              </span>
+                            </DialogTrigger>
 
-                                      if (key === "scheduling") {
-                                        return (
-                                          <div
-                                            key={key}
-                                            className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
-                                          >
-                                            <p className="text-muted-foreground text-sm">
-                                              {key in keyLabels
-                                                ? keyLabels[
-                                                    key as keyof typeof keyLabels
-                                                  ]
-                                                : key}
-                                            </p>
-                                            <p className="text-right">
-                                              {typeof value === "string" ||
-                                              typeof value === "number"
-                                                ? new Date(
-                                                    value
-                                                  ).toLocaleString(undefined, {
-                                                    year: "numeric",
-                                                    month: "2-digit",
-                                                    day: "2-digit",
-                                                    hour: "2-digit",
-                                                    minute: "2-digit",
-                                                    hour12: false, // ou true, se quiser AM/PM
-                                                  })
-                                                : "Invalid date"}
-                                            </p>
-                                          </div>
-                                        );
-                                      }
-
-                                      if (key !== "assignedMembers") {
-                                        return (
-                                          <div
-                                            key={key}
-                                            className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
-                                          >
-                                            <p className="text-muted-foreground text-sm">
-                                              {key in keyLabels
-                                                ? keyLabels[
-                                                    key as keyof typeof keyLabels
-                                                  ]
-                                                : key}
-                                            </p>
-                                            <p className="text-right">
-                                              {String(value) in valueLabels
-                                                ? formatValue(
-                                                    key,
-                                                    valueLabels[
-                                                      String(
-                                                        value
-                                                      ) as keyof typeof valueLabels
-                                                    ]
-                                                  )
-                                                : String(value)}
-                                            </p>
-                                          </div>
-                                        );
-                                      }
-                                    })}
-                              </div>
-
-                              {/* Tabela de produtos */}
-                              <div className="overflow-x-auto">
-                                {Object.entries(productOrder ?? {}).length >
-                                  0 ||
-                                Object.entries(serviceOrder ?? {}).length >
-                                  0 ? (
-                                  <table className="min-w-full text-sm">
-                                    {Object.entries(productOrder ?? {}).length >
-                                      0 && (
-                                      <>
-                                        <thead>
-                                          <tr>
-                                            <th className="text-left p-2">
-                                              Produto
-                                            </th>
-                                            <th className="text-right p-2">
-                                              Qtd.
-                                            </th>
-                                            <th className="text-right p-2">
-                                              Preço
-                                            </th>
-                                            <th className="text-right p-2">
-                                              Subtotal
-                                            </th>
-                                          </tr>
-                                        </thead>
-                                        <tbody>
-                                          {item &&
-                                            typeof item === "object" &&
-                                            Object.entries(item)
-                                              .filter(
-                                                ([key]) =>
-                                                  key === "productOrder"
-                                              )
-                                              .flatMap(([_, value]) =>
-                                                Array.isArray(value)
-                                                  ? value.map(
-                                                      (element, idx) => (
-                                                        <tr
-                                                          className="border-t"
-                                                          key={`product-${idx}`}
-                                                        >
-                                                          <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
-                                                            {
-                                                              element.productName
-                                                            }
-                                                          </td>
-                                                          <td className="text-right p-2">
-                                                            {element.quantity}
-                                                          </td>
-                                                          <td className="text-right p-2">
-                                                            {element.price}
-                                                          </td>
-                                                          <td className="text-right p-2">
-                                                            {parseFloat(
-                                                              (
-                                                                element.price *
-                                                                element.quantity
-                                                              ).toString()
-                                                            )}
-                                                          </td>
-                                                        </tr>
-                                                      )
-                                                    )
-                                                  : []
-                                              )}
-                                        </tbody>
-                                      </>
+                            <DialogContent className="w-[95vw] max-w-[640px] rounded-md">
+                              <div className="absolute top-4 left-4 flex gap-2">
+                                <Can I="editVisibility" a="Order">
+                                  <button
+                                    onClick={() =>
+                                      handleShowOrder({
+                                        orderId,
+                                        token,
+                                        showOrder,
+                                      })
+                                    }
+                                    className={`border p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer ${
+                                      showOrder
+                                        ? "text-blue-500"
+                                        : "text-red-500"
+                                    } border-[#EFEFEF]`}
+                                  >
+                                    {showOrder ? (
+                                      <Eye className="size-4" />
+                                    ) : (
+                                      <EyeOff className="size-4" />
                                     )}
+                                  </button>
+                                </Can>
 
-                                    {Object.entries(serviceOrder ?? {}).length >
-                                      0 && (
-                                      <>
-                                        <thead>
-                                          <tr>
-                                            <th className="text-left p-2">
-                                              Serviço
-                                            </th>
-                                            <th className="text-right p-2"></th>
-                                            <th className="text-right p-2"></th>
-                                            <th className="text-right p-2">
-                                              Subtotal
-                                            </th>
-                                          </tr>
-                                        </thead>
-                                        <tbody>
-                                          {item &&
-                                            typeof item === "object" &&
-                                            Object.entries(item)
-                                              .filter(
-                                                ([key]) =>
-                                                  key === "serviceOrder"
-                                              )
-                                              .flatMap(([_, value]) =>
-                                                Array.isArray(value)
-                                                  ? value.map(
-                                                      (element, idx) => (
-                                                        <tr
-                                                          className="border-t"
-                                                          key={`service-${idx}`}
-                                                        >
-                                                          <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
-                                                            {element.title}
-                                                          </td>
-                                                          <td className="text-right p-2"></td>
-                                                          <td className="text-right p-2"></td>
-                                                          <td className="text-right p-2">
-                                                            {element.price}
-                                                          </td>
-                                                        </tr>
-                                                      )
-                                                    )
-                                                  : []
-                                              )}
-                                        </tbody>
-                                      </>
-                                    )}
+                                {/* MODAL DE EDIÇÃO */}
+                                <Dialog
+                                  onOpenChange={() => {
+                                    setShowSuccessNotification(false);
+                                    setShowErrorNotification(false);
+                                  }}
+                                >
+                                  <DialogTrigger
+                                    onClick={() => {
+                                      setSelectedClient(true);
+                                      setCustomerQuery(item.customer as string);
+                                      setCustomer({
+                                        id: item.customerId as string,
+                                        name: item.customer as string,
+                                      });
+                                      setOrderType(item.type as string);
 
-                                    <tfoot>
-                                      <tr className="border-t">
-                                        <td
-                                          colSpan={3}
-                                          className="p-2 font-bold"
+                                      type Product = {
+                                        blingId: bigint;
+                                        costPrice: number;
+                                        price: number;
+                                        productName: string;
+                                        quantity: number;
+                                      };
+
+                                      const productsTransformed = (
+                                        item.productOrder as Product[]
+                                      ).map((p) => ({
+                                        id: Number(p.blingId),
+                                        nome: p.productName,
+                                        preco: p.price,
+                                        precoCusto: p.costPrice,
+                                        quantity: p.quantity,
+                                        codigo: "",
+                                        tipo: "",
+                                        situacao: "",
+                                        formato: "",
+                                        descricaoCurta: "",
+                                        imagemURL: "",
+                                        estoque: undefined,
+                                      }));
+
+                                      setSelected(productsTransformed);
+
+                                      type Service = {
+                                        id: string;
+                                        title: string;
+                                        description: string;
+                                        price: number;
+                                        organizationId: string;
+                                        createdAt: Date;
+                                        updatedAt: Date;
+                                      };
+
+                                      setSelectedServices(
+                                        item.serviceOrder as Service[]
+                                      );
+
+                                      setPaymentAmount(item.amount as number);
+
+                                      setPaymentMethod(
+                                        item.method
+                                          ? (item.method as string)
+                                          : "PENDENTE"
+                                      );
+
+                                      setSelectedMembers(
+                                        (
+                                          item.assignedMembers as {
+                                            memberId: string;
+                                            memberName: string;
+                                          }[]
+                                        ).map((m) => ({
+                                          id: m.memberId,
+                                          name: m.memberName,
+                                        }))
+                                      );
+
+                                      const safeDate = new Date(
+                                        item.scheduling as string
+                                      );
+
+                                      setDate(safeDate);
+                                      setPaymentAmount(
+                                        item.amount
+                                          ? (item.amount as number)
+                                          : 0
+                                      );
+                                      setOrderVisibility(item.show as boolean);
+                                      setOrderId(item.id as string);
+                                      setService(item.service as string);
+                                      setNote(
+                                        item.note
+                                          ? (item.note as string)
+                                          : undefined
+                                      );
+                                    }}
+                                    asChild
+                                  >
+                                    <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                                      <SquarePen className="size-4" />
+                                    </span>
+                                  </DialogTrigger>
+
+                                  <DialogContent className="max-h-[90vh] overflow-y-auto">
+                                    <DialogHeader>
+                                      <DialogTitle>
+                                        Editar ordem de serviço
+                                      </DialogTitle>
+                                    </DialogHeader>
+
+                                    <form
+                                      className="flex flex-col gap-4"
+                                      action={handleSubmit}
+                                    >
+                                      <div className="flex flex-col gap-1">
+                                        <Label htmlFor="schedule">
+                                          Agendamento
+                                        </Label>
+
+                                        <DateTimePicker
+                                          date={date}
+                                          setDate={setDate}
+                                        />
+                                      </div>
+
+                                      {/* Cliente */}
+                                      <div className="flex flex-col gap-1">
+                                        <Label htmlFor="customerId">
+                                          Cliente
+                                        </Label>
+                                        <Input
+                                          id="customer-search"
+                                          placeholder="Digite para buscar..."
+                                          value={customerQuery}
+                                          onChange={(e) =>
+                                            setCustomerQuery(e.target.value)
+                                          }
+                                          disabled={selectedClient}
+                                        />
+                                      </div>
+
+                                      {/* Tipo de ordem */}
+                                      <div className="flex flex-col gap-1">
+                                        <Label htmlFor="type">
+                                          Tipo de ordem
+                                        </Label>
+                                        <Select
+                                          name="type"
+                                          value={orderType}
+                                          onValueChange={setOrderType}
                                         >
-                                          Total
-                                        </td>
-                                        <td className="text-right p-2 font-bold">
-                                          {orderPrice}
-                                        </td>
-                                      </tr>
-                                    </tfoot>
-                                  </table>
-                                ) : (
-                                  <div className="w-full p-6 text-center text-gray-500 bg-gray-50 rounded-lg">
-                                    <p className="text-lg font-semibold">
-                                      Nenhum produto ou serviço adicionado
-                                    </p>
-                                    <p className="text-sm mt-1">
-                                      Adicione itens para visualizar os detalhes
-                                      do pedido.
-                                    </p>
-                                  </div>
-                                )}
+                                          <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Selecione um tipo" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="SALE">
+                                              Serviço
+                                            </SelectItem>
+                                            <SelectItem value="BUDGET">
+                                              Orçamento
+                                            </SelectItem>
+                                            <SelectItem value="WARRANTY">
+                                              Garantia
+                                            </SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+
+                                      {/* Pesquisa de produto */}
+                                      <div className="flex flex-col gap-2">
+                                        <Label htmlFor="product-search">
+                                          Pesquisar produto
+                                        </Label>
+                                        <Input
+                                          id="product-search"
+                                          placeholder="Digite para buscar..."
+                                          value={productQuery}
+                                          onChange={(e) =>
+                                            setProductQuery(e.target.value)
+                                          }
+                                        />
+                                        {filteredProducts ? (
+                                          <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
+                                            {filteredProducts.map((product) => (
+                                              <button
+                                                key={product.id}
+                                                type="button"
+                                                onClick={() => {
+                                                  handleAddProduct(product);
+                                                  setProductQuery("");
+                                                }}
+                                                className="w-full flex flex-col text-left px-4 py-2 hover:bg-gray-100 justify-between"
+                                              >
+                                                {product.nome}
+                                                <p className="text-red-500">
+                                                  Preço: R$ {product.preco}
+                                                </p>
+                                              </button>
+                                            ))}
+                                          </div>
+                                        ) : (
+                                          productQuery && (
+                                            <p className="text-sm text-muted-foreground mt-2">
+                                              Nenhum produto encontrado.
+                                            </p>
+                                          )
+                                        )}
+                                      </div>
+
+                                      {/* Lista de produtos adicionados */}
+                                      {selected.length > 0 && (
+                                        <div className="space-y-2">
+                                          {selected.map((p) => (
+                                            <div
+                                              key={p.id}
+                                              className="flex items-center justify-between border-b border-gray-200 pb-2"
+                                            >
+                                              <span className="text-sm font-medium text-gray-800 pr-2">
+                                                <p>Produto: {p.nome}</p>
+
+                                                <p className="text-red-500 items-start">
+                                                  Preço: R$ {p.preco}
+                                                </p>
+                                              </span>
+
+                                              <div className="flex items-center gap-2">
+                                                <Input
+                                                  type="number"
+                                                  min={1}
+                                                  value={p.quantity}
+                                                  onChange={(e) =>
+                                                    updateQuantity(
+                                                      p.id,
+                                                      Number(e.target.value)
+                                                    )
+                                                  }
+                                                  className="w-16 h-8 px-2 py-1 text-sm"
+                                                />
+
+                                                <Button
+                                                  variant="ghost"
+                                                  size="sm"
+                                                  className="text-red-500 hover:text-red-700 h-8 px-2"
+                                                  onClick={() =>
+                                                    removeProduct(p.id)
+                                                  }
+                                                >
+                                                  Remover
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+
+                                      {/* Serviços */}
+                                      <div className="flex flex-col gap-2">
+                                        <Label htmlFor="note">
+                                          Nome do serviço
+                                        </Label>
+                                        <Input
+                                          type="text"
+                                          value={service}
+                                          onChange={(e) => {
+                                            if (e.target.value)
+                                              setService(e.target.value);
+                                          }}
+                                        />
+                                      </div>
+
+                                      {/* Observação */}
+                                      <div className="flex flex-col gap-2">
+                                        <Label htmlFor="note">Observação</Label>
+                                        <Textarea
+                                          placeholder="Escreva sua mensagem aqui..."
+                                          value={note}
+                                          onChange={(e) => {
+                                            if (e.target.value)
+                                              setNote(e.target.value);
+                                          }}
+                                        />
+                                      </div>
+
+                                      {/* Buscar Funcionário */}
+                                      <div className="flex flex-col gap-2">
+                                        <Label htmlFor="commission-search">
+                                          Funcionário designado
+                                        </Label>
+                                        <Input
+                                          placeholder="Digite para buscar..."
+                                          value={memberQuery}
+                                          onChange={(e) =>
+                                            setMemberQuery(e.target.value)
+                                          }
+                                        />
+                                        {filteredEmployees.length > 0 ? (
+                                          <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
+                                            {filteredEmployees.map(
+                                              (employee) => (
+                                                <button
+                                                  key={employee.id}
+                                                  type="button"
+                                                  onClick={() => {
+                                                    handleAddEmployee(employee);
+                                                    setMemberQuery("");
+                                                  }}
+                                                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                                                >
+                                                  {employee.name}
+                                                </button>
+                                              )
+                                            )}
+                                          </div>
+                                        ) : (
+                                          memberQuery && (
+                                            <p className="text-sm text-muted-foreground mt-2">
+                                              Nenhum funcionário encontrado.
+                                            </p>
+                                          )
+                                        )}
+                                      </div>
+
+                                      {selectedMembers.length > 0 && (
+                                        <div className="flex flex-col gap-1">
+                                          {selectedMembers.map((member) => {
+                                            return (
+                                              <div
+                                                key={member.id}
+                                                className="flex gap-2 items-center justify-between"
+                                              >
+                                                <span>{member.name}</span>
+                                                <Button
+                                                  variant="ghost"
+                                                  size="sm"
+                                                  className="text-red-500 hover:text-red-700 h-8 px-2"
+                                                  onClick={() =>
+                                                    removeEmployee(member.id)
+                                                  }
+                                                >
+                                                  Remover
+                                                </Button>
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                      )}
+
+                                      {/* Método de pagamento */}
+                                      <div className="flex flex-col gap-1">
+                                        <Label htmlFor="paymentMethod">
+                                          Método de pagamento
+                                        </Label>
+                                        <Select
+                                          name="paymentMethod"
+                                          value={paymentMethod}
+                                          onValueChange={setPaymentMethod}
+                                        >
+                                          <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Selecione" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="PIX">
+                                              PIX
+                                            </SelectItem>
+                                            <SelectItem value="CARTAO">
+                                              Cartão
+                                            </SelectItem>
+                                            <SelectItem value="BOLETO">
+                                              Boleto
+                                            </SelectItem>
+                                            <SelectItem value="DEPOSITO">
+                                              Depósito
+                                            </SelectItem>
+                                            <SelectItem value="PENDENTE">
+                                              Pendente
+                                            </SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+
+                                      {/* Valor do pagamento */}
+                                      <div className="flex flex-col gap-1">
+                                        <Label htmlFor="paymentAmount">
+                                          Valor
+                                        </Label>
+                                        <Input
+                                          name="paymentAmount"
+                                          type="text"
+                                          value={paymentAmount}
+                                          onChange={(e) =>
+                                            setPaymentAmount(
+                                              e.target.value
+                                                ? parseFloat(e.target.value)
+                                                : undefined
+                                            )
+                                          }
+                                        />
+                                      </div>
+
+                                      <div className="flex flex-col gap-4">
+                                        {showSuccessNotification && (
+                                          <SuccessNotification message="Atualização bem sucedida!" />
+                                        )}
+
+                                        {showErrorNotification && (
+                                          <ErrorNotification message="Erro ao atualizar!" />
+                                        )}
+
+                                        <Button type="submit">Atualizar</Button>
+                                      </div>
+                                    </form>
+                                  </DialogContent>
+                                </Dialog>
                               </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
 
-          <Pagination>
-            <PaginationContent className="justify-end">
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onPageChange(Math.max(1, currentPage - 1));
-                  }}
-                  className={
-                    currentPage === 1
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
+                              <DialogHeader className="flex items-center">
+                                <DialogTitle>
+                                  Ordem n°:{" "}
+                                  {orderNumber.toString().length === 1
+                                    ? `00${orderNumber}`
+                                    : `${orderNumber}`}
+                                </DialogTitle>
+                                <DialogDescription>
+                                  Detalhes da ordem
+                                </DialogDescription>
+                              </DialogHeader>
 
-              <PaginationItem>
-                <span className="text-xs text-muted-foreground px-2">
-                  Página {currentPage}
-                  {totalPages &&
-                    ` de ${currentPage > totalPages ? currentPage : totalPages}`}
-                </span>
-              </PaginationItem>
+                              <div className="max-h-[60vh] overflow-y-auto mt-4 space-y-6">
+                                {/* Informações do pedido */}
+                                <div className="space-y-4">
+                                  {item &&
+                                    typeof item === "object" &&
+                                    Object.entries(item)
+                                      .filter(
+                                        ([key]) =>
+                                          key !== "id" &&
+                                          key !== "orderAttachment" &&
+                                          key !== "payment" &&
+                                          key !== "status" &&
+                                          key !== "productOrder" &&
+                                          key !== "orderNumber" &&
+                                          key !== "serviceOrder" &&
+                                          key !== "amount" &&
+                                          key !== "show" &&
+                                          key !== "customerId" &&
+                                          key !== "note" &&
+                                          key !== "service" &&
+                                          key !== "method"
+                                      )
+                                      .map(([key, value], index) => {
+                                        if (
+                                          key === "assignedMembers" &&
+                                          Array.isArray(value) &&
+                                          value.length > 0
+                                        ) {
+                                          return (
+                                            <div
+                                              key={key}
+                                              className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
+                                            >
+                                              <p className="text-muted-foreground text-sm">
+                                                {key in keyLabels
+                                                  ? keyLabels[
+                                                      key as keyof typeof keyLabels
+                                                    ]
+                                                  : key}
+                                              </p>
+                                              <div className="flex gap-2 justify-end">
+                                                {value.map((element, idx) => (
+                                                  <p
+                                                    key={idx}
+                                                    className="text-right"
+                                                  ></p>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          );
+                                        }
 
-              <PaginationItem>
-                <PaginationNext
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onPageChange(currentPage + 1);
-                  }}
-                  className={
-                    currentPage === totalPages
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      ) : (
-        <p className="text-center table-fixed border-x border border-[#EFEFEF] w-full p-2">
-          Nenhum resultado encontrado.
-        </p>
-      )}
+                                        if (key === "scheduling") {
+                                          return (
+                                            <div
+                                              key={key}
+                                              className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
+                                            >
+                                              <p className="text-muted-foreground text-sm">
+                                                {key in keyLabels
+                                                  ? keyLabels[
+                                                      key as keyof typeof keyLabels
+                                                    ]
+                                                  : key}
+                                              </p>
+                                              <p className="text-right">
+                                                {typeof value === "string" ||
+                                                typeof value === "number"
+                                                  ? new Date(
+                                                      value
+                                                    ).toLocaleString(
+                                                      undefined,
+                                                      {
+                                                        year: "numeric",
+                                                        month: "2-digit",
+                                                        day: "2-digit",
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                        hour12: false, // ou true, se quiser AM/PM
+                                                      }
+                                                    )
+                                                  : "Invalid date"}
+                                              </p>
+                                            </div>
+                                          );
+                                        }
+
+                                        if (key !== "assignedMembers") {
+                                          return (
+                                            <div
+                                              key={key}
+                                              className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
+                                            >
+                                              <p className="text-muted-foreground text-sm">
+                                                {key in keyLabels
+                                                  ? keyLabels[
+                                                      key as keyof typeof keyLabels
+                                                    ]
+                                                  : key}
+                                              </p>
+                                              <p className="text-right">
+                                                {String(value) in valueLabels
+                                                  ? formatValue(
+                                                      key,
+                                                      valueLabels[
+                                                        String(
+                                                          value
+                                                        ) as keyof typeof valueLabels
+                                                      ]
+                                                    )
+                                                  : String(value)}
+                                              </p>
+                                            </div>
+                                          );
+                                        }
+                                      })}
+                                </div>
+
+                                {/* Tabela de produtos */}
+                                <div className="overflow-x-auto">
+                                  {Object.entries(productOrder ?? {}).length >
+                                    0 ||
+                                  Object.entries(serviceOrder ?? {}).length >
+                                    0 ? (
+                                    <table className="min-w-full text-sm">
+                                      {Object.entries(productOrder ?? {})
+                                        .length > 0 && (
+                                        <>
+                                          <thead>
+                                            <tr>
+                                              <th className="text-left p-2">
+                                                Produto
+                                              </th>
+                                              <th className="text-right p-2">
+                                                Qtd.
+                                              </th>
+                                              <th className="text-right p-2">
+                                                Preço
+                                              </th>
+                                              <th className="text-right p-2">
+                                                Subtotal
+                                              </th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {item &&
+                                              typeof item === "object" &&
+                                              Object.entries(item)
+                                                .filter(
+                                                  ([key]) =>
+                                                    key === "productOrder"
+                                                )
+                                                .flatMap(([_, value]) =>
+                                                  Array.isArray(value)
+                                                    ? value.map(
+                                                        (element, idx) => (
+                                                          <tr
+                                                            className="border-t"
+                                                            key={`product-${idx}`}
+                                                          >
+                                                            <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                                              {
+                                                                element.productName
+                                                              }
+                                                            </td>
+                                                            <td className="text-right p-2">
+                                                              {element.quantity}
+                                                            </td>
+                                                            <td className="text-right p-2">
+                                                              {element.price}
+                                                            </td>
+                                                            <td className="text-right p-2">
+                                                              {parseFloat(
+                                                                (
+                                                                  element.price *
+                                                                  element.quantity
+                                                                ).toString()
+                                                              )}
+                                                            </td>
+                                                          </tr>
+                                                        )
+                                                      )
+                                                    : []
+                                                )}
+                                          </tbody>
+                                        </>
+                                      )}
+
+                                      {Object.entries(serviceOrder ?? {})
+                                        .length > 0 && (
+                                        <>
+                                          <thead>
+                                            <tr>
+                                              <th className="text-left p-2">
+                                                Serviço
+                                              </th>
+                                              <th className="text-right p-2"></th>
+                                              <th className="text-right p-2"></th>
+                                              <th className="text-right p-2">
+                                                Subtotal
+                                              </th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {item &&
+                                              typeof item === "object" &&
+                                              Object.entries(item)
+                                                .filter(
+                                                  ([key]) =>
+                                                    key === "serviceOrder"
+                                                )
+                                                .flatMap(([_, value]) =>
+                                                  Array.isArray(value)
+                                                    ? value.map(
+                                                        (element, idx) => (
+                                                          <tr
+                                                            className="border-t"
+                                                            key={`service-${idx}`}
+                                                          >
+                                                            <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                                              {element.title}
+                                                            </td>
+                                                            <td className="text-right p-2"></td>
+                                                            <td className="text-right p-2"></td>
+                                                            <td className="text-right p-2">
+                                                              {element.price}
+                                                            </td>
+                                                          </tr>
+                                                        )
+                                                      )
+                                                    : []
+                                                )}
+                                          </tbody>
+                                        </>
+                                      )}
+
+                                      <tfoot>
+                                        <tr className="border-t">
+                                          <td
+                                            colSpan={3}
+                                            className="p-2 font-bold"
+                                          >
+                                            Total
+                                          </td>
+                                          <td className="text-right p-2 font-bold">
+                                            {orderPrice}
+                                          </td>
+                                        </tr>
+                                      </tfoot>
+                                    </table>
+                                  ) : (
+                                    <div className="w-full p-6 text-center text-gray-500 bg-gray-50 rounded-lg">
+                                      <p className="text-lg font-semibold">
+                                        Nenhum produto ou serviço adicionado
+                                      </p>
+                                      <p className="text-sm mt-1">
+                                        Adicione itens para visualizar os
+                                        detalhes do pedido.
+                                      </p>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+
+            <Pagination>
+              <PaginationContent className="justify-end">
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onPageChange(Math.max(1, currentPage - 1));
+                    }}
+                    className={
+                      currentPage === 1
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+
+                <PaginationItem>
+                  <span className="text-xs text-muted-foreground px-2">
+                    Página {currentPage}
+                    {totalPages &&
+                      ` de ${currentPage > totalPages ? currentPage : totalPages}`}
+                  </span>
+                </PaginationItem>
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onPageChange(currentPage + 1);
+                    }}
+                    className={
+                      currentPage === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        ) : (
+          <p className="text-center table-fixed border-x border border-[#EFEFEF] w-full p-2">
+            Nenhum resultado encontrado.
+          </p>
+        )}
+      </div>
+
+      <div className="flex flex-col h-[calc(100vh-150px)] sm:hidden">
+        {data.length > 0 ? (
+          <div className="flex-1 flex flex-col overflow-y-auto gap-2">
+            {data.map((item) => {
+              const productOrder = item?.productOrder as ProductResponse;
+              const serviceOrder = item?.serviceOrder as ServiceResponse;
+              const address = item?.address as string;
+              const orderNumber = item?.orderNumber as number;
+              const orderPrice = item.amount as number;
+              const showOrder = item.show as boolean;
+              const orderId = item.id as string;
+              const date = new Date(item.scheduling as string);
+              const horas = date.getHours().toString().padStart(2, "0");
+              const minutos = date.getMinutes().toString().padStart(2, "0");
+              const horaFormatada = `${horas}:${minutos}`;
+              const dataFormatada = date.toLocaleDateString("pt-BR");
+
+              console.log(item);
+
+              return (
+                <div
+                  className="sm:border-b sm:border-[#EFEFEF] bg-gradient-to-r from-[#059af8] to-[#38bdf8] rounded-[12px] min-h-[calc(100vh/3)]"
+                  key={orderId}
+                >
+                  <div className="relative py-6 px-4 h-full flex flex-col sm:m-2 gap-2 sm:flex-row">
+                    <div className="flex justify-between">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-sm rounded-md py-1 px-2 bg-[#2A282F] w-fit h-fit text-white">
+                          {dataFormatada}
+                        </span>
+                        <span className="text-sm rounded-md py-1 px-2 bg-[#2A282F] w-fit h-fit text-white">
+                          {horaFormatada}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-end gap-1">
+                        <div className="sm:hidden">
+                          <Can I="editVisibility" a="Order">
+                            <span
+                              onClick={() =>
+                                handleShowOrder({
+                                  orderId,
+                                  token,
+                                  showOrder,
+                                })
+                              }
+                              className={`flex w-fit border p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer ${
+                                showOrder ? "text-white" : "text-[#fbbc23]"
+                              } border-[#EFEFEF]`}
+                            >
+                              {showOrder ? (
+                                <Eye className="size-4" />
+                              ) : (
+                                <EyeOff className="size-4" />
+                              )}
+                            </span>
+                          </Can>
+                        </div>
+
+                        {attachment ? (
+                          <>
+                            {Array.isArray(item.orderAttachment) &&
+                            item.orderAttachment.length > 0 ? (
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <span className="h-fit border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                                    <ImageIcon className="text-[#fbbc23] sm:text-blue-500 size-4" />
+                                  </span>
+                                </DialogTrigger>
+
+                                <DialogContent className="flex flex-col items-center">
+                                  <div className="flex flex-col items-center gap-4">
+                                    <DialogTitle>Anexar ordem</DialogTitle>
+
+                                    <div className="relative w-full h-100">
+                                      {" "}
+                                      {/* Ajuste o tamanho conforme seu layout */}
+                                      <Image
+                                        src={item.orderAttachment[0]?.url}
+                                        alt="Visualização do anexo"
+                                        fill
+                                        className="object-cover rounded-md"
+                                      />
+                                    </div>
+                                    <FileUploader orderId={item.id} />
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                            ) : (
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <span className="h-fit border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                                    <ImageOff className="text-white size-4" />
+                                  </span>
+                                </DialogTrigger>
+                                <DialogContent className="flex flex-col items-center">
+                                  <DialogTitle>Anexar ordem</DialogTitle>
+                                  <FileUploader orderId={item.id} />
+                                </DialogContent>
+                              </Dialog>
+                            )}
+                          </>
+                        ) : null}
+
+                        {navigation && (
+                          <span className="h-fit border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                            <a href={getUrlNavigation(address)} target="_blank">
+                              <Navigation className="size-4 text-white" />
+                            </a>
+                          </span>
+                        )}
+
+                        {module === "orders" && (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <span className="h-fit border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                                <Expand className="size-4 text-white" />
+                              </span>
+                            </DialogTrigger>
+
+                            <DialogContent className="w-[95vw] max-w-[640px] rounded-md">
+                              <div className="absolute top-4 left-4 flex gap-2">
+                                <Can I="editVisibility" a="Order">
+                                  <button
+                                    onClick={() =>
+                                      handleShowOrder({
+                                        orderId,
+                                        token,
+                                        showOrder,
+                                      })
+                                    }
+                                    className={`border p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer ${
+                                      showOrder
+                                        ? "text-blue-500"
+                                        : "text-red-500"
+                                    } border-[#EFEFEF]`}
+                                  >
+                                    {showOrder ? (
+                                      <Eye className="size-4" />
+                                    ) : (
+                                      <EyeOff className="size-4" />
+                                    )}
+                                  </button>
+                                </Can>
+
+                                {/* MODAL DE EDIÇÃO */}
+                                <Dialog
+                                  onOpenChange={() => {
+                                    setShowSuccessNotification(false);
+                                    setShowErrorNotification(false);
+                                  }}
+                                >
+                                  <DialogTrigger
+                                    onClick={() => {
+                                      setSelectedClient(true);
+                                      setCustomerQuery(item.customer as string);
+                                      setCustomer({
+                                        id: item.customerId as string,
+                                        name: item.customer as string,
+                                      });
+                                      setOrderType(item.type as string);
+
+                                      type Product = {
+                                        blingId: bigint;
+                                        costPrice: number;
+                                        price: number;
+                                        productName: string;
+                                        quantity: number;
+                                      };
+
+                                      const productsTransformed = (
+                                        item.productOrder as Product[]
+                                      ).map((p) => ({
+                                        id: Number(p.blingId),
+                                        nome: p.productName,
+                                        preco: p.price,
+                                        precoCusto: p.costPrice,
+                                        quantity: p.quantity,
+                                        codigo: "",
+                                        tipo: "",
+                                        situacao: "",
+                                        formato: "",
+                                        descricaoCurta: "",
+                                        imagemURL: "",
+                                        estoque: undefined,
+                                      }));
+
+                                      setSelected(productsTransformed);
+
+                                      type Service = {
+                                        id: string;
+                                        title: string;
+                                        description: string;
+                                        price: number;
+                                        organizationId: string;
+                                        createdAt: Date;
+                                        updatedAt: Date;
+                                      };
+
+                                      setSelectedServices(
+                                        item.serviceOrder as Service[]
+                                      );
+
+                                      setPaymentAmount(item.amount as number);
+
+                                      setPaymentMethod(
+                                        item.method
+                                          ? (item.method as string)
+                                          : "PENDENTE"
+                                      );
+
+                                      setSelectedMembers(
+                                        (
+                                          item.assignedMembers as {
+                                            memberId: string;
+                                            memberName: string;
+                                          }[]
+                                        ).map((m) => ({
+                                          id: m.memberId,
+                                          name: m.memberName,
+                                        }))
+                                      );
+
+                                      const safeDate = new Date(
+                                        item.scheduling as string
+                                      );
+
+                                      setDate(safeDate);
+                                      setPaymentAmount(
+                                        item.amount
+                                          ? (item.amount as number)
+                                          : 0
+                                      );
+                                      setOrderVisibility(item.show as boolean);
+                                      setOrderId(item.id as string);
+                                      setService(item.service as string);
+                                      setNote(
+                                        item.note
+                                          ? (item.note as string)
+                                          : undefined
+                                      );
+                                    }}
+                                    asChild
+                                  >
+                                    <span className="border border-[#EFEFEF] p-2 rounded-sm hover:bg-[#F3F4F6] cursor-pointer">
+                                      <SquarePen className="size-4" />
+                                    </span>
+                                  </DialogTrigger>
+
+                                  <DialogContent className="max-h-[90vh] overflow-y-auto">
+                                    <DialogHeader>
+                                      <DialogTitle>
+                                        Editar ordem de serviço
+                                      </DialogTitle>
+                                    </DialogHeader>
+
+                                    <form
+                                      className="flex flex-col gap-4"
+                                      action={handleSubmit}
+                                    >
+                                      <div className="flex flex-col gap-1">
+                                        <Label htmlFor="schedule">
+                                          Agendamento
+                                        </Label>
+
+                                        <DateTimePicker
+                                          date={date}
+                                          setDate={setDate}
+                                        />
+                                      </div>
+
+                                      {/* Cliente */}
+                                      <div className="flex flex-col gap-1">
+                                        <Label htmlFor="customerId">
+                                          Cliente
+                                        </Label>
+                                        <Input
+                                          id="customer-search"
+                                          placeholder="Digite para buscar..."
+                                          value={customerQuery}
+                                          onChange={(e) =>
+                                            setCustomerQuery(e.target.value)
+                                          }
+                                          disabled={selectedClient}
+                                        />
+                                      </div>
+
+                                      {/* Tipo de ordem */}
+                                      <div className="flex flex-col gap-1">
+                                        <Label htmlFor="type">
+                                          Tipo de ordem
+                                        </Label>
+                                        <Select
+                                          name="type"
+                                          value={orderType}
+                                          onValueChange={setOrderType}
+                                        >
+                                          <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Selecione um tipo" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="SALE">
+                                              Serviço
+                                            </SelectItem>
+                                            <SelectItem value="BUDGET">
+                                              Orçamento
+                                            </SelectItem>
+                                            <SelectItem value="WARRANTY">
+                                              Garantia
+                                            </SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+
+                                      {/* Pesquisa de produto */}
+                                      <div className="flex flex-col gap-2">
+                                        <Label htmlFor="product-search">
+                                          Pesquisar produto
+                                        </Label>
+                                        <Input
+                                          id="product-search"
+                                          placeholder="Digite para buscar..."
+                                          value={productQuery}
+                                          onChange={(e) =>
+                                            setProductQuery(e.target.value)
+                                          }
+                                        />
+                                        {filteredProducts ? (
+                                          <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
+                                            {filteredProducts.map((product) => (
+                                              <button
+                                                key={product.id}
+                                                type="button"
+                                                onClick={() => {
+                                                  handleAddProduct(product);
+                                                  setProductQuery("");
+                                                }}
+                                                className="w-full flex flex-col text-left px-4 py-2 hover:bg-gray-100 justify-between"
+                                              >
+                                                {product.nome}
+                                                <p className="text-red-500">
+                                                  Preço: R$ {product.preco}
+                                                </p>
+                                              </button>
+                                            ))}
+                                          </div>
+                                        ) : (
+                                          productQuery && (
+                                            <p className="text-sm text-muted-foreground mt-2">
+                                              Nenhum produto encontrado.
+                                            </p>
+                                          )
+                                        )}
+                                      </div>
+
+                                      {/* Lista de produtos adicionados */}
+                                      {selected.length > 0 && (
+                                        <div className="space-y-2">
+                                          {selected.map((p) => (
+                                            <div
+                                              key={p.id}
+                                              className="flex items-center justify-between border-b border-gray-200 pb-2"
+                                            >
+                                              <span className="text-sm font-medium text-gray-800 pr-2">
+                                                <p>Produto: {p.nome}</p>
+
+                                                <p className="text-red-500 items-start">
+                                                  Preço: R$ {p.preco}
+                                                </p>
+                                              </span>
+
+                                              <div className="flex items-center gap-2">
+                                                <Input
+                                                  type="number"
+                                                  min={1}
+                                                  value={p.quantity}
+                                                  onChange={(e) =>
+                                                    updateQuantity(
+                                                      p.id,
+                                                      Number(e.target.value)
+                                                    )
+                                                  }
+                                                  className="w-16 h-8 px-2 py-1 text-sm"
+                                                />
+
+                                                <Button
+                                                  variant="ghost"
+                                                  size="sm"
+                                                  className="text-red-500 hover:text-red-700 h-8 px-2"
+                                                  onClick={() =>
+                                                    removeProduct(p.id)
+                                                  }
+                                                >
+                                                  Remover
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+
+                                      {/* Serviços */}
+                                      <div className="flex flex-col gap-2">
+                                        <Label htmlFor="note">
+                                          Nome do serviço
+                                        </Label>
+                                        <Input
+                                          type="text"
+                                          value={service}
+                                          onChange={(e) => {
+                                            if (e.target.value)
+                                              setService(e.target.value);
+                                          }}
+                                        />
+                                      </div>
+
+                                      {/* Observação */}
+                                      <div className="flex flex-col gap-2">
+                                        <Label htmlFor="note">Observação</Label>
+                                        <Textarea
+                                          placeholder="Escreva sua mensagem aqui..."
+                                          value={note}
+                                          onChange={(e) => {
+                                            if (e.target.value)
+                                              setNote(e.target.value);
+                                          }}
+                                        />
+                                      </div>
+
+                                      {/* Buscar Funcionário */}
+                                      <div className="flex flex-col gap-2">
+                                        <Label htmlFor="commission-search">
+                                          Funcionário designado
+                                        </Label>
+                                        <Input
+                                          placeholder="Digite para buscar..."
+                                          value={memberQuery}
+                                          onChange={(e) =>
+                                            setMemberQuery(e.target.value)
+                                          }
+                                        />
+                                        {filteredEmployees.length > 0 ? (
+                                          <div className="border rounded-md mt-2 max-h-40 overflow-y-auto">
+                                            {filteredEmployees.map(
+                                              (employee) => (
+                                                <button
+                                                  key={employee.id}
+                                                  type="button"
+                                                  onClick={() => {
+                                                    handleAddEmployee(employee);
+                                                    setMemberQuery("");
+                                                  }}
+                                                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                                                >
+                                                  {employee.name}
+                                                </button>
+                                              )
+                                            )}
+                                          </div>
+                                        ) : (
+                                          memberQuery && (
+                                            <p className="text-sm text-muted-foreground mt-2">
+                                              Nenhum funcionário encontrado.
+                                            </p>
+                                          )
+                                        )}
+                                      </div>
+
+                                      {selectedMembers.length > 0 && (
+                                        <div className="flex flex-col gap-1">
+                                          {selectedMembers.map((member) => {
+                                            return (
+                                              <div
+                                                key={member.id}
+                                                className="flex gap-2 items-center justify-between"
+                                              >
+                                                <span>{member.name}</span>
+                                                <Button
+                                                  variant="ghost"
+                                                  size="sm"
+                                                  className="text-red-500 hover:text-red-700 h-8 px-2"
+                                                  onClick={() =>
+                                                    removeEmployee(member.id)
+                                                  }
+                                                >
+                                                  Remover
+                                                </Button>
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                      )}
+
+                                      {/* Método de pagamento */}
+                                      <div className="flex flex-col gap-1">
+                                        <Label htmlFor="paymentMethod">
+                                          Método de pagamento
+                                        </Label>
+                                        <Select
+                                          name="paymentMethod"
+                                          value={paymentMethod}
+                                          onValueChange={setPaymentMethod}
+                                        >
+                                          <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Selecione" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="PIX">
+                                              PIX
+                                            </SelectItem>
+                                            <SelectItem value="CARTAO">
+                                              Cartão
+                                            </SelectItem>
+                                            <SelectItem value="BOLETO">
+                                              Boleto
+                                            </SelectItem>
+                                            <SelectItem value="DEPOSITO">
+                                              Depósito
+                                            </SelectItem>
+                                            <SelectItem value="PENDENTE">
+                                              Pendente
+                                            </SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+
+                                      {/* Valor do pagamento */}
+                                      <div className="flex flex-col gap-1">
+                                        <Label htmlFor="paymentAmount">
+                                          Valor
+                                        </Label>
+                                        <Input
+                                          name="paymentAmount"
+                                          type="text"
+                                          value={paymentAmount}
+                                          onChange={(e) =>
+                                            setPaymentAmount(
+                                              e.target.value
+                                                ? parseFloat(e.target.value)
+                                                : undefined
+                                            )
+                                          }
+                                        />
+                                      </div>
+
+                                      <div className="flex flex-col gap-4">
+                                        {showSuccessNotification && (
+                                          <SuccessNotification message="Atualização bem sucedida!" />
+                                        )}
+
+                                        {showErrorNotification && (
+                                          <ErrorNotification message="Erro ao atualizar!" />
+                                        )}
+
+                                        <Button type="submit">Atualizar</Button>
+                                      </div>
+                                    </form>
+                                  </DialogContent>
+                                </Dialog>
+                              </div>
+
+                              <DialogHeader className="flex items-center">
+                                <DialogTitle>
+                                  Ordem n°:{" "}
+                                  {orderNumber.toString().length === 1
+                                    ? `00${orderNumber}`
+                                    : `${orderNumber}`}
+                                </DialogTitle>
+                                <DialogDescription>
+                                  Detalhes da ordem
+                                </DialogDescription>
+                              </DialogHeader>
+
+                              <div className="max-h-[60vh] overflow-y-auto mt-4 space-y-6">
+                                {/* Informações do pedido */}
+                                <div className="space-y-4">
+                                  {item &&
+                                    typeof item === "object" &&
+                                    Object.entries(item)
+                                      .filter(
+                                        ([key]) =>
+                                          key !== "id" &&
+                                          key !== "orderAttachment" &&
+                                          key !== "payment" &&
+                                          key !== "status" &&
+                                          key !== "productOrder" &&
+                                          key !== "orderNumber" &&
+                                          key !== "serviceOrder" &&
+                                          key !== "amount" &&
+                                          key !== "show" &&
+                                          key !== "customerId" &&
+                                          key !== "note" &&
+                                          key !== "service" &&
+                                          key !== "method"
+                                      )
+                                      .map(([key, value], index) => {
+                                        if (
+                                          key === "assignedMembers" &&
+                                          Array.isArray(value) &&
+                                          value.length > 0
+                                        ) {
+                                          return (
+                                            <div
+                                              key={key}
+                                              className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
+                                            >
+                                              <p className="text-muted-foreground text-sm">
+                                                {key in keyLabels
+                                                  ? keyLabels[
+                                                      key as keyof typeof keyLabels
+                                                    ]
+                                                  : key}
+                                              </p>
+                                              <div className="flex gap-2 justify-end">
+                                                {value.map((element, idx) => (
+                                                  <p
+                                                    key={idx}
+                                                    className="text-right"
+                                                  >
+                                                    <Badge
+                                                      variant={"secondary"}
+                                                    >
+                                                      {element.memberName}
+                                                    </Badge>
+                                                  </p>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          );
+                                        }
+
+                                        if (key === "scheduling") {
+                                          return (
+                                            <div
+                                              key={key}
+                                              className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
+                                            >
+                                              <p className="text-muted-foreground text-sm">
+                                                {key in keyLabels
+                                                  ? keyLabels[
+                                                      key as keyof typeof keyLabels
+                                                    ]
+                                                  : key}
+                                              </p>
+                                              <p className="text-right">
+                                                {typeof value === "string" ||
+                                                typeof value === "number"
+                                                  ? new Date(
+                                                      value
+                                                    ).toLocaleString(
+                                                      undefined,
+                                                      {
+                                                        year: "numeric",
+                                                        month: "2-digit",
+                                                        day: "2-digit",
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                        hour12: false, // ou true, se quiser AM/PM
+                                                      }
+                                                    )
+                                                  : "Invalid date"}
+                                              </p>
+                                            </div>
+                                          );
+                                        }
+
+                                        if (key !== "assignedMembers") {
+                                          return (
+                                            <div
+                                              key={key}
+                                              className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2"
+                                            >
+                                              <p className="text-muted-foreground text-sm">
+                                                {key in keyLabels
+                                                  ? keyLabels[
+                                                      key as keyof typeof keyLabels
+                                                    ]
+                                                  : key}
+                                              </p>
+                                              <p className="text-right">
+                                                {String(value) in valueLabels
+                                                  ? formatValue(
+                                                      key,
+                                                      valueLabels[
+                                                        String(
+                                                          value
+                                                        ) as keyof typeof valueLabels
+                                                      ]
+                                                    )
+                                                  : String(value)}
+                                              </p>
+                                            </div>
+                                          );
+                                        }
+                                      })}
+                                </div>
+
+                                {/* Tabela de produtos */}
+                                <div className="overflow-x-auto">
+                                  {Object.entries(productOrder ?? {}).length >
+                                    0 ||
+                                  Object.entries(serviceOrder ?? {}).length >
+                                    0 ? (
+                                    <table className="min-w-full text-sm">
+                                      {Object.entries(productOrder ?? {})
+                                        .length > 0 && (
+                                        <>
+                                          <thead>
+                                            <tr>
+                                              <th className="text-left p-2">
+                                                Produto
+                                              </th>
+                                              <th className="text-right p-2">
+                                                Qtd.
+                                              </th>
+                                              <th className="text-right p-2">
+                                                Preço
+                                              </th>
+                                              <th className="text-right p-2">
+                                                Subtotal
+                                              </th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {item &&
+                                              typeof item === "object" &&
+                                              Object.entries(item)
+                                                .filter(
+                                                  ([key]) =>
+                                                    key === "productOrder"
+                                                )
+                                                .flatMap(([_, value]) =>
+                                                  Array.isArray(value)
+                                                    ? value.map(
+                                                        (element, idx) => (
+                                                          <tr
+                                                            className="border-t"
+                                                            key={`product-${idx}`}
+                                                          >
+                                                            <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                                              {
+                                                                element.productName
+                                                              }
+                                                            </td>
+                                                            <td className="text-right p-2">
+                                                              {element.quantity}
+                                                            </td>
+                                                            <td className="text-right p-2">
+                                                              {element.price}
+                                                            </td>
+                                                            <td className="text-right p-2">
+                                                              {parseFloat(
+                                                                (
+                                                                  element.price *
+                                                                  element.quantity
+                                                                ).toString()
+                                                              )}
+                                                            </td>
+                                                          </tr>
+                                                        )
+                                                      )
+                                                    : []
+                                                )}
+                                          </tbody>
+                                        </>
+                                      )}
+
+                                      {Object.entries(serviceOrder ?? {})
+                                        .length > 0 && (
+                                        <>
+                                          <thead>
+                                            <tr>
+                                              <th className="text-left p-2">
+                                                Serviço
+                                              </th>
+                                              <th className="text-right p-2"></th>
+                                              <th className="text-right p-2"></th>
+                                              <th className="text-right p-2">
+                                                Subtotal
+                                              </th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {item &&
+                                              typeof item === "object" &&
+                                              Object.entries(item)
+                                                .filter(
+                                                  ([key]) =>
+                                                    key === "serviceOrder"
+                                                )
+                                                .flatMap(([_, value]) =>
+                                                  Array.isArray(value)
+                                                    ? value.map(
+                                                        (element, idx) => (
+                                                          <tr
+                                                            className="border-t"
+                                                            key={`service-${idx}`}
+                                                          >
+                                                            <td className="p-2 break-words whitespace-normal max-w-[160px] sm:max-w-none">
+                                                              {element.title}
+                                                            </td>
+                                                            <td className="text-right p-2"></td>
+                                                            <td className="text-right p-2"></td>
+                                                            <td className="text-right p-2">
+                                                              {element.price}
+                                                            </td>
+                                                          </tr>
+                                                        )
+                                                      )
+                                                    : []
+                                                )}
+                                          </tbody>
+                                        </>
+                                      )}
+
+                                      <tfoot>
+                                        <tr className="border-t">
+                                          <td
+                                            colSpan={3}
+                                            className="p-2 font-bold"
+                                          >
+                                            Total
+                                          </td>
+                                          <td className="text-right p-2 font-bold">
+                                            {orderPrice}
+                                          </td>
+                                        </tr>
+                                      </tfoot>
+                                    </table>
+                                  ) : (
+                                    <div className="w-full p-6 text-center text-gray-500 bg-gray-50 rounded-lg">
+                                      <p className="text-lg font-semibold">
+                                        Nenhum produto ou serviço adicionado
+                                      </p>
+                                      <p className="text-sm mt-1">
+                                        Adicione itens para visualizar os
+                                        detalhes do pedido.
+                                      </p>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col">
+                      <div>
+                        <p className="text-[#FFFFFF] text-sm opacity-50">
+                          Cliente
+                        </p>
+                        <p className="text-white text-[16px]">
+                          {item.customer as string}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[#FFFFFF] text-sm opacity-50">
+                          Serviço
+                        </p>
+                        <p className="text-white text-[16px] truncate">
+                          {item.service as string}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[#FFFFFF] text-sm opacity-50">
+                          Observação
+                        </p>
+                        <p className="text-white text-[16px] truncate">
+                          {item.note as string}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex mt-auto">
+                      {(
+                        item.assignedMembers as {
+                          memberId: string;
+                          memberName: string;
+                        }[]
+                      ).map((member, index) => (
+                        <div
+                          key={member.memberId}
+                          className={`w-[32px] h-[32px] bg-[#fbbc23] rounded-full border-2 border-white flex items-center justify-center text-white text-sm font-bold
+        ${index !== 0 ? "-ml-2" : ""}
+        z-${index + 10}`}
+                        >
+                          {member.memberName.charAt(0)}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            <Pagination>
+              <PaginationContent className="justify-end">
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onPageChange(Math.max(1, currentPage - 1));
+                    }}
+                    className={
+                      currentPage === 1
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+
+                <PaginationItem>
+                  <span className="text-xs text-muted-foreground px-2">
+                    Página {currentPage}
+                    {totalPages &&
+                      ` de ${currentPage > totalPages ? currentPage : totalPages}`}
+                  </span>
+                </PaginationItem>
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onPageChange(currentPage + 1);
+                    }}
+                    className={
+                      currentPage === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        ) : (
+          <p className="text-center table-fixed border-x border border-[#EFEFEF] w-full p-2">
+            Nenhum resultado encontrado.
+          </p>
+        )}
+      </div>
     </>
   );
 }
